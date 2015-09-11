@@ -1,25 +1,11 @@
-'use strict'
+var extend = require('extend'),
+    request = require('request'),
+    UsergridRequest = require('./lib/request')
 
-var usergridRequest = require('./lib/request');
+var Usergrid = function() {}
 
+Usergrid.GET = function(uri, options, callback) {
+    return new UsergridRequest('GET', uri, options, callback)
+};
 
-
-// var usergridRequest = usergridRequest;
-
-usergridRequest.GET = usergridRequest.get
-
-var Usergrid = usergridRequest;
-
-Usergrid.GET("https://api.usergrid.com/brandon.apigee/sandbox/tests", {
-    headers: {
-        'User-Agent': 'request'
-    }
-}, function(err, usergridResponse) {
-    console.log(usergridResponse.first);
-});
-
-// console.log(usergridRequest.super_);
-// console.log(usergridRequest.pat());
-// usergridRequest.get("https://api.usergrid.com/brandon.apigee/sandbox/tests", function(err, response, body) {
-//     console.log(body);
-// });
+module.exports = Usergrid;
