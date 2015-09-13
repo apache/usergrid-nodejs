@@ -2,9 +2,12 @@
     "author": "Brandon Shelley",
     "dependencies": {
         "async": "",
+        "extend": "",
         "objectkit": "",
         "request": "",
-        "extend": "",
+        "underscore": "",
+        "underscore.inflection": "",
+        "underscore.string": "",
         "volos-analytics-apigee": "",
         "volos-analytics-common": "",
         "volos-analytics-memory": "",
