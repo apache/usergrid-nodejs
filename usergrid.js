@@ -1,12 +1,25 @@
 'use strict'
-var extend = require('extend'),
-    request = require('request'),
-    UsergridRequest = require('./lib/request')
 
-var Usergrid = function() {}
+var UsergridClient = require('./lib/client'),
+    // ok = require('objectkit'),
+    helpers = require('./helpers'),
+    util = require("util")
 
-Usergrid.GET = function(uri, options, callback) {
-    return new UsergridRequest('GET', uri, options, callback)
+var Usergrid = function() {
+    var self = this
+    if (self) {
+        return self
+    } else {
+        throw new Error('Usergrid shared instance has not been initialized')
+    }
 }
 
-module.exports = Usergrid
+util.inherits(Usergrid, UsergridClient);
+
+Usergrid.prototype.initialize = function(orgId, appId, callback) {
+    var self = this
+    self = new UsergridClient(orgId, appId)
+}
+
+// Exports
+module.exports = new Usergrid

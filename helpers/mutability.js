@@ -1,9 +1,9 @@
-function setImmutable(obj, property) {
-    return Object.defineProperty(obj, property, { configurable: false, writable: false });
+function setImmutable(obj, key) {
+    return Object.defineProperty(obj, key, { configurable: false, writable: false });
 }
 
-function setMutable(obj, property) {
-    return Object.defineProperty(obj, property, { configurable: true, writable: true });
+function setMutable(obj, key) {
+    return Object.defineProperty(obj, key, { configurable: true, writable: true });
 }
 
 module.exports = {
