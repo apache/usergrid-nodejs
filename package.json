@@ -31,7 +31,7 @@
     "private": false,
     "scripts": {
         "start": "node app.js",
-        "test": "mocha test"
+        "test": "mocha tests"
     },
     "version": "2.0.0"
 }
