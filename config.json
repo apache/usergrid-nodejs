@@ -1,0 +1,12 @@
+{
+    "config": {
+        "usergrid": {
+            "appId": "sandbox",
+            "baseUrl": "https://api.usergrid.com",
+            "clientId": "YXA6GXSAACS2EeOYd20aP4G6Lw",
+            "clientSecret": "YXA66BeEvgNpJBwc4PAbvZZGTVS_SSw",
+            "orgId": "brandon.apigee",
+            "version": "2.0"
+        }
+    }
+}

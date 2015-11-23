@@ -1,14 +1,15 @@
 'use strict'
 
 var should = require('should'),
-    config = require('../package.json').config,
+    config = require('../config.json').config,
     Usergrid = require('../usergrid'),
     UsergridClient = require('../lib/client')
 
 const _collection = 'tests'
 var _uuid = null
 
-describe('Usergrid', function() {
+describe('Usergrid.initialize', function() {
+
     it('should fail to initialize without an orgId and appId', function() {
         should(function() {
             Usergrid.initialize()
@@ -17,10 +18,19 @@ describe('Usergrid', function() {
 
     it('should initialize when using an orgId and appId', function(done) {
         Usergrid.initialize(config.usergrid.orgId, config.usergrid.appId)
-        Usergrid.orgId.should.equal(config.usergrid.orgId)
-        Usergrid.appId.should.equal(config.usergrid.appId)
-        Usergrid.should.be.an.instanceof(UsergridClient)
         done()
+    })
+
+    it('Usergrid.orgId should match the orgId in package.json', function() {
+        Usergrid.orgId.should.equal(config.usergrid.orgId)
+    })
+
+    it('Usergrid.appId should match the appId in package.json', function() {
+        Usergrid.appId.should.equal(config.usergrid.appId)
+    })
+
+    it('Usergird should be an instance of UsergridClient', function() {
+        Usergrid.should.be.an.instanceof(UsergridClient)
     })
 });
 
