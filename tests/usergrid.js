@@ -159,6 +159,7 @@ describe('Usergrid.DELETE', function() {
 
         it('should return a 200 ok', function() {
             // This should check for 404, but because of a Usergrid bug, it returns 401 instead of 404.
+            // see https://issues.apache.org/jira/browse/USERGRID-1128
             response.statusCode.should.not.equal(200)
         })
 
