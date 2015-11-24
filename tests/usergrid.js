@@ -13,7 +13,7 @@ describe('Usergrid.initSharedInstance', function() {
 
     it('should fail to initialize without an orgId and appId', function() {
         should(function() {
-            Usergrid.init()
+            Usergrid.init(undefined, undefined)
         }).fail
     })
 
@@ -27,36 +27,18 @@ describe('Usergrid.initSharedInstance', function() {
         done()
     })
 
-    it('Usergrid.orgId should match the orgId in config.json', function() {
-        Usergrid.orgId.should.equal(config.usergrid.orgId)
-    })
-
-    it('Usergrid.appId should match the appId in config.json', function() {
-        Usergrid.appId.should.equal(config.usergrid.appId)
-    })
-
-    it('Usergrid.clientId should match the clientId in config.json', function() {
-        Usergrid.clientId.should.equal(config.usergrid.clientId)
-    })
-
-    it('Usergrid.clientSecret should match the clientSecret in config.json', function() {
-        Usergrid.clientSecret.should.equal(config.usergrid.clientSecret)
-    })
-
-    it('Usergrid.baseUrl should match the baseUrl in config.json', function() {
-        Usergrid.baseUrl.should.equal(config.usergrid.baseUrl)
-    })
-
-    it('Usergrid.tokenTtl should match the tokenTtl in config.json', function() {
-        Usergrid.tokenTtl.should.equal(config.usergrid.tokenTtl)
-    })
-
-    it('Usergrid.authFallback should match the authFallback in config.json', function() {
-        Usergrid.authFallback.should.equal(config.usergrid.authFallback)
-    })
-
     it('Usergrid should be an instance of UsergridClient', function() {
         Usergrid.should.be.an.instanceof(UsergridClient)
+    })
+
+    it('Usergrid\'s properties should match those defined in config.json', function() {
+        Usergrid.orgId.should.equal(config.usergrid.orgId)
+        Usergrid.appId.should.equal(config.usergrid.appId)
+        Usergrid.clientId.should.equal(config.usergrid.clientId)
+        Usergrid.clientSecret.should.equal(config.usergrid.clientSecret)
+        Usergrid.baseUrl.should.equal(config.usergrid.baseUrl)
+        Usergrid.tokenTtl.should.equal(config.usergrid.tokenTtl)
+        Usergrid.authFallback.should.equal(config.usergrid.authFallback)
     })
 });
 
