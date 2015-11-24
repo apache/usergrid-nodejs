@@ -1,6 +1,7 @@
 'use strict'
 
 var should = require('should'),
+    ok = require('objectkit'),
     config = require('../config.json').config,
     Usergrid = require('../usergrid'),
     UsergridClient = require('../lib/client')
@@ -8,28 +9,53 @@ var should = require('should'),
 const _collection = 'tests'
 var _uuid = null
 
-describe('Usergrid.initialize', function() {
+describe('Usergrid.initSharedInstance', function() {
 
     it('should fail to initialize without an orgId and appId', function() {
         should(function() {
-            Usergrid.initialize()
+            Usergrid.init()
         }).fail
     })
 
-    it('should initialize when using an orgId and appId', function(done) {
-        Usergrid.initialize(config.usergrid.orgId, config.usergrid.appId)
+    it('should initialize when passing an orgId and appId', function(done) {
+        Usergrid.init(config.usergrid.orgId, config.usergrid.appId)
         done()
     })
 
-    it('Usergrid.orgId should match the orgId in package.json', function() {
+    it('should initialize using orgId and appId from config.json', function(done) {
+        Usergrid.init()
+        done()
+    })
+
+    it('Usergrid.orgId should match the orgId in config.json', function() {
         Usergrid.orgId.should.equal(config.usergrid.orgId)
     })
 
-    it('Usergrid.appId should match the appId in package.json', function() {
+    it('Usergrid.appId should match the appId in config.json', function() {
         Usergrid.appId.should.equal(config.usergrid.appId)
     })
 
-    it('Usergird should be an instance of UsergridClient', function() {
+    it('Usergrid.clientId should match the clientId in config.json', function() {
+        Usergrid.clientId.should.equal(config.usergrid.clientId)
+    })
+
+    it('Usergrid.clientSecret should match the clientSecret in config.json', function() {
+        Usergrid.clientSecret.should.equal(config.usergrid.clientSecret)
+    })
+
+    it('Usergrid.baseUrl should match the baseUrl in config.json', function() {
+        Usergrid.baseUrl.should.equal(config.usergrid.baseUrl)
+    })
+
+    it('Usergrid.tokenTtl should match the tokenTtl in config.json', function() {
+        Usergrid.tokenTtl.should.equal(config.usergrid.tokenTtl)
+    })
+
+    it('Usergrid.authFallback should match the authFallback in config.json', function() {
+        Usergrid.authFallback.should.equal(config.usergrid.authFallback)
+    })
+
+    it('Usergrid should be an instance of UsergridClient', function() {
         Usergrid.should.be.an.instanceof(UsergridClient)
     })
 });

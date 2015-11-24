@@ -5,11 +5,11 @@ var UsergridClient = require('./lib/client'),
     util = require("util")
 
 var Usergrid = {
-    initialize: function(orgId, appId) {
+    initSharedInstance: function(orgId, appId) {
         Object.setPrototypeOf(Usergrid, new UsergridClient(orgId, appId))
     }
 }
 
-Usergrid.init = Usergrid.initialize
+Usergrid.init = Usergrid.initSharedInstance
 
 module.exports = Usergrid
