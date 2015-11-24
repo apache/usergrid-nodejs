@@ -13,8 +13,8 @@ describe('Usergrid.initSharedInstance', function() {
 
     it('should fail to initialize without an orgId and appId', function() {
         should(function() {
-            Usergrid.init(undefined, undefined)
-        }).fail
+            Usergrid.init(null, null)
+        }).throw()
     })
 
     it('should initialize when passing an orgId and appId', function(done) {
