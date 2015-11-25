@@ -34,5 +34,5 @@
         "start": "node app.js",
         "test": "mocha tests"
     },
-    "version": "2.0.0"
+    "version": "2.0"
 }

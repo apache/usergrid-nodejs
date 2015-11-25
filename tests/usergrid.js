@@ -4,9 +4,12 @@ var should = require('should'),
     ok = require('objectkit'),
     config = require('../config.json').config,
     Usergrid = require('../usergrid'),
-    UsergridClient = require('../lib/client')
+    UsergridClient = require('../lib/client'),
+    UsergridAuth = require('../lib/auth'),
+    UsergridAppAuth = require('../lib/appAuth')    
 
 const _collection = 'tests'
+var _client = null
 var _uuid = null
 
 describe('Usergrid.initSharedInstance', function() {
@@ -27,22 +30,33 @@ describe('Usergrid.initSharedInstance', function() {
         done()
     })
 
-    it('Usergrid should be an instance of UsergridClient', function() {
-        Usergrid.should.be.an.instanceof(UsergridClient)
+    it('Usergrid\'s properties should match those defined in config.json', function(done) {
+        Object(Usergrid).should.containDeep(config.usergrid)
+        done()
     })
 
-    it('Usergrid\'s properties should match those defined in config.json', function() {
-        Usergrid.orgId.should.equal(config.usergrid.orgId)
-        Usergrid.appId.should.equal(config.usergrid.appId)
-        Usergrid.clientId.should.equal(config.usergrid.clientId)
-        Usergrid.clientSecret.should.equal(config.usergrid.clientSecret)
-        Usergrid.baseUrl.should.equal(config.usergrid.baseUrl)
-        Usergrid.tokenTtl.should.equal(config.usergrid.tokenTtl)
-        Usergrid.authFallback.should.equal(config.usergrid.authFallback)
+    it('Usergrid should be an instance of UsergridClient', function(done) {
+        Usergrid.should.be.an.instanceof(UsergridClient)
+        done()
     })
+
+    it('Usergrid should have default values set for non-init-time properties', function() {
+        Usergrid.paginationPreloadPages.should.equal(0)
+        Usergrid.paginationCacheTimeout.should.equal(300 * 1000)
+        Usergrid.paginationCursors.should.be.an.Array.with.a.lengthOf(0)
+    })
+
 });
 
-describe('Usergrid.GET', function() {
+describe('UsergridClient', function() {
+    it('should instantiate a new instance of UsergridClient', function(done) {
+        _client = new UsergridClient()
+        _client.should.be.an.instanceof(UsergridClient)
+        done()
+    })
+})
+
+describe('UsergridClient.GET', function() {
 
     this.slow(1000)
     this.timeout(6000)
@@ -50,7 +64,7 @@ describe('Usergrid.GET', function() {
     describe('make a GET call to Usergrid and retrieve entities', function() {
         var response
         before(function(done) {
-            Usergrid.GET(_collection, function(err, usergridResponse) {
+            _client.GET(_collection, function(err, usergridResponse) {
                 response = usergridResponse
                 done()
             })
@@ -78,7 +92,7 @@ describe('Usergrid.GET', function() {
     })
 })
 
-describe('Usergrid.POST', function() {
+describe('UsergridClient.POST', function() {
 
     this.slow(1000)
     this.timeout(3000)
@@ -87,7 +101,7 @@ describe('Usergrid.POST', function() {
 
         var response
         before(function(done) {
-            Usergrid.POST(_collection, {
+            _client.POST(_collection, {
                 author: 'Sir Arthur Conan Doyle'
             }, function(err, usergridResponse) {
                 response = usergridResponse
@@ -114,7 +128,7 @@ describe('Usergrid.POST', function() {
     })
 })
 
-describe('Usergrid.PUT', function() {
+describe('UsergridClient.PUT', function() {
 
     this.slow(1000)
     this.timeout(3000)
@@ -123,7 +137,7 @@ describe('Usergrid.PUT', function() {
 
         var response
         before(function(done) {
-            Usergrid.PUT(_collection, _uuid, {
+            _client.PUT(_collection, _uuid, {
                 narrator: 'Peter Doyle'
             }, function(err, usergridResponse) {
                 response = usergridResponse
@@ -149,7 +163,7 @@ describe('Usergrid.PUT', function() {
     })
 })
 
-describe('Usergrid.DELETE', function() {
+describe('UsergridClient.DELETE', function() {
 
     this.slow(1000)
     this.timeout(6000)
@@ -157,8 +171,8 @@ describe('Usergrid.DELETE', function() {
     describe('make a DELETE call to Usergrid and delete an entity', function() {
         var response
         before(function(done) {
-            Usergrid.DELETE(_collection, _uuid, function(err, usergridResponse) {
-                Usergrid.GET(_collection, _uuid, function(err, usergridResponse) {
+            _client.DELETE(_collection, _uuid, function(err, usergridResponse) {
+                _client.GET(_collection, _uuid, function(err, usergridResponse) {
                     response = usergridResponse
                     done()
                 })
@@ -174,5 +188,21 @@ describe('Usergrid.DELETE', function() {
         it('response.error.name should equal \'service_resource_not_found\'', function() {
             response.error.name.should.equal('service_resource_not_found')
         })
+    })
+})
+
+describe('UsergridClient.appAuth', function() {
+    it('should instantiate a new instance of UsergridAppAuth', function() {
+        _client.setAppAuth(config.usergrid.clientId, config.usergrid.clientSecret, config.usergrid.tokenTtl)
+        _client.appAuth.should.be.instanceof(UsergridAuth)
+        _client.setAppAuth({
+            clientId: config.usergrid.clientId,
+            clientSecret: config.usergrid.clientSecret,
+            tokenTtl: config.usergrid.tokenTtl
+        })
+        _client.appAuth.should.be.instanceof(UsergridAuth)
+        _client.setAppAuth(new UsergridAppAuth(config.usergrid.clientId, config.usergrid.clientSecret, config.usergrid.tokenTtl))
+        _client.appAuth.should.be.instanceof(UsergridAuth)
+        _client.appAuth.should.be.instanceof(UsergridAppAuth)
     })
 })
