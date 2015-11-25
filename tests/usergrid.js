@@ -6,62 +6,62 @@ var should = require('should'),
     Usergrid = require('../usergrid'),
     UsergridClient = require('../lib/client'),
     UsergridAuth = require('../lib/auth'),
-    UsergridAppAuth = require('../lib/appAuth')    
+    UsergridAppAuth = require('../lib/appAuth')
 
 const _collection = 'tests'
 var _client = null
 var _uuid = null
 
-describe('Usergrid.initSharedInstance', function() {
+describe('Usergrid', function() {
+    describe('.init() / .initSharedInstance()', function() {
+        it('should fail to initialize without an orgId and appId', function() {
+            should(function() {
+                Usergrid.init(null, null)
+            }).throw()
+        })
 
-    it('should fail to initialize without an orgId and appId', function() {
-        should(function() {
-            Usergrid.init(null, null)
-        }).throw()
-    })
+        it('should initialize when passing an orgId and appId', function(done) {
+            Usergrid.init(config.usergrid.orgId, config.usergrid.appId)
+            done()
+        })
 
-    it('should initialize when passing an orgId and appId', function(done) {
-        Usergrid.init(config.usergrid.orgId, config.usergrid.appId)
-        done()
-    })
+        it('should initialize using orgId and appId from config.json', function(done) {
+            Usergrid.init()
+            done()
+        })
 
-    it('should initialize using orgId and appId from config.json', function(done) {
-        Usergrid.init()
-        done()
-    })
+        it('should contain and match all properties defined in config.json', function(done) {
+            Object(Usergrid).should.containDeep(config.usergrid)
+            done()
+        })
 
-    it('Usergrid\'s properties should match those defined in config.json', function(done) {
-        Object(Usergrid).should.containDeep(config.usergrid)
-        done()
-    })
+        it('should be an instance of UsergridClient', function(done) {
+            Usergrid.should.be.an.instanceof(UsergridClient)
+            done()
+        })
 
-    it('Usergrid should be an instance of UsergridClient', function(done) {
-        Usergrid.should.be.an.instanceof(UsergridClient)
-        done()
-    })
-
-    it('Usergrid should have default values set for non-init-time properties', function() {
-        Usergrid.paginationPreloadPages.should.equal(0)
-        Usergrid.paginationCacheTimeout.should.equal(300 * 1000)
-        Usergrid.paginationCursors.should.be.an.Array.with.a.lengthOf(0)
-    })
-
-});
-
-describe('UsergridClient', function() {
-    it('should instantiate a new instance of UsergridClient', function(done) {
-        _client = new UsergridClient()
-        _client.should.be.an.instanceof(UsergridClient)
-        done()
+        it('should have default values set for non-init-time properties', function() {
+            Usergrid.paginationPreloadPages.should.equal(0)
+            Usergrid.paginationCacheTimeout.should.equal(300 * 1000)
+            Usergrid.paginationCursors.should.be.an.Array.with.a.lengthOf(0)
+        })
     })
 })
 
-describe('UsergridClient.GET', function() {
+describe('UsergridClient', function() {
+    describe('initialization', function() {
+        it('should initialize', function(done) {
+            _client = new UsergridClient()
+            _client.should.be.an.instanceof(UsergridClient)
+            done()
+        })
+    })
 
-    this.slow(1000)
-    this.timeout(6000)
+    describe('.GET()', function() {
 
-    describe('make a GET call to Usergrid and retrieve entities', function() {
+        this.slow(1000)
+        this.timeout(6000)
+
         var response
         before(function(done) {
             _client.GET(_collection, function(err, usergridResponse) {
@@ -90,14 +90,12 @@ describe('UsergridClient.GET', function() {
             response.last.should.be.an.Object.and.have.property('uuid').with.a.lengthOf(36)
         })
     })
-})
 
-describe('UsergridClient.POST', function() {
+    describe('.POST()', function() {
 
-    this.slow(1000)
-    this.timeout(3000)
+        this.slow(1000)
+        this.timeout(3000)
 
-    describe('make a POST call to Usergrid and create an entity', function() {
 
         var response
         before(function(done) {
@@ -126,14 +124,12 @@ describe('UsergridClient.POST', function() {
             response.entity.should.have.property('author').equal('Sir Arthur Conan Doyle')
         })
     })
-})
 
-describe('UsergridClient.PUT', function() {
+    describe('.PUT()', function() {
 
-    this.slow(1000)
-    this.timeout(3000)
+        this.slow(1000)
+        this.timeout(3000)
 
-    describe('make a PUT call to Usergrid and update an entity', function() {
 
         var response
         before(function(done) {
@@ -161,14 +157,12 @@ describe('UsergridClient.PUT', function() {
             response.entity.should.have.property('narrator').equal('Peter Doyle')
         })
     })
-})
 
-describe('UsergridClient.DELETE', function() {
+    describe('.DELETE()', function() {
 
-    this.slow(1000)
-    this.timeout(6000)
+        this.slow(1000)
+        this.timeout(6000)
 
-    describe('make a DELETE call to Usergrid and delete an entity', function() {
         var response
         before(function(done) {
             _client.DELETE(_collection, _uuid, function(err, usergridResponse) {
@@ -189,20 +183,41 @@ describe('UsergridClient.DELETE', function() {
             response.error.name.should.equal('service_resource_not_found')
         })
     })
-})
 
-describe('UsergridClient.appAuth', function() {
-    it('should instantiate a new instance of UsergridAppAuth', function() {
-        _client.setAppAuth(config.usergrid.clientId, config.usergrid.clientSecret, config.usergrid.tokenTtl)
-        _client.appAuth.should.be.instanceof(UsergridAuth)
-        _client.setAppAuth({
-            clientId: config.usergrid.clientId,
-            clientSecret: config.usergrid.clientSecret,
-            tokenTtl: config.usergrid.tokenTtl
+    describe('.appAuth', function() {
+        it('should initialize by passing a list of arguments', function() {
+            _client.setAppAuth(config.usergrid.clientId, config.usergrid.clientSecret, config.usergrid.tokenTtl)
+            _client.appAuth.should.be.instanceof(UsergridAppAuth)
+            _client.setAppAuth({
+                clientId: config.usergrid.clientId,
+                clientSecret: config.usergrid.clientSecret,
+                tokenTtl: config.usergrid.tokenTtl
+            })
+            _client.appAuth.should.be.instanceof(UsergridAuth)
+            _client.setAppAuth(new UsergridAppAuth(config.usergrid.clientId, config.usergrid.clientSecret, config.usergrid.tokenTtl))
+            _client.appAuth.should.be.instanceof(UsergridAppAuth)
         })
-        _client.appAuth.should.be.instanceof(UsergridAuth)
-        _client.setAppAuth(new UsergridAppAuth(config.usergrid.clientId, config.usergrid.clientSecret, config.usergrid.tokenTtl))
-        _client.appAuth.should.be.instanceof(UsergridAuth)
-        _client.appAuth.should.be.instanceof(UsergridAppAuth)
+
+        it('should initialize by passing an object', function() {
+            _client.setAppAuth({
+                clientId: config.usergrid.clientId,
+                clientSecret: config.usergrid.clientSecret,
+                tokenTtl: config.usergrid.tokenTtl
+            })
+            _client.appAuth.should.be.instanceof(UsergridAppAuth)
+        })
+
+        it('should initialize by passing an instance of UsergridAppAuth', function() {
+            _client.setAppAuth({
+                clientId: config.usergrid.clientId,
+                clientSecret: config.usergrid.clientSecret,
+                tokenTtl: config.usergrid.tokenTtl
+            })
+            _client.appAuth.should.be.instanceof(UsergridAppAuth)
+        })
+
+        it('should be a subclass of UsergridAuth', function() {
+            _client.appAuth.should.be.instanceof(UsergridAuth)
+        })        
     })
 })
