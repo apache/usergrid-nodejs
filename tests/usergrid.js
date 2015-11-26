@@ -14,7 +14,7 @@ var _client = null
 var _uuid = null
 
 describe('Usergrid', function() {
-    describe('.init() / .initSharedInstance()', function() {
+    describe('init() / initSharedInstance()', function() {
         it('should fail to initialize without an orgId and appId', function() {
             should(function() {
                 Usergrid.init(null, null)
@@ -58,7 +58,7 @@ describe('UsergridClient', function() {
         })
     })
 
-    describe('.GET()', function() {
+    describe('GET()', function() {
 
         this.slow(1000)
         this.timeout(6000)
@@ -97,7 +97,7 @@ describe('UsergridClient', function() {
         })
     })
 
-    describe('.POST()', function() {
+    describe('POST()', function() {
 
         this.slow(1000)
         this.timeout(3000)
@@ -135,7 +135,7 @@ describe('UsergridClient', function() {
         })
     })
 
-    describe('.PUT()', function() {
+    describe('PUT()', function() {
 
         this.slow(1000)
         this.timeout(3000)
@@ -172,7 +172,7 @@ describe('UsergridClient', function() {
         })
     })
 
-    describe('.DELETE()', function() {
+    describe('DELETE()', function() {
 
         this.slow(1000)
         this.timeout(6000)
@@ -203,7 +203,7 @@ describe('UsergridClient', function() {
         })
     })
 
-    describe('.appAuth', function() {
+    describe('setAppAuth()', function() {
         it('should initialize by passing a list of arguments', function() {
             _client.setAppAuth(config.usergrid.clientId, config.usergrid.clientSecret, config.usergrid.tokenTtl)
             _client.appAuth.should.be.instanceof(UsergridAppAuth)
@@ -240,7 +240,7 @@ describe('UsergridClient', function() {
         })
     })
 
-    describe('.authenticateApp()', function() {
+    describe('authenticateApp()', function() {
 
         this.slow(1000)
         this.timeout(6000)
