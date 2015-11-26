@@ -9,7 +9,7 @@ var should = require('should'),
     UsergridAuth = require('../lib/auth'),
     UsergridAppAuth = require('../lib/appAuth')
 
-const _collection = 'tests'
+var _collection = config.tests.collection
 var _client = null
 var _uuid = null
 

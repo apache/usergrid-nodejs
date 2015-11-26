@@ -1,4 +1,7 @@
 {
+    "tests": {
+        "collection": "tests"
+    },
     "usergrid": {
         "appId": "sandbox",
         "authFallback": "none",
