@@ -2,7 +2,8 @@
 
 var should = require('should'),
     ok = require('objectkit'),
-    config = require('../config.json').config,
+    config = require('../config.json'),
+    helpers = require('../helpers'),
     Usergrid = require('../usergrid'),
     UsergridClient = require('../lib/client'),
     UsergridAuth = require('../lib/auth'),
@@ -70,6 +71,11 @@ describe('UsergridClient', function() {
             })
         })
 
+        it('should not fail when a callback function is not passed', function() {
+            // note: this test will NOT fail gracefully inside the Mocha event chain
+            _client.GET(_collection)
+        })
+
         it('should return a 200 ok', function() {
             response.statusCode.should.equal(200)
         })
@@ -96,7 +102,6 @@ describe('UsergridClient', function() {
         this.slow(1000)
         this.timeout(3000)
 
-
         var response
         before(function(done) {
             _client.POST(_collection, {
@@ -106,6 +111,11 @@ describe('UsergridClient', function() {
                 _uuid = usergridResponse.entity.uuid
                 done()
             })
+        })
+
+        it('should not fail when a callback function is not passed', function() {
+            // note: this test will NOT fail gracefully inside the Mocha event chain
+            _client.POST(_collection, {})
         })
 
         it('should return a 200 ok', function() {
@@ -130,7 +140,6 @@ describe('UsergridClient', function() {
         this.slow(1000)
         this.timeout(3000)
 
-
         var response
         before(function(done) {
             _client.PUT(_collection, _uuid, {
@@ -139,6 +148,11 @@ describe('UsergridClient', function() {
                 response = usergridResponse
                 done()
             })
+        })
+
+        it('should not fail when a callback function is not passed', function() {
+            // note: this test will NOT fail gracefully inside the Mocha event chain
+            _client.PUT(_collection, _uuid)
         })
 
         it('should return a 200 ok', function() {
@@ -171,6 +185,11 @@ describe('UsergridClient', function() {
                     done()
                 })
             })
+        })
+
+        it('should not fail when a callback function is not passed', function() {
+            // note: this test will NOT fail gracefully inside the Mocha event chain
+            _client.DELETE(_collection, _uuid)
         })
 
         it('should return a 200 ok', function() {
@@ -218,6 +237,38 @@ describe('UsergridClient', function() {
 
         it('should be a subclass of UsergridAuth', function() {
             _client.appAuth.should.be.instanceof(UsergridAuth)
-        })        
+        })
+    })
+
+    describe('.authenticateApp()', function() {
+
+        this.slow(1000)
+        this.timeout(6000)
+
+        var response, token
+        before(function(done) {
+            _client.authenticateApp(function(err, r, t) {
+                response = r
+                token = t
+                done()
+            })
+        })
+
+        it('should return a 200 ok', function() {
+            response.statusCode.should.equal(200)
+        })
+
+        it('should have a valid token', function() {
+            token.should.be.a.String
+            token.length.should.be.greaterThan(10)
+        })
+
+        it('should have token set in .appAuth instance', function() {
+            _client.appAuth.should.have.property('token').equal(token)
+        })
+
+        it('should have expiry set in .appAuth instance greater than current time', function() {
+            _client.appAuth.should.have.property('expiry').greaterThan(new Date().getSeconds())
+        })
     })
 })
