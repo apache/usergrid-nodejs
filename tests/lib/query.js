@@ -1,7 +1,6 @@
 'use strict'
 
 var should = require('should'),
-    config = require('../../config.json'),
     UsergridQuery = require('../../lib/query')
 
 describe('type', function() {

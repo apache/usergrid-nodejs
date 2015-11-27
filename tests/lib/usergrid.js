@@ -1,9 +1,7 @@
 'use strict'
 
 var should = require('should'),
-    ok = require('objectkit'),
     config = require('../../config.json'),
-    helpers = require('../../helpers'),
     Usergrid = require('../../usergrid'),
     UsergridClient = require('../../lib/client')
 
