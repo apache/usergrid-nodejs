@@ -10,25 +10,24 @@ var should = require('should'),
     UsergridAppAuth = require('../../lib/appAuth')
 
 var _collection = config.tests.collection
-var _client = null
 var _uuid = null
 
 describe('initialization', function() {
     it('should initialize', function(done) {
-        _client = new UsergridClient()
-        _client.should.be.an.instanceof(UsergridClient)
+        var client = new UsergridClient()
+        client.should.be.an.instanceof(UsergridClient)
         done()
     })
 })
 
-describe('GET()', function() {
+describe.skip('GET()', function() {
 
     this.slow(1000)
     this.timeout(6000)
-
-    var response
+    var response, client
     before(function(done) {
-        _client.GET(_collection, function(err, usergridResponse) {
+        client = new UsergridClient()
+        client.GET(_collection, function(err, usergridResponse) {
             response = usergridResponse
             done()
         })
@@ -36,7 +35,7 @@ describe('GET()', function() {
 
     it('should not fail when a callback function is not passed', function() {
         // note: this test will NOT fail gracefully inside the Mocha event chain
-        _client.GET(_collection)
+        client.GET(_collection)
     })
 
     it('should return a 200 ok', function() {
@@ -60,14 +59,15 @@ describe('GET()', function() {
     })
 })
 
-describe('POST()', function() {
+describe.skip('POST()', function() {
 
     this.slow(1000)
     this.timeout(3000)
 
-    var response
+    var response, client
     before(function(done) {
-        _client.POST(_collection, {
+        client = new UsergridClient()
+        client.POST(_collection, {
             author: 'Sir Arthur Conan Doyle'
         }, function(err, usergridResponse) {
             response = usergridResponse
@@ -78,7 +78,7 @@ describe('POST()', function() {
 
     it('should not fail when a callback function is not passed', function() {
         // note: this test will NOT fail gracefully inside the Mocha event chain
-        _client.POST(_collection, {})
+        client.POST(_collection, {})
     })
 
     it('should return a 200 ok', function() {
@@ -98,14 +98,15 @@ describe('POST()', function() {
     })
 })
 
-describe('PUT()', function() {
+describe.skip('PUT()', function() {
 
     this.slow(1000)
     this.timeout(3000)
 
-    var response
+    var response, client
     before(function(done) {
-        _client.PUT(_collection, _uuid, {
+        client = new UsergridClient()
+        client.PUT(_collection, _uuid, {
             narrator: 'Peter Doyle'
         }, function(err, usergridResponse) {
             response = usergridResponse
@@ -115,7 +116,7 @@ describe('PUT()', function() {
 
     it('should not fail when a callback function is not passed', function() {
         // note: this test will NOT fail gracefully inside the Mocha event chain
-        _client.PUT(_collection, _uuid)
+        client.PUT(_collection, _uuid)
     })
 
     it('should return a 200 ok', function() {
@@ -135,15 +136,16 @@ describe('PUT()', function() {
     })
 })
 
-describe('DELETE()', function() {
+describe.skip('DELETE()', function() {
 
     this.slow(1000)
     this.timeout(6000)
 
-    var response
+    var response, client
     before(function(done) {
-        _client.DELETE(_collection, _uuid, function(err, usergridResponse) {
-            _client.GET(_collection, _uuid, function(err, usergridResponse) {
+        client = new UsergridClient()
+        client.DELETE(_collection, _uuid, function(err, usergridResponse) {
+            client.GET(_collection, _uuid, function(err, usergridResponse) {
                 response = usergridResponse
                 done()
             })
@@ -152,7 +154,7 @@ describe('DELETE()', function() {
 
     it('should not fail when a callback function is not passed', function() {
         // note: this test will NOT fail gracefully inside the Mocha event chain
-        _client.DELETE(_collection, _uuid)
+        client.DELETE(_collection, _uuid)
     })
 
     it('should return a 200 ok', function() {
@@ -171,10 +173,11 @@ describe('authenticateApp()', function() {
     this.slow(1000)
     this.timeout(6000)
 
-    var response, token
+    var response, token, client
     before(function(done) {
-        _client.setAppAuth(config.usergrid.clientId, config.usergrid.clientSecret, config.usergrid.tokenTtl)
-        _client.authenticateApp(function(err, r, t) {
+        client = new UsergridClient()
+        client.setAppAuth(config.usergrid.clientId, config.usergrid.clientSecret, config.usergrid.tokenTtl)
+        client.authenticateApp(function(err, r, t) {
             response = r
             token = t
             done()
@@ -191,47 +194,40 @@ describe('authenticateApp()', function() {
     })
 
     it('client.appAuth.token should be set to the token returned from Usergrid', function() {
-        _client.appAuth.should.have.property('token').equal(token)
+        client.appAuth.should.have.property('token').equal(token)
     })
 
     it('client.appAuth.expiry should be set to a future date', function() {
-        _client.appAuth.should.have.property('expiry').greaterThan(Date.now())
+        client.appAuth.should.have.property('expiry').greaterThan(Date.now())
     })
 })
 
-describe('setAppAuth()', function() {
+describe('appAuth / setAppAuth()', function() {
     it('should initialize by passing a list of arguments', function() {
-        _client.setAppAuth(config.usergrid.clientId, config.usergrid.clientSecret, config.usergrid.tokenTtl)
-        _client.appAuth.should.be.instanceof(UsergridAppAuth)
-        _client.setAppAuth({
-            clientId: config.usergrid.clientId,
-            clientSecret: config.usergrid.clientSecret,
-            tokenTtl: config.usergrid.tokenTtl
-        })
-        _client.appAuth.should.be.instanceof(UsergridAuth)
-        _client.setAppAuth(new UsergridAppAuth(config.usergrid.clientId, config.usergrid.clientSecret, config.usergrid.tokenTtl))
-        _client.appAuth.should.be.instanceof(UsergridAppAuth)
+        var client = new UsergridClient()
+        client.setAppAuth(config.usergrid.clientId, config.usergrid.clientSecret, config.usergrid.tokenTtl)
+        client.appAuth.should.be.instanceof(UsergridAppAuth)
     })
 
     it('should initialize by passing an object', function() {
-        _client.setAppAuth({
+        var client = new UsergridClient()
+        client.setAppAuth({
             clientId: config.usergrid.clientId,
             clientSecret: config.usergrid.clientSecret,
             tokenTtl: config.usergrid.tokenTtl
-        })
-        _client.appAuth.should.be.instanceof(UsergridAppAuth)
+        })        
+        client.appAuth.should.be.instanceof(UsergridAppAuth)
     })
 
     it('should initialize by passing an instance of UsergridAppAuth', function() {
-        _client.setAppAuth({
-            clientId: config.usergrid.clientId,
-            clientSecret: config.usergrid.clientSecret,
-            tokenTtl: config.usergrid.tokenTtl
-        })
-        _client.appAuth.should.be.instanceof(UsergridAppAuth)
+        var client = new UsergridClient()
+        client.setAppAuth(new UsergridAppAuth(config.usergrid.clientId, config.usergrid.clientSecret, config.usergrid.tokenTtl))
+        client.appAuth.should.be.instanceof(UsergridAppAuth)
     })
 
-    it('should be a subclass of UsergridAuth', function() {
-        _client.appAuth.should.be.instanceof(UsergridAuth)
+    it('should initialize by setting to an instance of UsergridAppAuth', function() {
+        var client = new UsergridClient()
+        client.appAuth = new UsergridAppAuth(config.usergrid.clientId, config.usergrid.clientSecret, config.usergrid.tokenTtl)
+        client.appAuth.should.be.instanceof(UsergridAppAuth)
     })
 })
