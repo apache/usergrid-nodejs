@@ -3,10 +3,7 @@
 var should = require('should'),
     ok = require('objectkit'),
     config = require('../../config.json'),
-    helpers = require('../../helpers'),
-    Usergrid = require('../../usergrid'),
     UsergridClient = require('../../lib/client'),
-    UsergridAuth = require('../../lib/auth'),
     UsergridAppAuth = require('../../lib/appAuth')
 
 var _collection = config.tests.collection
@@ -144,7 +141,7 @@ describe('DELETE()', function() {
     var response, client
     before(function(done) {
         client = new UsergridClient()
-        client.DELETE(_collection, _uuid, function(err, usergridResponse) {
+        client.DELETE(_collection, _uuid, function() {
             client.GET(_collection, _uuid, function(err, usergridResponse) {
                 response = usergridResponse
                 done()

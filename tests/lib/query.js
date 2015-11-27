@@ -2,7 +2,6 @@
 
 var should = require('should'),
     config = require('../../config.json'),
-    UsergridClient = require('../../lib/client'),
     UsergridQuery = require('../../lib/query')
 
 describe('type', function() {

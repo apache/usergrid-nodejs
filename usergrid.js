@@ -1,8 +1,6 @@
 'use strict'
 
-var UsergridClient = require('./lib/client'),
-    helpers = require('./helpers'),
-    util = require("util")
+var UsergridClient = require('./lib/client')
 
 var Usergrid = {
     initSharedInstance: function(opts) {
