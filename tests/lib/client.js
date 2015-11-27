@@ -190,12 +190,12 @@ describe('authenticateApp()', function() {
         token.length.should.be.greaterThan(10)
     })
 
-    it('should set .appAuth.token', function() {
+    it('client.appAuth.token should be set to the token returned from Usergrid', function() {
         _client.appAuth.should.have.property('token').equal(token)
     })
 
-    it('should set .appAuth.expiry to future date', function() {
-        _client.appAuth.should.have.property('expiry').greaterThan(new Date().getSeconds())
+    it('client.appAuth.expiry should be set to a future date', function() {
+        _client.appAuth.should.have.property('expiry').greaterThan(Date.now())
     })
 })
 
