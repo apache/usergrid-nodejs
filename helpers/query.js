@@ -5,6 +5,6 @@ var isNumeric = require('./isNumeric'),
 
 module.exports = {
     useQuotesIfRequired: function(value) {
-        return isNumeric(value) ? value : util.format('\'%s\'', value)
+        return isNumeric(value) ? value : util.format("'%s'", value)
     }
 }

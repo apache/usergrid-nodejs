@@ -6,17 +6,17 @@ var should = require('should'),
     UsergridQuery = require('../../lib/query')
 
 describe('type', function() {
-    it('query._type should equal \'cats\' when passing \'type\' as a parameter to UsergridQuery', function() {
+    it('query._type should equal "cats" when passing "type" as a parameter to UsergridQuery', function() {
         var query = new UsergridQuery('cats')
         query.should.have.property('_type').equal('cats')
     })
 
-    it('query._type should equal \'cats\' when calling .type() builder method', function() {
+    it('query._type should equal "cats" when calling .type() builder method', function() {
         var query = new UsergridQuery().type('cats')
         query.should.have.property('_type').equal('cats')
     })
 
-    it('query._type should equal \'cats\' when calling .collection() builder method', function() {
+    it('query._type should equal "cats" when calling .collection() builder method', function() {
         var query = new UsergridQuery().collection('cats')
         query.should.have.property('_type').equal('cats')
     })
@@ -30,9 +30,10 @@ describe('limit', function() {
 })
 
 describe('eq', function() {
-    it('query._ql should equal \"select * where color = \'black\'\"', function() {
+    var queryString = "select * where color = 'black'"
+    it(util.format('query._ql should equal %s', queryString), function() {
         var query = new UsergridQuery().collection('cats').eq('color', 'black')
-        query.should.have.property('_ql').equal('select * where color = \'black\'')
+        query.should.have.property('_ql').equal(queryString)
     })
 })
 

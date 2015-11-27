@@ -93,7 +93,7 @@ describe('POST()', function() {
         response.entity.should.be.an.Object.and.have.property('uuid').with.a.lengthOf(36)
     })
 
-    it('response.entity.author should equal \'Sir Arthur Conan Doyle\'', function() {
+    it('response.entity.author should equal "Sir Arthur Conan Doyle"', function() {
         response.entity.should.have.property('author').equal('Sir Arthur Conan Doyle')
     })
 })
@@ -131,7 +131,7 @@ describe('PUT()', function() {
         response.entity.should.be.an.Object.and.have.property('uuid').equal(_uuid)
     })
 
-    it('response.entity.narrator should equal \'Peter Doyle\'', function() {
+    it('response.entity.narrator should equal "Peter Doyle"', function() {
         response.entity.should.have.property('narrator').equal('Peter Doyle')
     })
 })
@@ -163,7 +163,7 @@ describe('DELETE()', function() {
         response.statusCode.should.not.equal(200)
     })
 
-    it('response.error.name should equal \'service_resource_not_found\'', function() {
+    it('response.error.name should equal "service_resource_not_found"', function() {
         response.error.name.should.equal('service_resource_not_found')
     })
 })
