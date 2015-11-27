@@ -20,7 +20,7 @@ describe('initialization', function() {
     })
 })
 
-describe.skip('GET()', function() {
+describe('GET()', function() {
 
     this.slow(1000)
     this.timeout(6000)
@@ -59,7 +59,7 @@ describe.skip('GET()', function() {
     })
 })
 
-describe.skip('POST()', function() {
+describe('POST()', function() {
 
     this.slow(1000)
     this.timeout(3000)
@@ -98,7 +98,7 @@ describe.skip('POST()', function() {
     })
 })
 
-describe.skip('PUT()', function() {
+describe('PUT()', function() {
 
     this.slow(1000)
     this.timeout(3000)
@@ -136,7 +136,7 @@ describe.skip('PUT()', function() {
     })
 })
 
-describe.skip('DELETE()', function() {
+describe('DELETE()', function() {
 
     this.slow(1000)
     this.timeout(6000)
