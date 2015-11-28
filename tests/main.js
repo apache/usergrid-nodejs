@@ -1,13 +1,13 @@
 'use strict'
 
 describe.skip('Usergrid', function() {
-    return require('./lib/usergrid')
+    return require('./lib/usergrid.test')
 })
 
 describe.skip('UsergridClient', function() {
-    return require('./lib/client')
+    return require('./lib/client.test')
 })
 
 describe('UsergridQuery', function() {
-    return require('./lib/query')
+    return require('./lib/query.test')
 })
