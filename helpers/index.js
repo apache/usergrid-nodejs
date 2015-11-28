@@ -2,7 +2,7 @@ var mutability = require('./mutability'),
     cb = require('./callbackCheck'),
     buildUrl = require('./buildUrl'),
     userAgent = require('./userAgent'),
-    isNumeric = require('./isNumeric'),
+    is = require('./is'),
     query = require('./query')
 
 module.exports = {
@@ -11,6 +11,6 @@ module.exports = {
     cb: cb,
     buildUrl: buildUrl,
     userAgent: userAgent,
-    isNumeric: isNumeric,
+    is: is,
     query: query
 }
