@@ -1,7 +1,8 @@
 'use strict'
 
 var should = require('should'),
-    UsergridQuery = require('../../lib/query')
+    UsergridQuery = require('../../lib/query'),
+    util = require('util')
 
 describe('type', function() {
     it('query._type should equal "cats" when passing "type" as a parameter to UsergridQuery', function() {
@@ -27,14 +28,16 @@ describe('limit', function() {
     })
 })
 
-describe('eq', function() {
-    var queryString = "select * where color = 'black'"
+describe('builder pattern', function() {
+    var queryString = "select * where weight > 2.4 and color contains 'bl*' and not color = 'blue' or color = 'orange'"
     it(util.format('query._ql should equal %s', queryString), function() {
-        var query = new UsergridQuery().collection('cats').eq('color', 'black')
+        var query = new UsergridQuery('cats')
+            .gt('weight', 2.4)
+            .contains('color', 'bl*')
+            .not
+            .eq('color', 'blue')
+            .or
+            .eq('color', 'orange')
         query.should.have.property('_ql').equal(queryString)
     })
 })
-
-// console.log(.desc('color').ql)
-// console.log(new UsergridQuery().collection('cats').gt('weight', 2.4).desc('color').ql)
-// console.log(new UsergridQuery().collection('cats').limit(10).limit)
