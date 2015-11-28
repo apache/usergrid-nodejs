@@ -1,5 +1,5 @@
 var mutability = require('./mutability'),
-    cb = require('./callbackCheck'),
+    cb = require('./cb'),
     buildUrl = require('./buildUrl'),
     userAgent = require('./userAgent'),
     is = require('./is'),
