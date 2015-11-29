@@ -9,10 +9,32 @@ var _collection = config.tests.collection
 var _uuid = null
 
 describe('initialization', function() {
-    it('should initialize', function(done) {
+    it('should fail to initialize without an orgId and appId', function() {
+        should(function() {
+            var client = new UsergridClient(null, null)
+        }).throw()
+    })
+
+    it('should initialize using properties defined in config.json', function() {
         var client = new UsergridClient()
-        client.should.be.an.instanceof(UsergridClient)
-        done()
+        client.should.be.an.instanceof(UsergridClient).with.property('orgId').equal(config.usergrid.orgId)
+        client.should.be.an.instanceof(UsergridClient).with.property('appId').equal(config.usergrid.appId)
+        Object(client).should.containDeep(config.usergrid)
+    })
+
+    it('should initialize when passing an orgId and appId as arguments, taking precedence over config', function() {
+        var client = new UsergridClient('foo', 'bar')
+        client.should.be.an.instanceof(UsergridClient).with.property('orgId').equal('foo')
+        client.should.be.an.instanceof(UsergridClient).with.property('appId').equal('bar')
+    })
+
+    it('should initialize when passing object containing orgId and appId, taking precedence over config', function() {
+        var client = new UsergridClient({
+            orgId: 'foo',
+            appId: 'bar'
+        })
+        client.should.be.an.instanceof(UsergridClient).with.property('orgId').equal('foo')
+        client.should.be.an.instanceof(UsergridClient).with.property('appId').equal('bar')
     })
 })
 
@@ -211,7 +233,7 @@ describe('appAuth / setAppAuth()', function() {
             clientId: config.usergrid.clientId,
             clientSecret: config.usergrid.clientSecret,
             tokenTtl: config.usergrid.tokenTtl
-        })        
+        })
         client.appAuth.should.be.instanceof(UsergridAppAuth)
     })
 
