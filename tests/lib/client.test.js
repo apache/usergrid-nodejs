@@ -17,15 +17,15 @@ describe('initialization', function() {
 
     it('should initialize using properties defined in config.json', function() {
         var client = new UsergridClient()
-        client.should.be.an.instanceof(UsergridClient).and.have.property('orgId').equal(config.usergrid.orgId)
-        client.should.be.an.instanceof(UsergridClient).and.have.property('appId').equal(config.usergrid.appId)
+        client.should.be.an.instanceof(UsergridClient).with.property('orgId').equal(config.usergrid.orgId)
+        client.should.be.an.instanceof(UsergridClient).with.property('appId').equal(config.usergrid.appId)
         Object(client).should.containDeep(config.usergrid)
     })
 
     it('should initialize when passing orgId and appId as arguments, taking precedence over config', function() {
         var client = new UsergridClient('foo', 'bar')
-        client.should.be.an.instanceof(UsergridClient).and.have.property('orgId').equal('foo')
-        client.should.be.an.instanceof(UsergridClient).and.have.property('appId').equal('bar')
+        client.should.be.an.instanceof(UsergridClient).with.property('orgId').equal('foo')
+        client.should.be.an.instanceof(UsergridClient).with.property('appId').equal('bar')
     })
 
     it('should initialize when passing an object containing orgId and appId, taking precedence over config', function() {
@@ -33,8 +33,8 @@ describe('initialization', function() {
             orgId: 'foo',
             appId: 'bar'
         })
-        client.should.be.an.instanceof(UsergridClient).and.have.property('orgId').equal('foo')
-        client.should.be.an.instanceof(UsergridClient).and.have.property('appId').equal('bar')
+        client.should.be.an.instanceof(UsergridClient).with.property('orgId').equal('foo')
+        client.should.be.an.instanceof(UsergridClient).with.property('appId').equal('bar')
     })
 })
 
@@ -53,7 +53,6 @@ describe('GET()', function() {
 
     it('should not fail when a callback function is not passed', function() {
         // note: this test will NOT fail gracefully inside the Mocha event chain
-        console.log(response)
         client.GET(_collection)
     })
 
@@ -66,15 +65,15 @@ describe('GET()', function() {
     })
 
     it('response.first should exist and have a valid uuid', function() {
-        response.first.should.be.an.Object.and.have.property('uuid').and.have.a.lengthOf(36)
+        response.first.should.be.an.Object.with.property('uuid').with.a.lengthOf(36)
     })
 
     it('response.entity should exist and have a valid uuid', function() {
-        response.entity.should.be.an.Object.and.have.property('uuid').and.have.a.lengthOf(36)
+        response.entity.should.be.an.Object.with.property('uuid').with.a.lengthOf(36)
     })
 
     it('response.last should exist and have a valid uuid', function() {
-        response.last.should.be.an.Object.and.have.property('uuid').and.have.a.lengthOf(36)
+        response.last.should.be.an.Object.with.property('uuid').with.a.lengthOf(36)
     })
 })
 
@@ -105,11 +104,11 @@ describe('POST()', function() {
     })
 
     it('response.entities should be an array', function() {
-        response.entities.should.be.an.Array.and.have.a.lengthOf(1)
+        response.entities.should.be.an.Array.with.a.lengthOf(1)
     })
 
     it('response.entity should exist and have a valid uuid', function() {
-        response.entity.should.be.an.Object.and.have.property('uuid').and.have.a.lengthOf(36)
+        response.entity.should.be.an.Object.with.property('uuid').with.a.lengthOf(36)
     })
 
     it('response.entity.author should equal "Sir Arthur Conan Doyle"', function() {
@@ -143,11 +142,11 @@ describe('PUT()', function() {
     })
 
     it('response.entities should be an array', function() {
-        response.entities.should.be.an.Array.and.have.a.lengthOf(1)
+        response.entities.should.be.an.Array.with.a.lengthOf(1)
     })
 
     it('response.entity should exist and its uuid should the uuid from the previous POST requets', function() {
-        response.entity.should.be.an.Object.and.have.property('uuid').equal(_uuid)
+        response.entity.should.be.an.Object.with.property('uuid').equal(_uuid)
     })
 
     it('response.entity.narrator should equal "Peter Doyle"', function() {
