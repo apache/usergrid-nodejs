@@ -46,41 +46,35 @@ describe('GET()', function() {
     before(function(done) {
         client = new UsergridClient()
         client.GET(_collection, function(err, usergridResponse) {
+            response = usergridResponse
             done()
         })
     })
 
-
-
-    it('should not fail when a callback function is not passed', function(done) {
+    it('should not fail when a callback function is not passed', function() {
         // note: this test will NOT fail gracefully inside the Mocha event chain
+        console.log(response)
         client.GET(_collection)
-        done()
     })
 
-    it('should return a 200 ok', function(done) {
+    it('should return a 200 ok', function() {
         response.statusCode.should.equal(200)
-        done()
     })
 
-    it('response.entities should be an array', function(done) {
+    it('response.entities should be an array', function() {
         response.entities.should.be.an.Array
-        done()
     })
 
-    it('response.first should exist and have a valid uuid', function(done) {
+    it('response.first should exist and have a valid uuid', function() {
         response.first.should.be.an.Object.with.property('uuid').with.a.lengthOf(36)
-        done()
     })
 
-    it('response.entity should exist and have a valid uuid', function(done) {
+    it('response.entity should exist and have a valid uuid', function() {
         response.entity.should.be.an.Object.with.property('uuid').with.a.lengthOf(36)
-        done()
     })
 
-    it('response.last should exist and have a valid uuid', function(done) {
+    it('response.last should exist and have a valid uuid', function() {
         response.last.should.be.an.Object.with.property('uuid').with.a.lengthOf(36)
-        done()
     })
 })
 
@@ -101,30 +95,25 @@ describe('POST()', function() {
         })
     })
 
-    it('should not fail when a callback function is not passed', function(done) {
+    it('should not fail when a callback function is not passed', function() {
         // note: this test will NOT fail gracefully inside the Mocha event chain
         client.POST(_collection, {})
-        done()
     })
 
-    it('should return a 200 ok', function(done) {
+    it('should return a 200 ok', function() {
         response.statusCode.should.equal(200)
-        done()
     })
 
-    it('response.entities should be an array', function(done) {
+    it('response.entities should be an array', function() {
         response.entities.should.be.an.Array.with.a.lengthOf(1)
-        done()
     })
 
-    it('response.entity should exist and have a valid uuid', function(done) {
+    it('response.entity should exist and have a valid uuid', function() {
         response.entity.should.be.an.Object.with.property('uuid').with.a.lengthOf(36)
-        done()
     })
 
-    it('response.entity.author should equal "Sir Arthur Conan Doyle"', function(done) {
+    it('response.entity.author should equal "Sir Arthur Conan Doyle"', function() {
         response.entity.should.have.property('author').equal('Sir Arthur Conan Doyle')
-        done()
     })
 })
 
@@ -144,30 +133,25 @@ describe('PUT()', function() {
         })
     })
 
-    it('should not fail when a callback function is not passed', function(done) {
+    it('should not fail when a callback function is not passed', function() {
         // note: this test will NOT fail gracefully inside the Mocha event chain
         client.PUT(_collection, _uuid)
-        done()
     })
 
-    it('should return a 200 ok', function(done) {
+    it('should return a 200 ok', function() {
         response.statusCode.should.equal(200)
-        done()
     })
 
-    it('response.entities should be an array', function(done) {
+    it('response.entities should be an array', function() {
         response.entities.should.be.an.Array.with.a.lengthOf(1)
-        done()
     })
 
-    it('response.entity should exist and its uuid should the uuid from the previous POST requets', function(done) {
+    it('response.entity should exist and its uuid should the uuid from the previous POST requets', function() {
         response.entity.should.be.an.Object.with.property('uuid').equal(_uuid)
-        done()
     })
 
-    it('response.entity.narrator should equal "Peter Doyle"', function(done) {
+    it('response.entity.narrator should equal "Peter Doyle"', function() {
         response.entity.should.have.property('narrator').equal('Peter Doyle')
-        done()
     })
 })
 
@@ -187,22 +171,19 @@ describe('DELETE()', function() {
         })
     })
 
-    it('should not fail when a callback function is not passed', function(done) {
+    it('should not fail when a callback function is not passed', function() {
         // note: this test will NOT fail gracefully inside the Mocha event chain
         client.DELETE(_collection, _uuid)
-        done()
     })
 
-    it('should return a 200 ok', function(done) {
+    it('should return a 200 ok', function() {
         // This should check for 404, but because of a Usergrid bug, it returns 401 instead of 404.
         // see https://issues.apache.org/jira/browse/USERGRID-1128
         response.statusCode.should.not.equal(200)
-        done()
     })
 
-    it('response.error.name should equal "service_resource_not_found"', function(done) {
+    it('response.error.name should equal "service_resource_not_found"', function() {
         response.error.name.should.equal('service_resource_not_found')
-        done()
     })
 })
 
@@ -222,25 +203,21 @@ describe('authenticateApp()', function() {
         })
     })
 
-    it('should return a 200 ok', function(done) {
+    it('should return a 200 ok', function() {
         response.statusCode.should.equal(200)
-        done()
     })
 
-    it('should have a valid token', function(done) {
+    it('should have a valid token', function() {
         token.should.be.a.String
         token.length.should.be.greaterThan(10)
-        done()
     })
 
-    it('client.appAuth.token should be set to the token returned from Usergrid', function(done) {
+    it('client.appAuth.token should be set to the token returned from Usergrid', function() {
         client.appAuth.should.have.property('token').equal(token)
-        done()
     })
 
-    it('client.appAuth.expiry should be set to a future date', function(done) {
+    it('client.appAuth.expiry should be set to a future date', function() {
         client.appAuth.should.have.property('expiry').greaterThan(Date.now())
-        done()
     })
 })
 
