@@ -22,13 +22,13 @@ describe('initialization', function() {
         Object(client).should.containDeep(config.usergrid)
     })
 
-    it('should initialize when passing an orgId and appId as arguments, taking precedence over config', function() {
+    it('should initialize when passing orgId and appId as arguments, taking precedence over config', function() {
         var client = new UsergridClient('foo', 'bar')
         client.should.be.an.instanceof(UsergridClient).with.property('orgId').equal('foo')
         client.should.be.an.instanceof(UsergridClient).with.property('appId').equal('bar')
     })
 
-    it('should initialize when passing object containing orgId and appId, taking precedence over config', function() {
+    it('should initialize when passing an object containing orgId and appId, taking precedence over config', function() {
         var client = new UsergridClient({
             orgId: 'foo',
             appId: 'bar'

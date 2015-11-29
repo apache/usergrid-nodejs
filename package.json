@@ -1,37 +1,40 @@
 {
-    "author": "Brandon Shelley",
-    "dependencies": {
-        "async": "",
-        "objectkit": "",
-        "request": "",
-        "underscore": "",
-        "underscore.inflection": "",
-        "underscore.string": "",
-        "url-join": "",
-        "volos-analytics-apigee": "",
-        "volos-analytics-common": "",
-        "volos-analytics-memory": "",
-        "volos-cache-apigee": "",
-        "volos-cache-memory": "",
-        "volos-cache-redis": "",
-        "volos-oauth-apigee": "",
-        "volos-oauth-redis": "",
-        "volos-quota-apigee": "",
-        "volos-quota-memory": "",
-        "volos-quota-redis": ""
-    },
-    "description": "The official Node.js SDK for Usergrid",
-    "devDependencies": {
-        "should": ""
-    },
-    "keywords": [],
-    "license": "MIT",
-    "main": "app.js",
-    "name": "usergrid",
-    "private": false,
-    "scripts": {
-        "start": "node app.js",
-        "test": "mocha tests"
-    },
-    "version": "2.0.0"
+  "author": "Brandon Shelley",
+  "dependencies": {
+    "async": "",
+    "objectkit": "",
+    "request": "",
+    "underscore": "",
+    "underscore.inflection": "",
+    "underscore.string": "",
+    "url-join": "",
+    "volos-analytics-apigee": "",
+    "volos-analytics-common": "",
+    "volos-analytics-memory": "",
+    "volos-cache-apigee": "",
+    "volos-cache-memory": "",
+    "volos-cache-redis": "",
+    "volos-oauth-apigee": "",
+    "volos-oauth-redis": "",
+    "volos-quota-apigee": "",
+    "volos-quota-memory": "",
+    "volos-quota-redis": ""
+  },
+  "description": "The official Node.js SDK for Usergrid",
+  "devDependencies": {
+    "grunt": "",
+    "grunt-codacy": "",
+    "grunt-mocha-test": "",
+    "should": ""
+  },
+  "keywords": [],
+  "license": "MIT",
+  "main": "app.js",
+  "name": "usergrid",
+  "private": false,
+  "scripts": {
+    "start": "node app.js",
+    "test": "mocha tests"
+  },
+  "version": "2.0.0"
 }
