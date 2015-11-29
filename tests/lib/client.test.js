@@ -46,10 +46,11 @@ describe('GET()', function() {
     before(function(done) {
         client = new UsergridClient()
         client.GET(_collection, function(err, usergridResponse) {
-            response = usergridResponse
             done()
         })
     })
+
+
 
     it('should not fail when a callback function is not passed', function() {
         // note: this test will NOT fail gracefully inside the Mocha event chain
@@ -57,6 +58,7 @@ describe('GET()', function() {
     })
 
     it('should return a 200 ok', function() {
+        console.log(response, client)        
         response.statusCode.should.equal(200)
     })
 
@@ -65,15 +67,15 @@ describe('GET()', function() {
     })
 
     it('response.first should exist and have a valid uuid', function() {
-        response.first.should.be.an.Object.and.have.property('uuid').with.a.lengthOf(36)
+        response.first.should.be.an.Object.with.property('uuid').with.a.lengthOf(36)
     })
 
     it('response.entity should exist and have a valid uuid', function() {
-        response.entity.should.be.an.Object.and.have.property('uuid').with.a.lengthOf(36)
+        response.entity.should.be.an.Object.with.property('uuid').with.a.lengthOf(36)
     })
 
     it('response.last should exist and have a valid uuid', function() {
-        response.last.should.be.an.Object.and.have.property('uuid').with.a.lengthOf(36)
+        response.last.should.be.an.Object.with.property('uuid').with.a.lengthOf(36)
     })
 })
 
@@ -108,7 +110,7 @@ describe('POST()', function() {
     })
 
     it('response.entity should exist and have a valid uuid', function() {
-        response.entity.should.be.an.Object.and.have.property('uuid').with.a.lengthOf(36)
+        response.entity.should.be.an.Object.with.property('uuid').with.a.lengthOf(36)
     })
 
     it('response.entity.author should equal "Sir Arthur Conan Doyle"', function() {
@@ -146,7 +148,7 @@ describe('PUT()', function() {
     })
 
     it('response.entity should exist and its uuid should the uuid from the previous POST requets', function() {
-        response.entity.should.be.an.Object.and.have.property('uuid').equal(_uuid)
+        response.entity.should.be.an.Object.with.property('uuid').equal(_uuid)
     })
 
     it('response.entity.narrator should equal "Peter Doyle"', function() {
