@@ -11,3 +11,7 @@ describe('UsergridClient', function() {
 describe('UsergridQuery', function() {
     return require('./lib/query.test')
 })
+
+describe('UsergridResponse', function() {
+    return require('./lib/response.test')
+})

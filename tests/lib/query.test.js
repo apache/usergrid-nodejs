@@ -28,7 +28,7 @@ describe('_limit', function() {
 })
 
 describe('_ql', function() {
-    it('should support complex builder syntax (chained constructor methods)', function() {
+    it('should support complex builder pattern syntax (chained constructor methods)', function() {
         var query = new UsergridQuery('cats')
             .gt('weight', 2.4)
             .contains('color', 'bl*')
@@ -44,6 +44,13 @@ describe('_ql', function() {
             .not
             .eq('color', 'white')
         query.should.have.property('_ql').equal("select * where not color = 'white'")
+    })
+
+    it('fromString should set _ql directly, bypassing builder pattern methods', function() {
+        var q = "where color = 'black' or color = 'orange'"
+        var query = new UsergridQuery('cats')
+            .fromString(q)
+        query.should.have.property('_ql').equal(q)
     })
 
     it('string values should be contained in single quotes', function() {
