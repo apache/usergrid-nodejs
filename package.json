@@ -25,6 +25,8 @@
     "grunt": "latest",
     "grunt-codacy": "latest",
     "grunt-mocha-test": "latest",
+    "mocha-lcov-reporter": "latest",
+    "codacy-coverage": "latest",
     "should": "latest",
     "mocha": "latest"
   },

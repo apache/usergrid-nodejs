@@ -61,19 +61,19 @@ describe('GET()', function() {
     })
 
     it('response.entities should be an array', function() {
-        response.entities.should.be.an.Array
+        response.entities.should.be.an.Array()
     })
 
     it('response.first should exist and have a valid uuid', function() {
-        response.first.should.be.an.Object.with.property('uuid').with.a.lengthOf(36)
+        response.first.should.be.an.Object().with.property('uuid').with.a.lengthOf(36)
     })
 
     it('response.entity should exist and have a valid uuid', function() {
-        response.entity.should.be.an.Object.with.property('uuid').with.a.lengthOf(36)
+        response.entity.should.be.an.Object().with.property('uuid').with.a.lengthOf(36)
     })
 
     it('response.last should exist and have a valid uuid', function() {
-        response.last.should.be.an.Object.with.property('uuid').with.a.lengthOf(36)
+        response.last.should.be.an.Object().with.property('uuid').with.a.lengthOf(36)
     })
 })
 
@@ -104,11 +104,11 @@ describe('POST()', function() {
     })
 
     it('response.entities should be an array', function() {
-        response.entities.should.be.an.Array.with.a.lengthOf(1)
+        response.entities.should.be.an.Array().with.a.lengthOf(1)
     })
 
     it('response.entity should exist and have a valid uuid', function() {
-        response.entity.should.be.an.Object.with.property('uuid').with.a.lengthOf(36)
+        response.entity.should.be.an.Object().with.property('uuid').with.a.lengthOf(36)
     })
 
     it('response.entity.author should equal "Sir Arthur Conan Doyle"', function() {
@@ -142,11 +142,11 @@ describe('PUT()', function() {
     })
 
     it('response.entities should be an array', function() {
-        response.entities.should.be.an.Array.with.a.lengthOf(1)
+        response.entities.should.be.an.Array().with.a.lengthOf(1)
     })
 
     it('response.entity should exist and its uuid should the uuid from the previous POST requets', function() {
-        response.entity.should.be.an.Object.with.property('uuid').equal(_uuid)
+        response.entity.should.be.an.Object().with.property('uuid').equal(_uuid)
     })
 
     it('response.entity.narrator should equal "Peter Doyle"', function() {
