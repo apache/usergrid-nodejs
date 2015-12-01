@@ -4,10 +4,10 @@ var should = require('should'),
     config = require('../../config.json'),
     UsergridClient = require('../../lib/client'),
     UsergridEntity = require('../../lib/entity'),
+    UsergridUser = require('../../lib/user'),
     UsergridResponseError = require('../../lib/responseError'),
     _ = require('underscore')
 
-var _collection = config.tests.collection
 var client = new UsergridClient()
 
 var _response
@@ -17,7 +17,7 @@ before(function(done) {
     this.slow(1000)
     this.timeout(6000)
 
-    client.GET(_collection, function(err, usergridResponse) {
+    client.GET(config.tests.collection, function(err, usergridResponse) {
         _response = usergridResponse
         done()
     })
@@ -51,9 +51,37 @@ describe('error', function() {
         this.slow(1000)
         this.timeout(6000)
 
-        client.GET(_collection, 'BADNAMEORUUID', function(err, usergridResponse) {
-            usergridResponse.statusCode.should.not.equal(200)
-            usergridResponse.error.should.be.an.instanceof(UsergridResponseError).with.keys(['name', 'description', 'exception'])
+        client.GET(config.tests.collection, 'BADNAMEORUUID', function(err, usergridResponse) {
+            usergridResponse.error.should.be.an.instanceof(UsergridResponseError)
+            done()
+        })
+    })
+})
+
+describe('users', function() {
+
+    this.slow(1000)
+    this.timeout(6000)
+
+    it('response.users should be an array of UsergridUser objects', function(done) {
+        client.GET('users', function(err, usergridResponse) {
+            usergridResponse.users.should.be.an.Array()
+            usergridResponse.users.forEach(function(user) {
+                user.should.be.an.instanceof(UsergridUser)
+            })
+            done()
+        })
+    })
+})
+
+describe('user', function() {
+
+    this.slow(1000)
+    this.timeout(6000)
+
+    it('response.user should be a UsergridUser object and have a valid uuid matching the first object in response.users', function(done) {
+        client.GET('users', function(err, usergridResponse) {
+            usergridResponse.user.should.be.an.instanceof(UsergridUser).with.property('uuid').equal(_.first(usergridResponse.users).uuid)
             done()
         })
     })
@@ -68,7 +96,7 @@ describe('entities', function() {
     })
 })
 
-describe('first / entity', function() {
+describe('first, entity', function() {
     it('response.first should be a UsergridEntity object and have a valid uuid matching the first object in response.entities', function() {
         _response.first.should.be.an.instanceof(UsergridEntity).with.property('uuid').equal(_.first(_response.entities).uuid)
     })

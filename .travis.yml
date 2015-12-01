@@ -5,7 +5,7 @@ install:
 - 'npm install'
 - 'npm -g install mocha'
 script: 
-- 'mocha tests'
+- 'grunt'
 notifications:
   email:
     on_failure: change

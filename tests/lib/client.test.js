@@ -5,7 +5,6 @@ var should = require('should'),
     UsergridClient = require('../../lib/client'),
     UsergridAppAuth = require('../../lib/appAuth')
 
-var _collection = config.tests.collection
 var _uuid = null
 
 describe('initialization', function() {
@@ -45,7 +44,7 @@ describe('GET()', function() {
     var response, client
     before(function(done) {
         client = new UsergridClient()
-        client.GET(_collection, function(err, usergridResponse) {
+        client.GET(config.tests.collection, function(err, usergridResponse) {
             response = usergridResponse
             done()
         })
@@ -53,7 +52,7 @@ describe('GET()', function() {
 
     it('should not fail when a callback function is not passed', function() {
         // note: this test will NOT fail gracefully inside the Mocha event chain
-        client.GET(_collection)
+        client.GET(config.tests.collection)
     })
 
     it('should return a 200 ok', function() {
@@ -85,7 +84,7 @@ describe('POST()', function() {
     var response, client
     before(function(done) {
         client = new UsergridClient()
-        client.POST(_collection, {
+        client.POST(config.tests.collection, {
             author: 'Sir Arthur Conan Doyle'
         }, function(err, usergridResponse) {
             response = usergridResponse
@@ -96,7 +95,7 @@ describe('POST()', function() {
 
     it('should not fail when a callback function is not passed', function() {
         // note: this test will NOT fail gracefully inside the Mocha event chain
-        client.POST(_collection, {})
+        client.POST(config.tests.collection, {})
     })
 
     it('should return a 200 ok', function() {
@@ -124,7 +123,7 @@ describe('PUT()', function() {
     var response, client
     before(function(done) {
         client = new UsergridClient()
-        client.PUT(_collection, _uuid, {
+        client.PUT(config.tests.collection, _uuid, {
             narrator: 'Peter Doyle'
         }, function(err, usergridResponse) {
             response = usergridResponse
@@ -134,7 +133,7 @@ describe('PUT()', function() {
 
     it('should not fail when a callback function is not passed', function() {
         // note: this test will NOT fail gracefully inside the Mocha event chain
-        client.PUT(_collection, _uuid)
+        client.PUT(config.tests.collection, _uuid)
     })
 
     it('should return a 200 ok', function() {
@@ -162,8 +161,8 @@ describe('DELETE()', function() {
     var response, client
     before(function(done) {
         client = new UsergridClient()
-        client.DELETE(_collection, _uuid, function() {
-            client.GET(_collection, _uuid, function(err, usergridResponse) {
+        client.DELETE(config.tests.collection, _uuid, function() {
+            client.GET(config.tests.collection, _uuid, function(err, usergridResponse) {
                 response = usergridResponse
                 done()
             })
@@ -172,7 +171,7 @@ describe('DELETE()', function() {
 
     it('should not fail when a callback function is not passed', function() {
         // note: this test will NOT fail gracefully inside the Mocha event chain
-        client.DELETE(_collection, _uuid)
+        client.DELETE(config.tests.collection, _uuid)
     })
 
     it('should return a 200 ok', function() {
@@ -220,7 +219,7 @@ describe('authenticateApp()', function() {
     })
 })
 
-describe('appAuth / setAppAuth()', function() {
+describe('appAuth, setAppAuth()', function() {
     it('should initialize by passing a list of arguments', function() {
         var client = new UsergridClient()
         client.setAppAuth(config.usergrid.clientId, config.usergrid.clientSecret, config.usergrid.tokenTtl)
