@@ -37,7 +37,7 @@ describe('statusCode', function() {
 
 describe('metadata', function() {
     it('should be a read-only object', function() {
-        _response.metadata.should.be.an.Object()
+        _response.metadata.should.be.an.Object().with.any.properties(['action', 'application', 'path', 'uri', 'timestamp', 'duration'])
         Object.isFrozen(_response.metadata).should.be.ok
         should(function() {
             _response.metadata.uri = 'TEST'
@@ -109,5 +109,25 @@ describe('first, entity', function() {
 describe('last', function() {
     it('response.last should be a UsergridEntity object and have a valid uuid matching the last object in response.entities', function() {
         _response.last.should.be.an.instanceof(UsergridEntity).with.property('uuid').equal(_.last(_response.entities).uuid)
+    })
+})
+
+describe('hasNextPage', function() {
+    this.slow(1000)
+    this.timeout(6000)
+
+    it('should be true when more entities exist', function(done) {
+        client.GET(config.tests.collection, function(err, usergridResponse) {
+            usergridResponse.hasNextPage.should.be.true()
+            done()
+        })
+    })
+
+    it('should be false when no more entities exist', function(done) {
+        client.GET('users', function(err, usergridResponse) {
+            usergridResponse.metadata.count.should.be.lessThan(10)
+            usergridResponse.hasNextPage.should.not.be.true()
+            done()
+        })
     })
 })
