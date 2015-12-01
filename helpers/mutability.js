@@ -1,12 +1,12 @@
-function setImmutable(obj, key) {
+function setReadOnly(obj, key) {
     return Object.defineProperty(obj, key, { configurable: false, writable: false })
 }
 
-function setMutable(obj, key) {
+function setWritable(obj, key) {
     return Object.defineProperty(obj, key, { configurable: true, writable: true })
 }
 
 module.exports = {
-    setImmutable: setImmutable,
-    setMutable: setMutable
+    setReadOnly: setReadOnly,
+    setWritable: setWritable
 }

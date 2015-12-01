@@ -6,8 +6,8 @@ var mutability = require('./mutability'),
     query = require('./query')
 
 module.exports = {
-    setImmutable: mutability.setImmutable,
-    setMutable: mutability.setMutable,
+    setReadOnly: mutability.setReadOnly,
+    setWritable: mutability.setWritable,
     cb: cb,
     buildUrl: buildUrl,
     userAgent: userAgent,

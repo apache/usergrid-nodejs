@@ -11,6 +11,10 @@ var client = new UsergridClient()
 var _response, _uuid
 
 before(function(done) {
+
+    this.slow(1000)
+    this.timeout(6000)
+
     client.GET(_collection, function(err, usergridResponse) {
         _response = usergridResponse
         done()
@@ -18,74 +22,46 @@ before(function(done) {
 })
 
 describe('headers', function() {
-
-    this.slow(1000)
-    this.timeout(6000)
-
-    it('should be an object', function(done) {
-        // client.GET(_collection, function(err, usergridResponse) {
-            _response.headers.should.be.an.Object().with.property('content-type')
-            // done()
-        // })
+    it('should be an object', function() {
+        _response.headers.should.be.an.Object().with.property('content-type')
     })
 })
 
 describe('statusCode', function() {
-
-    this.slow(1000)
-    this.timeout(6000)
-
-    it('should be a number', function(done) {
-        client.GET(_collection, function(err, usergridResponse) {
-            usergridResponse.statusCode.should.be.a.Number()
-            done()
-        })
+    it('should be a number', function() {
+        _response.statusCode.should.be.a.Number()
     })
 })
 
-describe('statusCode', function() {
-
-    this.slow(1000)
-    this.timeout(6000)
-
-    it('should be a number', function(done) {
-        client.GET(_collection, function(err, usergridResponse) {
-            usergridResponse.statusCode.should.be.a.Number()
-            done()
-        })
+describe('metadata', function() {
+    it('should be a read-only object', function() {
+        _response.metadata.should.be.an.Object()
+        Object.isFrozen(_response.metadata).should.be.ok
+        should(function() {
+            _response.metadata.uri = 'TEST'
+        }).throw()
     })
 })
 
 describe('entities', function() {
-
-    this.slow(1000)
-    this.timeout(6000)
-
-    it('should be an array of UsergridEntity objects', function(done) {
-        client.GET(_collection, function(err, usergridResponse) {
-            usergridResponse.entities.should.be.an.Array()
-            usergridResponse.entities.forEach(function(entity) {
-                entity.should.be.an.instanceof(UsergridEntity)
-            })
-            done()
+    it('should be an array of UsergridEntity objects', function() {
+        _response.entities.should.be.an.Array()
+        _response.entities.forEach(function(entity) {
+            entity.should.be.an.instanceof(UsergridEntity)
         })
     })
 })
 
 describe('first / entity', function() {
-
-    this.slow(1000)
-    this.timeout(6000)
-
     it('response.first should be a UsergridEntity object and have a valid uuid', function(done) {
-        response.first.should.be.an.instanceof(UsergridEntity).with.property('uuid').with.a.lengthOf(36)
-        uuid = response.first.uuid
+        _response.first.should.be.an.instanceof(UsergridEntity).with.property('uuid').with.a.lengthOf(36)
+        _uuid = _response.first.uuid
         done()
     })
 
     it('response.entity should be a UsergridEntity object and have a valid uuid', function(done) {
-        response.entity.should.be.an.instanceof(UsergridEntity).with.property('uuid').with.a.lengthOf(36)
-        response.entity.uuid.should.equal(uuid)
+        _response.entity.should.be.an.instanceof(UsergridEntity).with.property('uuid').with.a.lengthOf(36)
+        _response.entity.uuid.should.equal(_uuid)
         done()
     })
 })

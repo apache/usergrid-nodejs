@@ -4,13 +4,13 @@ module.exports = function(grunt) {
         codacy: {
             your_target: {
                 files: {
-                    'dest/default_options': ['tests/main.js'],
+                    'dest/default_options': ['tests/main.test.js'],
                 }
             },
         },
         mochaTest: {
             test: {
-                src: ['tests/main.js'],
+                src: ['tests/main.test.js'],
             }
         }
     })
