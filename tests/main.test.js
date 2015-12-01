@@ -1,14 +1,14 @@
 'use strict'
 
-describe.skip('Usergrid', function() {
+describe('Usergrid', function() {
     return require('./lib/usergrid.test')
 })
 
-describe.skip('UsergridClient', function() {
+describe('UsergridClient', function() {
     return require('./lib/client.test')
 })
 
-describe.skip('UsergridQuery', function() {
+describe('UsergridQuery', function() {
     return require('./lib/query.test')
 })
 

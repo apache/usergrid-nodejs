@@ -38,7 +38,7 @@ describe('statusCode', function() {
 describe('metadata', function() {
     it('should be a read-only object', function() {
         _response.metadata.should.be.an.Object().with.any.properties(['action', 'application', 'path', 'uri', 'timestamp', 'duration'])
-        Object.isFrozen(_response.metadata).should.be.ok
+        Object.isFrozen(_response.metadata).should.be.true()
         should(function() {
             _response.metadata.uri = 'TEST'
         }).throw()
@@ -107,7 +107,7 @@ describe('first, entity', function() {
 })
 
 describe('last', function() {
-    it('response.last should be a UsergridEntity object and have a valid uuid matching the last object in response.entities', function() {
+    it('last should be a UsergridEntity object and have a valid uuid matching the last object in response.entities', function() {
         _response.last.should.be.an.instanceof(UsergridEntity).with.property('uuid').equal(_.last(_response.entities).uuid)
     })
 })

@@ -4,24 +4,24 @@ var should = require('should'),
     UsergridQuery = require('../../lib/query')
 
 describe('_type', function() {
-    it('query._type should equal "cats" when passing "type" as a parameter to UsergridQuery', function() {
+    it('_type should equal "cats" when passing "type" as a parameter to UsergridQuery', function() {
         var query = new UsergridQuery('cats')
         query.should.have.property('_type').equal('cats')
     })
 
-    it('query._type should equal "cats" when calling .type() builder method', function() {
+    it('_type should equal "cats" when calling .type() builder method', function() {
         var query = new UsergridQuery().type('cats')
         query.should.have.property('_type').equal('cats')
     })
 
-    it('query._type should equal "cats" when calling .collection() builder method', function() {
+    it('_type should equal "cats" when calling .collection() builder method', function() {
         var query = new UsergridQuery().collection('cats')
         query.should.have.property('_type').equal('cats')
     })
 })
 
 describe('_limit', function() {
-    it('query._limit should equal 10', function() {
+    it('_limit should equal 10', function() {
         var query = new UsergridQuery('cats').limit(10)
         query.should.have.property('_limit').equal(10)
     })
