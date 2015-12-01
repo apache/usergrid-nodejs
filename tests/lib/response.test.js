@@ -3,12 +3,14 @@
 var should = require('should'),
     config = require('../../config.json'),
     UsergridClient = require('../../lib/client'),
-    UsergridEntity = require('../../lib/entity')
+    UsergridEntity = require('../../lib/entity'),
+    UsergridResponseError = require('../../lib/responseError'),
+    _ = require('underscore')
 
 var _collection = config.tests.collection
 var client = new UsergridClient()
 
-var _response, _uuid
+var _response
 
 before(function(done) {
 
@@ -43,6 +45,20 @@ describe('metadata', function() {
     })
 })
 
+describe('error', function() {
+    it('should be a UsergridResponseError object', function(done) {
+
+        this.slow(1000)
+        this.timeout(6000)
+
+        client.GET(_collection, 'BADNAMEORUUID', function(err, usergridResponse) {
+            usergridResponse.statusCode.should.not.equal(200)
+            usergridResponse.error.should.be.an.instanceof(UsergridResponseError).with.keys(['name', 'description', 'exception'])
+            done()
+        })
+    })
+})
+
 describe('entities', function() {
     it('should be an array of UsergridEntity objects', function() {
         _response.entities.should.be.an.Array()
@@ -53,15 +69,17 @@ describe('entities', function() {
 })
 
 describe('first / entity', function() {
-    it('response.first should be a UsergridEntity object and have a valid uuid', function(done) {
-        _response.first.should.be.an.instanceof(UsergridEntity).with.property('uuid').with.a.lengthOf(36)
-        _uuid = _response.first.uuid
-        done()
+    it('response.first should be a UsergridEntity object and have a valid uuid matching the first object in response.entities', function() {
+        _response.first.should.be.an.instanceof(UsergridEntity).with.property('uuid').equal(_.first(_response.entities).uuid)
     })
 
-    it('response.entity should be a UsergridEntity object and have a valid uuid', function(done) {
-        _response.entity.should.be.an.instanceof(UsergridEntity).with.property('uuid').with.a.lengthOf(36)
-        _response.entity.uuid.should.equal(_uuid)
-        done()
+    it('response.entity should be a reference to response.first', function() {
+        _response.entity.should.deepEqual(_response.first)
+    })
+})
+
+describe('last', function() {
+    it('response.last should be a UsergridEntity object and have a valid uuid matching the last object in response.entities', function() {
+        _response.last.should.be.an.instanceof(UsergridEntity).with.property('uuid').equal(_.last(_response.entities).uuid)
     })
 })
