@@ -1,7 +1,6 @@
 'use strict'
 
 var should = require('should'),
-    config = require('../../config.json'),
     Usergrid = require('../../usergrid'),
     UsergridClient = require('../../lib/client')
 

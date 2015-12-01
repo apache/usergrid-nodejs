@@ -11,6 +11,7 @@ describe('initialization', function() {
     it('should fail to initialize without an orgId and appId', function() {
         should(function() {
             var client = new UsergridClient(null, null)
+            client.GET()
         }).throw()
     })
 
@@ -206,7 +207,7 @@ describe('authenticateApp()', function() {
     })
 
     it('should have a valid token', function() {
-        token.should.be.a.String
+        token.should.be.a.String()
         token.length.should.be.greaterThan(10)
     })
 
