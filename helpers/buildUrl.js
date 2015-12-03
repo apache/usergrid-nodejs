@@ -1,7 +1,6 @@
 'use strict'
 
 var urljoin = require('url-join'),
-    ok = require('objectkit'),
     config = require('./config')
 
 function buildUrl(options) {
