@@ -1,7 +1,7 @@
 'use strict'
 
 var should = require('should'),
-    config = require('../../config.json'),
+    config = require('../../helpers/config'),
     UsergridClient = require('../../lib/client'),
     UsergridEntity = require('../../lib/entity'),
     UsergridUser = require('../../lib/user'),
@@ -17,7 +17,7 @@ before(function(done) {
     this.slow(1000)
     this.timeout(6000)
 
-    client.GET(config.tests.collection, function(err, usergridResponse) {
+    client.GET(config.testCollection, function(err, usergridResponse) {
         _response = usergridResponse
         done()
     })
@@ -51,7 +51,7 @@ describe('error', function() {
         this.slow(1000)
         this.timeout(6000)
 
-        client.GET(config.tests.collection, 'BADNAMEORUUID', function(err, usergridResponse) {
+        client.GET(config.testCollection, 'BADNAMEORUUID', function(err, usergridResponse) {
             usergridResponse.error.should.be.an.instanceof(UsergridResponseError)
             done()
         })
@@ -63,13 +63,19 @@ describe('users', function() {
     this.slow(1000)
     this.timeout(6000)
 
+    var user = new UsergridUser()
+
     it('response.users should be an array of UsergridUser objects', function(done) {
-        client.GET('users', function(err, usergridResponse) {
-            usergridResponse.users.should.be.an.Array()
-            usergridResponse.users.forEach(function(user) {
-                user.should.be.an.instanceof(UsergridUser)
+        client.setAppAuth(config.clientId, config.clientSecret, config.tokenTtl)
+        client.authenticateApp(function(err) {
+            client.GET('users', function(err, usergridResponse) {
+                usergridResponse.statusCode.should.equal(200)
+                usergridResponse.users.should.be.an.Array()
+                usergridResponse.users.forEach(function(user) {
+                    user.should.be.an.instanceof(UsergridUser)
+                })
+                done()
             })
-            done()
         })
     })
 })
@@ -80,9 +86,12 @@ describe('user', function() {
     this.timeout(6000)
 
     it('response.user should be a UsergridUser object and have a valid uuid matching the first object in response.users', function(done) {
-        client.GET('users', function(err, usergridResponse) {
-            usergridResponse.user.should.be.an.instanceof(UsergridUser).with.property('uuid').equal(_.first(usergridResponse.users).uuid)
-            done()
+        client.setAppAuth(config.clientId, config.clientSecret, config.tokenTtl)
+        client.authenticateApp(function(err) {
+            client.GET('users', function(err, usergridResponse) {
+                usergridResponse.user.should.be.an.instanceof(UsergridUser).with.property('uuid').equal(_.first(usergridResponse.users).uuid)
+                done()
+            })
         })
     })
 })
@@ -117,7 +126,7 @@ describe('hasNextPage', function() {
     this.timeout(6000)
 
     it('should be true when more entities exist', function(done) {
-        client.GET(config.tests.collection, function(err, usergridResponse) {
+        client.GET(config.testCollection, function(err, usergridResponse) {
             usergridResponse.hasNextPage.should.be.true()
             done()
         })

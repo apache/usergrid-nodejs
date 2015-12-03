@@ -3,7 +3,8 @@ var mutability = require('./mutability'),
     buildUrl = require('./buildUrl'),
     userAgent = require('./userAgent'),
     is = require('./is'),
-    query = require('./query')
+    query = require('./query'),
+    config = require('./config')
 
 module.exports = {
     setReadOnly: mutability.setReadOnly,
@@ -12,5 +13,6 @@ module.exports = {
     buildUrl: buildUrl,
     userAgent: userAgent,
     is: is,
-    query: query
+    query: query,
+    config: config
 }

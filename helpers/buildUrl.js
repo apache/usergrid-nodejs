@@ -2,11 +2,11 @@
 
 var urljoin = require('url-join'),
     ok = require('objectkit'),
-    config = require('../config.json')
+    config = require('./config')
 
 function buildUrl(options) {
     return urljoin(
-        ok(config).getIfExists('usergrid.baseUrl'),
+        config.baseUrl,
         options.client.orgId,
         options.client.appId,
         options.type, (typeof options.uuidOrName === 'string') ? options.uuidOrName : ""

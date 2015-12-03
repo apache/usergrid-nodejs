@@ -1,7 +1,7 @@
 'use strict'
 
 var should = require('should'),
-    config = require('../../config.json'),
+    config = require('../../helpers/config'),
     UsergridClient = require('../../lib/client'),
     UsergridResponseError = require('../../lib/responseError')
 
@@ -16,7 +16,7 @@ describe('name, description, exception', function() {
         this.slow(1000)
         this.timeout(6000)
 
-        client.GET(config.tests.collection, 'BADNAMEORUUID', function(err, usergridResponse) {
+        client.GET(config.testCollection, 'BADNAMEORUUID', function(err, usergridResponse) {
             _response = usergridResponse
             done()
         })
@@ -36,7 +36,7 @@ describe('undefined check', function() {
     it('response.error should be undefined on a successful response', function(done) {
         this.slow(1000)
         this.timeout(6000)
-        client.GET(config.tests.collection, function(err, usergridResponse) {
+        client.GET(config.testCollection, function(err, usergridResponse) {
             usergridResponse.statusCode.should.equal(200)
             should(usergridResponse.error).be.undefined()
             done()

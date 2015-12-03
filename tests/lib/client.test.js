@@ -1,7 +1,7 @@
 'use strict'
 
 var should = require('should'),
-    config = require('../../config.json'),
+    config = require('../../helpers/config'),
     UsergridClient = require('../../lib/client'),
     UsergridAppAuth = require('../../lib/appAuth')
 
@@ -17,9 +17,8 @@ describe('initialization', function() {
 
     it('should initialize using properties defined in config.json', function() {
         var client = new UsergridClient()
-        client.should.be.an.instanceof(UsergridClient).with.property('orgId').equal(config.usergrid.orgId)
-        client.should.be.an.instanceof(UsergridClient).with.property('appId').equal(config.usergrid.appId)
-        Object(client).should.containDeep(config.usergrid)
+        client.should.be.an.instanceof(UsergridClient).with.property('orgId').equal(config.orgId)
+        client.should.be.an.instanceof(UsergridClient).with.property('appId').equal(config.appId)
     })
 
     it('should initialize when passing orgId and appId as arguments, taking precedence over config', function() {
@@ -44,8 +43,8 @@ describe('GET()', function() {
     this.timeout(6000)
     var response, client
     before(function(done) {
-        client = new UsergridClient()
-        client.GET(config.tests.collection, function(err, usergridResponse) {
+        client = new UsergridClient(config)
+        client.GET(config.testCollection, function(err, usergridResponse) {
             response = usergridResponse
             done()
         })
@@ -53,7 +52,7 @@ describe('GET()', function() {
 
     it('should not fail when a callback function is not passed', function() {
         // note: this test will NOT fail gracefully inside the Mocha event chain
-        client.GET(config.tests.collection)
+        client.GET(config.testCollection)
     })
 
     it('should return a 200 ok', function() {
@@ -85,7 +84,7 @@ describe('POST()', function() {
     var response, client
     before(function(done) {
         client = new UsergridClient()
-        client.POST(config.tests.collection, {
+        client.POST(config.testCollection, {
             author: 'Sir Arthur Conan Doyle'
         }, function(err, usergridResponse) {
             response = usergridResponse
@@ -96,7 +95,7 @@ describe('POST()', function() {
 
     it('should not fail when a callback function is not passed', function() {
         // note: this test will NOT fail gracefully inside the Mocha event chain
-        client.POST(config.tests.collection, {})
+        client.POST(config.testCollection, {})
     })
 
     it('should return a 200 ok', function() {
@@ -124,7 +123,7 @@ describe('PUT()', function() {
     var response, client
     before(function(done) {
         client = new UsergridClient()
-        client.PUT(config.tests.collection, _uuid, {
+        client.PUT(config.testCollection, _uuid, {
             narrator: 'Peter Doyle'
         }, function(err, usergridResponse) {
             response = usergridResponse
@@ -134,7 +133,7 @@ describe('PUT()', function() {
 
     it('should not fail when a callback function is not passed', function() {
         // note: this test will NOT fail gracefully inside the Mocha event chain
-        client.PUT(config.tests.collection, _uuid)
+        client.PUT(config.testCollection, _uuid)
     })
 
     it('should return a 200 ok', function() {
@@ -162,8 +161,8 @@ describe('DELETE()', function() {
     var response, client
     before(function(done) {
         client = new UsergridClient()
-        client.DELETE(config.tests.collection, _uuid, function() {
-            client.GET(config.tests.collection, _uuid, function(err, usergridResponse) {
+        client.DELETE(config.testCollection, _uuid, function() {
+            client.GET(config.testCollection, _uuid, function(err, usergridResponse) {
                 response = usergridResponse
                 done()
             })
@@ -172,7 +171,7 @@ describe('DELETE()', function() {
 
     it('should not fail when a callback function is not passed', function() {
         // note: this test will NOT fail gracefully inside the Mocha event chain
-        client.DELETE(config.tests.collection, _uuid)
+        client.DELETE(config.testCollection, _uuid)
     })
 
     it('should return a 200 ok', function() {
@@ -181,9 +180,15 @@ describe('DELETE()', function() {
         response.statusCode.should.not.equal(200)
     })
 
-    it('response.error.name should equal "service_resource_not_found"', function() {
-        response.error.name.should.equal('service_resource_not_found')
-    })
+    if (config.target === '1.0') {
+        it('response.error.name should equal "service_resource_not_found"', function() {
+            response.error.name.should.equal('service_resource_not_found')
+        })
+    } else {
+        it('response.error.name should equal "entity_not_found"', function() {
+            response.error.name.should.equal('entity_not_found')
+        })
+    }
 })
 
 describe('authenticateApp()', function() {
@@ -194,12 +199,20 @@ describe('authenticateApp()', function() {
     var response, token, client
     before(function(done) {
         client = new UsergridClient()
-        client.setAppAuth(config.usergrid.clientId, config.usergrid.clientSecret, config.usergrid.tokenTtl)
+        client.setAppAuth(config.clientId, config.clientSecret, config.tokenTtl)
         client.authenticateApp(function(err, r, t) {
             response = r
             token = t
             done()
         })
+    })
+
+    it('should fail when called without a clientId and clientSecret', function() {
+        should(function() {
+            var client = new UsergridClient()
+            client.setAppAuth(undefined, undefined, 0)
+            client.authenticateApp()
+        }).throw()
     })
 
     it('should return a 200 ok', function() {
@@ -215,6 +228,10 @@ describe('authenticateApp()', function() {
         client.appAuth.should.have.property('token').equal(token)
     })
 
+    it('client.appAuth.isTokenValid should be true', function() {
+        client.appAuth.should.have.property('isTokenValid').which.is.true()
+    })
+
     it('client.appAuth.expiry should be set to a future date', function() {
         client.appAuth.should.have.property('expiry').greaterThan(Date.now())
     })
@@ -223,29 +240,29 @@ describe('authenticateApp()', function() {
 describe('appAuth, setAppAuth()', function() {
     it('should initialize by passing a list of arguments', function() {
         var client = new UsergridClient()
-        client.setAppAuth(config.usergrid.clientId, config.usergrid.clientSecret, config.usergrid.tokenTtl)
+        client.setAppAuth(config.clientId, config.clientSecret, config.tokenTtl)
         client.appAuth.should.be.instanceof(UsergridAppAuth)
     })
 
     it('should initialize by passing an object', function() {
         var client = new UsergridClient()
         client.setAppAuth({
-            clientId: config.usergrid.clientId,
-            clientSecret: config.usergrid.clientSecret,
-            tokenTtl: config.usergrid.tokenTtl
+            clientId: config.clientId,
+            clientSecret: config.clientSecret,
+            tokenTtl: config.tokenTtl
         })
         client.appAuth.should.be.instanceof(UsergridAppAuth)
     })
 
     it('should initialize by passing an instance of UsergridAppAuth', function() {
         var client = new UsergridClient()
-        client.setAppAuth(new UsergridAppAuth(config.usergrid.clientId, config.usergrid.clientSecret, config.usergrid.tokenTtl))
+        client.setAppAuth(new UsergridAppAuth(config.clientId, config.clientSecret, config.tokenTtl))
         client.appAuth.should.be.instanceof(UsergridAppAuth)
     })
 
     it('should initialize by setting to an instance of UsergridAppAuth', function() {
         var client = new UsergridClient()
-        client.appAuth = new UsergridAppAuth(config.usergrid.clientId, config.usergrid.clientSecret, config.usergrid.tokenTtl)
+        client.appAuth = new UsergridAppAuth(config.clientId, config.clientSecret, config.tokenTtl)
         client.appAuth.should.be.instanceof(UsergridAppAuth)
     })
 })
