@@ -6,7 +6,7 @@ var should = require('should'),
     UsergridEntity = require('../../lib/entity'),
     UsergridUser = require('../../lib/user'),
     UsergridResponseError = require('../../lib/responseError'),
-    _ = require('underscore')
+    _ = require('lodash')
 
 var client = new UsergridClient()
 

@@ -6,7 +6,7 @@ var mutability = require('./mutability'),
     config = require('./config'),
     _ = require('lodash')
 
-module.exports = _.extend(module.exports, {
+module.exports = _.assign(module.exports, {
     cb: cb,
     build: build,
     userAgent: userAgent,

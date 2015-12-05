@@ -5,7 +5,7 @@ var should = require('should'),
     Usergrid = require('../../usergrid'),
     UsergridClient = require('../../lib/client'),
     util = require('util'),
-    _ = require('underscore') 
+    _ = require('lodash') 
 
 describe('init() / initSharedInstance()', function() {
     it('should be an instance of UsergridClient', function() {

@@ -6,7 +6,7 @@ var should = require('should'),
     UsergridEntity = require('../../lib/entity'),
     UsergridQuery = require('../../lib/query'),
     UsergridAppAuth = require('../../lib/appAuth'),
-    _ = require('underscore')
+    _ = require('lodash')
 
 _.mixin(require('lodash-uuid'))
 
@@ -291,7 +291,7 @@ describe('PUT()', function() {
         this.slow(_slow)
         this.timeout(_timeout)
 
-        var updateEntity = _.extend(response.entity, {
+        var updateEntity = _.assign(response.entity, {
             publisher: {
                 name: "George Newns",
                 date: "14 October 1892",
@@ -484,7 +484,7 @@ describe('DELETE()', function() {
         }
 
         client.POST(options, function(err, usergridResponse) {
-            client.DELETE(_.extend(options, {uuid: usergridResponse.entity.uuid}), function() {
+            client.DELETE(_.assign(options, {uuid: usergridResponse.entity.uuid}), function() {
                 client.GET(config.testCollection, usergridResponse.entity.uuid, function(err, delResponse) {
                     delResponse.error.name.should.equal((config.target === '1.0') ? 'service_resource_not_found' : 'entity_not_found')
                     done()

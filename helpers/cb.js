@@ -1,3 +1,5 @@
+var _ = require('lodash')
+
 module.exports = function(callback) {
-    return (typeof callback === 'function') ? callback : function() {}
+    return _.isFunction(callback) ? callback : function() {}
 }

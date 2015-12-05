@@ -6,7 +6,7 @@ var urljoin = require('url-join'),
     UsergridQuery = require('../lib/query'),
     UsergridEntity = require('../lib/entity'),
     ok = require('objectkit'),
-    _ = require('underscore')
+    _ = require('lodash')
 
 module.exports = {
     url: function(options) {
@@ -40,7 +40,7 @@ module.exports = {
         }
 
         if (typeof args[0] === 'object' && !(args[0] instanceof UsergridQuery)) {
-            _.extend(options, args[0])
+            _.assign(options, args[0])
         }
 
         options.callback = helpers.cb(_.last(args.filter(_.isFunction)))
@@ -82,7 +82,7 @@ module.exports = {
         }
 
         if (typeof args[0] === 'object' && !(args[0] instanceof UsergridEntity) && !(args[0] instanceof UsergridQuery)) {
-            _.extend(options, args[0])
+            _.assign(options, args[0])
         }
 
         options.callback = helpers.cb(_.last(args.filter(_.isFunction)))
@@ -166,7 +166,7 @@ module.exports = {
         }
 
         if (typeof args[0] === 'object' && !(args[0] instanceof UsergridQuery)) {
-            _.extend(options, args[0])
+            _.assign(options, args[0])
         }
 
         options.callback = helpers.cb(_.last(args.filter(_.isFunction)))
