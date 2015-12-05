@@ -14,7 +14,7 @@ module.exports = {
             config.baseUrl,
             options.client.orgId,
             options.client.appId,
-            options.type, (typeof options.uuidOrName === 'string' ? options.uuidOrName : "")
+            options.type, (_.isString(options.uuidOrName) ? options.uuidOrName : "")
         )
     },
     GET: function(client, args) {
@@ -43,12 +43,13 @@ module.exports = {
             _.extend(options, args[0])
         }
 
-        options.callback = helpers.cb(_.last(args.filter(function(property) {
-            return typeof property === 'function'
-        })))
+        options.callback = helpers.cb(_.last(args.filter(_.isFunction)))
 
-        options.type = options.type || (args[0] instanceof UsergridQuery ? args[0]._type : args[0])
-        options.query = options.query || (args[0] instanceof UsergridQuery ? args[0] : undefined)
+        options.type = _.first([options.type, args[0]._type, args[0]].filter(_.isString))
+
+        options.query = _.first([options.query, args[0]].filter(function(property) {
+            return (property instanceof UsergridQuery)
+        }))
         options.uuidOrName = _.last([options.uuidOrName, options.uuid, options.name, args[1]].filter(function(property) {
             return (property)
         }))
@@ -84,9 +85,7 @@ module.exports = {
             _.extend(options, args[0])
         }
 
-        options.callback = helpers.cb(_.last(args.filter(function(property) {
-            return typeof property === 'function'
-        })))
+        options.callback = helpers.cb(_.last(args.filter(_.isFunction)))
 
         options.body = _.first([options.entity, options.body, args[2], args[1], args[0]].filter(function(property) {
             return typeof property === 'object' && !(property instanceof UsergridQuery)
@@ -96,12 +95,12 @@ module.exports = {
             throw new Error('"body" parameter is required when making a PUT request')
         }
 
-        options.uuidOrName = _.first([options.nameOrUuid, options.uuid, options.name, options.body.uuid, args[2], args[1], args[0]].filter(function(property) {
-            return typeof property === 'string'
-        }))
+        options.uuidOrName = _.first([options.nameOrUuid, options.uuid, options.name, options.body.uuid, args[2], args[1], args[0]].filter(_.isString))
 
-        options.type = options.type || (args[0] instanceof UsergridQuery ? args[0]._type : options.body.type || args[0])
-        options.query = options.query || (args[0] instanceof UsergridQuery ? args[0] : undefined)
+        options.type = _.first([options.type, args[0]._type, options.body.type, args[0]].filter(_.isString))
+        options.query = _.first([options.query, args[0]].filter(function(property) {
+            return (property instanceof UsergridQuery)
+        }))
 
         return options
     },
@@ -127,21 +126,21 @@ module.exports = {
         }
 
         if (typeof args[0] === 'object' && !(args[0] instanceof UsergridEntity)) {
-            _.extend(options, args[0])
+            _.assign(options, args[0])
         }
 
-        options.callback = helpers.cb(_.last(args.filter(function(property) {
-            return typeof property === 'function'
-        })))
+        options.callback = helpers.cb(_.last(args.filter(_.isFunction)))    
 
         options.body = _.first([options.entities, options.entity, options.body, args[1], args[0]].filter(function(property) {
-            return property instanceof Array && typeof property[0] === 'object' || typeof property === 'object'
+            return _.isArray(property) && typeof property[0] === 'object' || typeof property === 'object'
         }))
+        
         if (typeof options.body !== 'object') {
             throw new Error('"body" parameter is required when making a POST request')
         }
-        options.body = options.body instanceof Array ? options.body : [options.body]
-        options.type = options.type || (typeof args[0] === 'string' ? args[0] : options.body[0].type)
+
+        options.body = _.isArray(options.body) ? options.body : [options.body]        
+        options.type = _.first([options.type, args[0], options.body[0].type].filter(_.isString))
 
         return options
     },
@@ -170,16 +169,17 @@ module.exports = {
             _.extend(options, args[0])
         }
 
-        options.callback = helpers.cb(_.last(args.filter(function(property) {
-            return typeof property === 'function'
-        })))
+        options.callback = helpers.cb(_.last(args.filter(_.isFunction)))
 
-        options.type = options.type || (args[0] instanceof UsergridQuery ? args[0]._type : args[0])
-        options.entity = options.entity || (args[0] instanceof UsergridEntity ? args[0] : undefined)
-        options.query = options.query || (args[0] instanceof UsergridQuery ? args[0] : undefined)
-        options.uuidOrName = _.first([options.uuidOrName, options.uuid, options.name, ok(options).getIfExists('entity.uuid'), args[1]].filter(function(property) {
-            return (typeof property === 'string')
+        options.type = _.first([options.type, args[0]._type, args[0]].filter(_.isString))
+        options.entity = _.first([options.entity, args[0]].filter(function(property) {
+            return (property instanceof UsergridEntity)
         }))
+        options.query = _.first([options.query, args[0]].filter(function(property) {
+            return (property instanceof UsergridQuery)
+        }))
+
+        options.uuidOrName = _.first([options.uuidOrName, options.uuid, options.name, ok(options).getIfExists('entity.uuid'), args[1]].filter(_.isString))
 
         if (typeof options.uuidOrName !== 'string' && options.query === undefined) {
             throw new Error('"uuidOrName" parameter or "query" is required when making a DELETE request')
