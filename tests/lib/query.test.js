@@ -1,9 +1,7 @@
 'use strict'
 
 var should = require('should'),
-    UsergridQuery = require('../../lib/query'),
-    UsergridClient = require('../../lib/client'),
-    config = require('../../helpers').config
+    UsergridQuery = require('../../lib/query')
 
 describe('_type', function() {
     it('_type should equal "cats" when passing "type" as a parameter to UsergridQuery', function() {

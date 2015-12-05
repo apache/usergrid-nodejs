@@ -89,6 +89,7 @@ describe('user', function() {
     it('response.user should be a UsergridUser object and have a valid uuid matching the first object in response.users', function(done) {
         client.setAppAuth(config.clientId, config.clientSecret, config.tokenTtl)
         client.authenticateApp(function(err) {
+            should(err).be.null()
             client.GET('users', function(err, usergridResponse) {
                 user = usergridResponse.user
                 user.should.be.an.instanceof(UsergridUser).with.property('uuid').equal(_.first(usergridResponse.entities).uuid)

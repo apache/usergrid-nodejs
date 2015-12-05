@@ -2,7 +2,6 @@
 
 var urljoin = require('url-join'),
     config = require('./config'),
-    cb = require('./cb'),
     helpers = require('./'),
     UsergridQuery = require('../lib/query'),
     UsergridEntity = require('../lib/entity'),

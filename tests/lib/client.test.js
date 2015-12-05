@@ -460,10 +460,10 @@ describe('DELETE()', function() {
 
         var query = new UsergridQuery(config.testCollection).eq('command', 'CMD+TAB')
 
-        client.POST([entity, entity, entity, entity], function(err, usergridResponse) {
+        client.POST([entity, entity, entity, entity], function() {
             client.DELETE(query, function() {
-                client.GET(query, function(err, delResponse) {
-                    delResponse.entities.should.be.an.Array().with.lengthOf(0)
+                client.GET(query, function(err, usergridResponse) {
+                    usergridResponse.entities.should.be.an.Array().with.lengthOf(0)
                     done()
                 })
             })
