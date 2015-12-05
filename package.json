@@ -1,43 +1,46 @@
 {
-  "author": "Brandon Shelley",
-  "dependencies": {
-    "async": "latest",
-    "objectkit": "latest",
-    "request": "latest",
-    "underscore": "latest",
-    "underscore.inflection": "latest",
-    "underscore.string": "latest",
-    "url-join": "latest",
-    "volos-analytics-apigee": "latest",
-    "volos-analytics-common": "latest",
-    "volos-analytics-memory": "latest",
-    "volos-cache-apigee": "latest",
-    "volos-cache-memory": "latest",
-    "volos-cache-redis": "latest",
-    "volos-oauth-apigee": "latest",
-    "volos-oauth-redis": "latest",
-    "volos-quota-apigee": "latest",
-    "volos-quota-memory": "latest",
-    "volos-quota-redis": "latest"
-  },
-  "description": "The official Node.js SDK for Usergrid",
-  "devDependencies": {
-    "grunt": "latest",
-    "grunt-codacy": "latest",
-    "grunt-mocha-test": "latest",
-    "mocha-lcov-reporter": "latest",
-    "codacy-coverage": "latest",
-    "should": "latest",
-    "mocha": "latest"
-  },
-  "keywords": [],
-  "license": "MIT",
-  "main": "app.js",
-  "name": "usergrid",
-  "private": false,
-  "scripts": {
-    "start": "node app.js",
-    "test": "mocha tests"
-  },
-  "version": "2.0.0"
+    "author": "Brandon Shelley",
+    "dependencies": {
+        "async": "latest",
+        "lodash": "latest",
+        "lodash-inflection": "latest",
+        "lodash-uuid": "latest",
+        "objectkit": "latest",
+        "request": "latest",
+        "underscore": "latest",
+        "underscore.inflection": "latest",
+        "underscore.string": "latest",
+        "url-join": "latest",
+        "volos-analytics-apigee": "latest",
+        "volos-analytics-common": "latest",
+        "volos-analytics-memory": "latest",
+        "volos-cache-apigee": "latest",
+        "volos-cache-memory": "latest",
+        "volos-cache-redis": "latest",
+        "volos-oauth-apigee": "latest",
+        "volos-oauth-redis": "latest",
+        "volos-quota-apigee": "latest",
+        "volos-quota-memory": "latest",
+        "volos-quota-redis": "latest"
+    },
+    "description": "The official Node.js SDK for Usergrid",
+    "devDependencies": {
+        "codacy-coverage": "latest",
+        "grunt": "latest",
+        "grunt-codacy": "latest",
+        "grunt-mocha-test": "latest",
+        "mocha": "latest",
+        "mocha-lcov-reporter": "latest",
+        "should": "latest"
+    },
+    "keywords": [],
+    "license": "MIT",
+    "main": "app.js",
+    "name": "usergrid",
+    "private": false,
+    "scripts": {
+        "start": "node app.js",
+        "test": "mocha tests"
+    },
+    "version": "2.0.0"
 }

@@ -1,18 +1,15 @@
 var mutability = require('./mutability'),
     cb = require('./cb'),
-    buildUrl = require('./buildUrl'),
+    build = require('./build'),
     userAgent = require('./userAgent'),
-    is = require('./is'),
     query = require('./query'),
-    config = require('./config')
+    config = require('./config'),
+    _ = require('lodash')
 
-module.exports = {
-    setReadOnly: mutability.setReadOnly,
-    setWritable: mutability.setWritable,
+module.exports = _.extend(module.exports, {
     cb: cb,
-    buildUrl: buildUrl,
+    build: build,
     userAgent: userAgent,
-    is: is,
     query: query,
     config: config
-}
+}, mutability)

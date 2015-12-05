@@ -1,10 +1,12 @@
 'use strict'
 
-var is = require('./is'),
-    util = require('util')
+var util = require('util'),
+    _ = require('lodash')
+
+_.mixin(require('lodash-uuid'))
 
 module.exports = {
     useQuotesIfRequired: function(value) {
-        return (is.numeric(value) || is.uuid(value) || is.bool(value)) ? value : util.format("'%s'", value)
+        return (_.isFinite(value) || _.isUuid(value) || _.isBoolean(value) || _.isObject(value) || _.isArray(value)) ? value : util.format("'%s'", value)
     }
 }

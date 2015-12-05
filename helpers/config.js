@@ -1,7 +1,6 @@
 'use strict'
 
-var _ = require('underscore')
-
+var _ = require('lodash')
 _.mixin(require('underscore.string'))
 
 if (/mocha$/i.test(process.argv[1])) {

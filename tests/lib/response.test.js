@@ -1,7 +1,7 @@
 'use strict'
 
 var should = require('should'),
-    config = require('../../helpers/config'),
+    config = require('../../helpers').config,
     UsergridClient = require('../../lib/client'),
     UsergridEntity = require('../../lib/entity'),
     UsergridUser = require('../../lib/user'),
@@ -84,14 +84,23 @@ describe('user', function() {
     this.slow(1000)
     this.timeout(6000)
 
+    var user
+
     it('response.user should be a UsergridUser object and have a valid uuid matching the first object in response.users', function(done) {
         client.setAppAuth(config.clientId, config.clientSecret, config.tokenTtl)
         client.authenticateApp(function(err) {
             client.GET('users', function(err, usergridResponse) {
-                usergridResponse.user.should.be.an.instanceof(UsergridUser).with.property('uuid').equal(_.first(usergridResponse.users).uuid)
+                user = usergridResponse.user
+                user.should.be.an.instanceof(UsergridUser).with.property('uuid').equal(_.first(usergridResponse.entities).uuid)
                 done()
             })
         })
+    })
+
+    it('response.user should also be a UsergridEntity object', function(done) {
+        user.isUser.should.be.true()
+        user.should.be.an.instanceof(UsergridEntity)
+        done()
     })
 })
 

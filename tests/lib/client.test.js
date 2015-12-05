@@ -1,11 +1,18 @@
 'use strict'
 
 var should = require('should'),
-    config = require('../../helpers/config'),
+    config = require('../../helpers').config,
     UsergridClient = require('../../lib/client'),
-    UsergridAppAuth = require('../../lib/appAuth')
+    UsergridEntity = require('../../lib/entity'),
+    UsergridQuery = require('../../lib/query'),
+    UsergridAppAuth = require('../../lib/appAuth'),
+    _ = require('underscore')
 
-var _uuid = null
+_.mixin(require('lodash-uuid'))
+
+var _uuid,
+    _slow = 500,
+    _timeout = 4000
 
 describe('initialization', function() {
     it('should fail to initialize without an orgId and appId', function() {
@@ -38,10 +45,10 @@ describe('initialization', function() {
 })
 
 describe('GET()', function() {
+    this.slow(_slow)
+    this.timeout(_timeout)
 
-    this.slow(1000)
-    this.timeout(6000)
-    var response, client
+    var response, client, query
     before(function(done) {
         client = new UsergridClient(config)
         client.GET(config.testCollection, function(err, usergridResponse) {
@@ -74,11 +81,27 @@ describe('GET()', function() {
     it('response.last should exist and have a valid uuid', function() {
         response.last.should.be.an.Object().with.property('uuid').with.a.lengthOf(36)
     })
+
+    it('each entity should match the search criteria when passing a UsergridQuery object', function(done) {
+
+        this.slow(_slow)
+        this.timeout(_timeout)
+
+        client = new UsergridClient(config)
+        query = new UsergridQuery(config.testCollection).eq('color', 'black')
+
+        client.GET(query, function(err, usergridResponse) {
+            usergridResponse.entities.forEach(function(entity) {
+                entity.should.be.an.Object().with.property('color').equal('black')
+            })
+            done()
+        })
+    })
 })
 
 describe('POST()', function() {
 
-    this.slow(1000)
+    this.slow(_slow)
     this.timeout(3000)
 
     var response, client
@@ -113,12 +136,104 @@ describe('POST()', function() {
     it('response.entity.author should equal "Sir Arthur Conan Doyle"', function() {
         response.entity.should.have.property('author').equal('Sir Arthur Conan Doyle')
     })
+
+    it('should support creating an entity by passing a UsergridEntity object', function(done) {
+
+        this.slow(_slow)
+        this.timeout(_timeout)
+
+        var entity = new UsergridEntity({
+            type: config.testCollection,
+            restaurant: "Dino's Deep Dish",
+            cuisine: "pizza"
+        })
+
+        client.POST(entity, function(err, usergridResponse) {
+            usergridResponse.entity.should.be.an.Object().with.property('restaurant').equal(entity.restaurant)
+            done()
+        })
+    })
+
+    it('should support creating an entity by passing type and a body object', function(done) {
+
+        this.slow(_slow)
+        this.timeout(_timeout)
+
+        client.POST(config.testCollection, {
+            restaurant: "Dino's Deep Dish",
+            cuisine: "pizza"
+        }, function(err, usergridResponse) {
+            usergridResponse.entity.should.be.an.Object().with.property('restaurant').equal("Dino's Deep Dish")
+            done()
+        })
+    })
+
+    it('should support creating an entity by passing a body object that includes type', function(done) {
+
+        this.slow(_slow)
+        this.timeout(_timeout)
+
+        client.POST({
+            type: config.testCollection,
+            restaurant: "Dino's Deep Dish",
+            cuisine: "pizza"
+        }, function(err, usergridResponse) {
+            usergridResponse.entity.should.be.an.Object().with.property('restaurant').equal("Dino's Deep Dish")
+            done()
+        })
+    })
+
+    it('should support creating an entity by passing an array of UsergridEntity objects', function(done) {
+
+        this.slow(_slow)
+        this.timeout(_timeout)
+
+        var entities = [
+            new UsergridEntity({
+                type: config.testCollection,
+                restaurant: "Dino's Deep Dish",
+                cuisine: "pizza"
+            }), new UsergridEntity({
+                type: config.testCollection,
+                restaurant: "Chipotle",
+                cuisine: "mexican"
+            })
+        ]
+
+        client.POST(entities, function(err, usergridResponse) {
+            usergridResponse.entities.forEach(function(entity) {
+                entity.should.be.an.Object().with.property('restaurant').equal(entity.restaurant)
+            })
+            done()
+        })
+    })
+
+    it('should support creating an entity by passing a preformatted POST builder object', function(done) {
+
+        this.slow(_slow)
+        this.timeout(_timeout)
+
+        var options = {
+            type: config.testCollection,
+            body: {
+                restaurant: "Chipotle",
+                cuisine: "mexican"
+            }
+        }
+
+        client.POST(options, function(err, usergridResponse) {
+            usergridResponse.entities.forEach(function(entity) {
+                entity.should.be.an.Object().with.property('restaurant').equal(entity.restaurant)
+            })
+            done()
+        })
+    })
 })
 
 describe('PUT()', function() {
 
-    this.slow(1000)
-    this.timeout(3000)
+    this.slow(_slow)
+    this.timeout(_timeout)
 
     var response, client
     before(function(done) {
@@ -133,30 +248,134 @@ describe('PUT()', function() {
 
     it('should not fail when a callback function is not passed', function() {
         // note: this test will NOT fail gracefully inside the Mocha event chain
-        client.PUT(config.testCollection, _uuid)
+        client.PUT(config.testCollection, _uuid, {})
     })
 
     it('should return a 200 ok', function() {
         response.statusCode.should.equal(200)
     })
 
-    it('response.entities should be an array', function() {
+    it('response.entities should be an array with a single entity', function() {
         response.entities.should.be.an.Array().with.a.lengthOf(1)
     })
 
-    it('response.entity should exist and its uuid should the uuid from the previous POST requets', function() {
+    it('response.entity should exist and its uuid should the uuid from the previous POST request', function() {
         response.entity.should.be.an.Object().with.property('uuid').equal(_uuid)
     })
 
-    it('response.entity.narrator should equal "Peter Doyle"', function() {
+    it('response.entity.narrator should be updated to "Peter Doyle"', function() {
         response.entity.should.have.property('narrator').equal('Peter Doyle')
+    })
+
+    it('should create a new entity when no uuid or name is passed', function(done) {
+
+        this.slow(_slow)
+        this.timeout(_timeout)
+
+        var newEntity = new UsergridEntity({
+            type: config.testCollection,
+            author: 'Frank Mills'
+        })
+
+        client.PUT(newEntity, function(err, usergridResponse) {
+            usergridResponse.entity.should.be.an.Object()
+            usergridResponse.entity.should.have.property('uuid').with.a.lengthOf(36)
+            usergridResponse.entity.should.have.property('author').equal('Frank Mills')
+            usergridResponse.entity.created.should.equal(usergridResponse.entity.modified)
+            done()
+        })
+    })
+
+    it('should support updating the entity by passing a UsergridEntity object', function(done) {
+
+        this.slow(_slow)
+        this.timeout(_timeout)
+
+        var updateEntity = _.extend(response.entity, {
+            publisher: {
+                name: "George Newns",
+                date: "14 October 1892",
+                country: "United Kingdom"
+            }
+        })
+
+        client.PUT(updateEntity, function(err, usergridResponse) {
+            usergridResponse.entity.should.be.an.Object().with.property('publisher').deepEqual(updateEntity.publisher)
+            done()
+        })
+    })
+
+    it('should support updating an entity by passing type and a body object', function(done) {
+
+        this.slow(_slow)
+        this.timeout(_timeout)
+
+        client.PUT(config.testCollection, {
+            uuid: response.entity.uuid,
+            updateByPassingTypeAndBody: true
+        }, function(err, usergridResponse) {
+            usergridResponse.entity.should.be.an.Object().with.property('updateByPassingTypeAndBody').equal(true)
+            done()
+        })
+    })
+
+    it('should support updating an entity by passing a body object that includes type', function(done) {
+
+        this.slow(_slow)
+        this.timeout(_timeout)
+
+        client.PUT(config.testCollection, {
+            type: config.testCollection,
+            uuid: response.entity.uuid,
+            updateByPassingBodyIncludingType: true
+        }, function(err, usergridResponse) {
+            usergridResponse.entity.should.be.an.Object().with.property('updateByPassingBodyIncludingType').equal(true)
+            done()
+        })
+    })
+
+    it('should support updating a set of entities by passing an UsergridQuery object', function(done) {
+
+        this.slow(_slow)
+        this.timeout(_timeout)
+
+        var query = new UsergridQuery(config.testCollection).eq('cuisine', 'pizza').limit(2)
+        var body = {
+            testUuid: _.uuid()
+        }
+
+        client.PUT(query, body, function(err, usergridResponse) {
+            usergridResponse.entities.forEach(function(entity) {
+                entity.should.be.an.Object().with.property('testUuid').equal(body.testUuid)
+            })
+            done()
+        })
+    })
+
+    it('should support updating an entity by passing a preformatted PUT builder object', function(done) {
+
+        this.slow(_slow)
+        this.timeout(_timeout)
+
+        var options = {
+            uuidOrName: response.entity.uuid,
+            type: config.testCollection,
+            body: {
+                relatedUuid: _.uuid()
+            }
+        }
+
+        client.PUT(options, function(err, usergridResponse) {
+            usergridResponse.entity.should.be.an.Object().with.property('relatedUuid').equal(options.body.relatedUuid)
+            done()
+        })
     })
 })
 
 describe('DELETE()', function() {
 
-    this.slow(1000)
-    this.timeout(6000)
+    this.slow(_slow)
+    this.timeout(_timeout)
 
     var response, client
     before(function(done) {
@@ -189,12 +408,96 @@ describe('DELETE()', function() {
             response.error.name.should.equal('entity_not_found')
         })
     }
+
+    it('should support deleting an entity by passing a UsergridEntity object', function(done) {
+
+        this.slow(_slow + 1000)
+        this.timeout(_timeout + 1000)
+
+        var entity = new UsergridEntity({
+            type: config.testCollection,
+            command: "CTRL+ALT+DEL"
+        })
+
+        client.POST(entity, function(err, usergridResponse) {
+            client.DELETE(usergridResponse.entity, function() {
+                client.GET(config.testCollection, usergridResponse.entity.uuid, function(err, delResponse) {
+                    delResponse.error.name.should.equal((config.target === '1.0') ? 'service_resource_not_found' : 'entity_not_found')
+                    done()
+                })
+            })
+        })
+    })
+
+    it('should support deleting an entity by passing type and uuid', function(done) {
+
+        this.slow(_slow + 1000)
+        this.timeout(_timeout + 1000)
+
+        var body = {
+            command: "CTRL+ALT+DEL"
+        }
+
+        client.POST(config.testCollection, body, function(err, usergridResponse) {
+            client.DELETE(config.testCollection, usergridResponse.entity.uuid, function() {
+                client.GET(config.testCollection, usergridResponse.entity.uuid, function(err, delResponse) {
+                    delResponse.error.name.should.equal((config.target === '1.0') ? 'service_resource_not_found' : 'entity_not_found')
+                    done()
+                })
+            })
+        })
+    })
+
+    it('should support deleting multiple entities by passing a UsergridQuery object', function(done) {
+
+        this.slow(_slow + 1000)
+        this.timeout(_timeout + 1000)
+
+        var entity = new UsergridEntity({
+            type: config.testCollection,
+            command: "CMD+TAB"
+        })
+
+        var query = new UsergridQuery(config.testCollection).eq('command', 'CMD+TAB')
+
+        client.POST([entity, entity, entity, entity], function(err, usergridResponse) {
+            client.DELETE(query, function() {
+                client.GET(query, function(err, delResponse) {
+                    delResponse.entities.should.be.an.Array().with.lengthOf(0)
+                    done()
+                })
+            })
+        })
+    })
+
+    it('should support deleting an entity by passing a preformatted DELETE builder object', function(done) {
+
+        this.slow(_slow + 1000)
+        this.timeout(_timeout + 1000)
+
+        var options = {
+            type: config.testCollection,
+            body: {
+                restaurant: "IHOP",
+                cuisine: "breakfast"
+            }
+        }
+
+        client.POST(options, function(err, usergridResponse) {
+            client.DELETE(_.extend(options, {uuid: usergridResponse.entity.uuid}), function() {
+                client.GET(config.testCollection, usergridResponse.entity.uuid, function(err, delResponse) {
+                    delResponse.error.name.should.equal((config.target === '1.0') ? 'service_resource_not_found' : 'entity_not_found')
+                    done()
+                })
+            })
+        })
+    })
 })
 
 describe('authenticateApp()', function() {
 
-    this.slow(1000)
-    this.timeout(6000)
+    this.slow(_slow)
+    this.timeout(_timeout)
 
     var response, token, client
     before(function(done) {
