@@ -7,14 +7,16 @@ var should = require('should'),
 
 var client = new UsergridClient()
 
-var _response
+var _response,
+    _slow = 500,
+    _timeout = 4000
 
 describe('name, description, exception', function() {
 
     before(function(done) {
 
-        this.slow(1000)
-        this.timeout(6000)
+        this.slow(_slow)
+        this.timeout(_timeout)
 
         client.GET(config.testCollection, 'BADNAMEORUUID', function(err, usergridResponse) {
             _response = usergridResponse
@@ -34,8 +36,8 @@ describe('name, description, exception', function() {
 
 describe('undefined check', function() {
     it('response.error should be undefined on a successful response', function(done) {
-        this.slow(1000)
-        this.timeout(6000)
+        this.slow(_slow)
+        this.timeout(_timeout)
         client.GET(config.testCollection, function(err, usergridResponse) {
             usergridResponse.statusCode.should.equal(200)
             should(usergridResponse.error).be.undefined()

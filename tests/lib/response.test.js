@@ -10,12 +10,14 @@ var should = require('should'),
 
 var client = new UsergridClient()
 
-var _response
+var _response,
+    _slow = 500,
+    _timeout = 4000
 
 before(function(done) {
 
-    this.slow(1000)
-    this.timeout(6000)
+    this.slow(_slow)
+    this.timeout(_timeout)
 
     client.GET(config.testCollection, function(err, usergridResponse) {
         _response = usergridResponse
@@ -48,8 +50,8 @@ describe('metadata', function() {
 describe('error', function() {
     it('should be a UsergridResponseError object', function(done) {
 
-        this.slow(1000)
-        this.timeout(6000)
+        this.slow(_slow)
+        this.timeout(_timeout)
 
         client.GET(config.testCollection, 'BADNAMEORUUID', function(err, usergridResponse) {
             usergridResponse.error.should.be.an.instanceof(UsergridResponseError)
@@ -60,8 +62,8 @@ describe('error', function() {
 
 describe('users', function() {
 
-    this.slow(1000)
-    this.timeout(6000)
+    this.slow(_slow)
+    this.timeout(_timeout)
 
     it('response.users should be an array of UsergridUser objects', function(done) {
         client.setAppAuth(config.clientId, config.clientSecret, config.tokenTtl)
@@ -81,8 +83,8 @@ describe('users', function() {
 
 describe('user', function() {
 
-    this.slow(1000)
-    this.timeout(6000)
+    this.slow(_slow)
+    this.timeout(_timeout)
 
     var user
 
@@ -131,8 +133,8 @@ describe('last', function() {
 })
 
 describe('hasNextPage', function() {
-    this.slow(1000)
-    this.timeout(6000)
+    this.slow(_slow)
+    this.timeout(_timeout)
 
     it('should be true when more entities exist', function(done) {
         client.GET(config.testCollection, function(err, usergridResponse) {
