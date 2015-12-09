@@ -39,7 +39,7 @@ module.exports = {
             method: 'GET'
         }
 
-        if (typeof args[0] === 'object' && !(args[0] instanceof UsergridQuery)) {
+        if (_.isObject(args[0]) && !_.isFunction(args[0]) && !(args[0] instanceof UsergridQuery)) {
             _.assign(options, args[0])
         }
 
@@ -81,14 +81,14 @@ module.exports = {
             method: 'PUT'
         }
 
-        if (typeof args[0] === 'object' && !(args[0] instanceof UsergridEntity) && !(args[0] instanceof UsergridQuery)) {
+        if (_.isObject(args[0]) && !_.isFunction(args[0]) && !(args[0] instanceof UsergridEntity) && !(args[0] instanceof UsergridQuery)) {
             _.assign(options, args[0])
         }
 
         options.callback = helpers.cb(_.last(args.filter(_.isFunction)))
 
         options.body = _.first([options.entity, options.body, args[2], args[1], args[0]].filter(function(property) {
-            return typeof property === 'object' && !(property instanceof UsergridQuery)
+            return _.isObject(property) && !_.isFunction(property) && !(property instanceof UsergridQuery)
         }))
 
         if (typeof options.body !== 'object') {
@@ -125,14 +125,14 @@ module.exports = {
             method: 'POST'
         }
 
-        if (typeof args[0] === 'object' && !(args[0] instanceof UsergridEntity)) {
+        if (_.isObject(args[0]) && !_.isFunction(args[0]) && !(args[0] instanceof UsergridEntity)) {
             _.assign(options, args[0])
         }
 
         options.callback = helpers.cb(_.last(args.filter(_.isFunction)))    
 
         options.body = _.first([options.entities, options.entity, options.body, args[1], args[0]].filter(function(property) {
-            return _.isArray(property) && typeof property[0] === 'object' || typeof property === 'object'
+            return _.isArray(property) && _.isObject(property[0]) && !_.isFunction(property[0]) || _.isObject(property) && !_.isFunction(property)
         }))
         
         if (typeof options.body !== 'object') {
@@ -165,7 +165,7 @@ module.exports = {
             method: 'DELETE'
         }
 
-        if (typeof args[0] === 'object' && !(args[0] instanceof UsergridQuery)) {
+        if (_.isObject(args[0]) && !_.isFunction(args[0]) && !(args[0] instanceof UsergridQuery)) {
             _.assign(options, args[0])
         }
 
@@ -181,7 +181,7 @@ module.exports = {
 
         options.uuidOrName = _.first([options.uuidOrName, options.uuid, options.name, ok(options).getIfExists('entity.uuid'), args[1]].filter(_.isString))
 
-        if (typeof options.uuidOrName !== 'string' && options.query === undefined) {
+        if (!_.isString(options.uuidOrName) && options.query === undefined) {
             throw new Error('"uuidOrName" parameter or "query" is required when making a DELETE request')
         }
 
