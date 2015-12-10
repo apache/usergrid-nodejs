@@ -51,7 +51,7 @@ describe('GET()', function() {
     var response, client, query
     before(function(done) {
         client = new UsergridClient(config)
-        client.GET(config.testCollection, function(err, usergridResponse) {
+        client.GET(config.test.collection, function(err, usergridResponse) {
             response = usergridResponse
             done()
         })
@@ -59,7 +59,7 @@ describe('GET()', function() {
 
     it('should not fail when a callback function is not passed', function() {
         // note: this test will NOT fail gracefully inside the Mocha event chain
-        client.GET(config.testCollection)
+        client.GET(config.test.collection)
     })
 
     it('should return a 200 ok', function() {
@@ -88,7 +88,7 @@ describe('GET()', function() {
         this.timeout(_timeout)
 
         client = new UsergridClient(config)
-        query = new UsergridQuery(config.testCollection).eq('color', 'black')
+        query = new UsergridQuery(config.test.collection).eq('color', 'black')
 
         client.GET(query, function(err, usergridResponse) {
             usergridResponse.entities.forEach(function(entity) {
@@ -107,7 +107,7 @@ describe('POST()', function() {
     var response, client
     before(function(done) {
         client = new UsergridClient()
-        client.POST(config.testCollection, {
+        client.POST(config.test.collection, {
             author: 'Sir Arthur Conan Doyle'
         }, function(err, usergridResponse) {
             response = usergridResponse
@@ -118,7 +118,7 @@ describe('POST()', function() {
 
     it('should not fail when a callback function is not passed', function() {
         // note: this test will NOT fail gracefully inside the Mocha event chain
-        client.POST(config.testCollection, {})
+        client.POST(config.test.collection, {})
     })
 
     it('should return a 200 ok', function() {
@@ -143,7 +143,7 @@ describe('POST()', function() {
         this.timeout(_timeout)
 
         var entity = new UsergridEntity({
-            type: config.testCollection,
+            type: config.test.collection,
             restaurant: "Dino's Deep Dish",
             cuisine: "pizza"
         })
@@ -159,7 +159,7 @@ describe('POST()', function() {
         this.slow(_slow)
         this.timeout(_timeout)
 
-        client.POST(config.testCollection, {
+        client.POST(config.test.collection, {
             restaurant: "Dino's Deep Dish",
             cuisine: "pizza"
         }, function(err, usergridResponse) {
@@ -174,7 +174,7 @@ describe('POST()', function() {
         this.timeout(_timeout)
 
         client.POST({
-            type: config.testCollection,
+            type: config.test.collection,
             restaurant: "Dino's Deep Dish",
             cuisine: "pizza"
         }, function(err, usergridResponse) {
@@ -190,11 +190,11 @@ describe('POST()', function() {
 
         var entities = [
             new UsergridEntity({
-                type: config.testCollection,
+                type: config.test.collection,
                 restaurant: "Dino's Deep Dish",
                 cuisine: "pizza"
             }), new UsergridEntity({
-                type: config.testCollection,
+                type: config.test.collection,
                 restaurant: "Chipotle",
                 cuisine: "mexican"
             })
@@ -214,7 +214,7 @@ describe('POST()', function() {
         this.timeout(_timeout)
 
         var options = {
-            type: config.testCollection,
+            type: config.test.collection,
             body: {
                 restaurant: "Chipotle",
                 cuisine: "mexican"
@@ -238,7 +238,7 @@ describe('PUT()', function() {
     var response, client
     before(function(done) {
         client = new UsergridClient()
-        client.PUT(config.testCollection, _uuid, {
+        client.PUT(config.test.collection, _uuid, {
             narrator: 'Peter Doyle'
         }, function(err, usergridResponse) {
             response = usergridResponse
@@ -248,7 +248,7 @@ describe('PUT()', function() {
 
     it('should not fail when a callback function is not passed', function() {
         // note: this test will NOT fail gracefully inside the Mocha event chain
-        client.PUT(config.testCollection, _uuid, {})
+        client.PUT(config.test.collection, _uuid, {})
     })
 
     it('should return a 200 ok', function() {
@@ -273,7 +273,7 @@ describe('PUT()', function() {
         this.timeout(_timeout)
 
         var newEntity = new UsergridEntity({
-            type: config.testCollection,
+            type: config.test.collection,
             author: 'Frank Mills'
         })
 
@@ -310,7 +310,7 @@ describe('PUT()', function() {
         this.slow(_slow)
         this.timeout(_timeout)
 
-        client.PUT(config.testCollection, {
+        client.PUT(config.test.collection, {
             uuid: response.entity.uuid,
             updateByPassingTypeAndBody: true
         }, function(err, usergridResponse) {
@@ -324,8 +324,8 @@ describe('PUT()', function() {
         this.slow(_slow)
         this.timeout(_timeout)
 
-        client.PUT(config.testCollection, {
-            type: config.testCollection,
+        client.PUT(config.test.collection, {
+            type: config.test.collection,
             uuid: response.entity.uuid,
             updateByPassingBodyIncludingType: true
         }, function(err, usergridResponse) {
@@ -336,10 +336,10 @@ describe('PUT()', function() {
 
     it('should support updating a set of entities by passing an UsergridQuery object', function(done) {
 
-        this.slow(_slow)
-        this.timeout(_timeout)
+        this.slow(_slow + 1000)
+        this.timeout(_timeout + 2000)
 
-        var query = new UsergridQuery(config.testCollection).eq('cuisine', 'pizza').limit(2)
+        var query = new UsergridQuery(config.test.collection).eq('cuisine', 'pizza').limit(2)
         var body = {
             testUuid: _.uuid()
         }
@@ -359,7 +359,7 @@ describe('PUT()', function() {
 
         var options = {
             uuidOrName: response.entity.uuid,
-            type: config.testCollection,
+            type: config.test.collection,
             body: {
                 relatedUuid: _.uuid()
             }
@@ -380,8 +380,8 @@ describe('DELETE()', function() {
     var response, client
     before(function(done) {
         client = new UsergridClient()
-        client.DELETE(config.testCollection, _uuid, function() {
-            client.GET(config.testCollection, _uuid, function(err, usergridResponse) {
+        client.DELETE(config.test.collection, _uuid, function() {
+            client.GET(config.test.collection, _uuid, function(err, usergridResponse) {
                 response = usergridResponse
                 done()
             })
@@ -390,7 +390,7 @@ describe('DELETE()', function() {
 
     it('should not fail when a callback function is not passed', function() {
         // note: this test will NOT fail gracefully inside the Mocha event chain
-        client.DELETE(config.testCollection, _uuid)
+        client.DELETE(config.test.collection, _uuid)
     })
 
     it('should return a 200 ok', function() {
@@ -415,13 +415,13 @@ describe('DELETE()', function() {
         this.timeout(_timeout + 1000)
 
         var entity = new UsergridEntity({
-            type: config.testCollection,
+            type: config.test.collection,
             command: "CTRL+ALT+DEL"
         })
 
         client.POST(entity, function(err, usergridResponse) {
             client.DELETE(usergridResponse.entity, function() {
-                client.GET(config.testCollection, usergridResponse.entity.uuid, function(err, delResponse) {
+                client.GET(config.test.collection, usergridResponse.entity.uuid, function(err, delResponse) {
                     delResponse.error.name.should.equal((config.target === '1.0') ? 'service_resource_not_found' : 'entity_not_found')
                     done()
                 })
@@ -438,9 +438,9 @@ describe('DELETE()', function() {
             command: "CTRL+ALT+DEL"
         }
 
-        client.POST(config.testCollection, body, function(err, usergridResponse) {
-            client.DELETE(config.testCollection, usergridResponse.entity.uuid, function() {
-                client.GET(config.testCollection, usergridResponse.entity.uuid, function(err, delResponse) {
+        client.POST(config.test.collection, body, function(err, usergridResponse) {
+            client.DELETE(config.test.collection, usergridResponse.entity.uuid, function() {
+                client.GET(config.test.collection, usergridResponse.entity.uuid, function(err, delResponse) {
                     delResponse.error.name.should.equal((config.target === '1.0') ? 'service_resource_not_found' : 'entity_not_found')
                     done()
                 })
@@ -454,11 +454,11 @@ describe('DELETE()', function() {
         this.timeout(_timeout + 1000)
 
         var entity = new UsergridEntity({
-            type: config.testCollection,
+            type: config.test.collection,
             command: "CMD+TAB"
         })
 
-        var query = new UsergridQuery(config.testCollection).eq('command', 'CMD+TAB')
+        var query = new UsergridQuery(config.test.collection).eq('command', 'CMD+TAB')
 
         client.POST([entity, entity, entity, entity], function() {
             client.DELETE(query, function() {
@@ -476,7 +476,7 @@ describe('DELETE()', function() {
         this.timeout(_timeout + 1000)
 
         var options = {
-            type: config.testCollection,
+            type: config.test.collection,
             body: {
                 restaurant: "IHOP",
                 cuisine: "breakfast"
@@ -484,8 +484,10 @@ describe('DELETE()', function() {
         }
 
         client.POST(options, function(err, usergridResponse) {
-            client.DELETE(_.assign(options, {uuid: usergridResponse.entity.uuid}), function() {
-                client.GET(config.testCollection, usergridResponse.entity.uuid, function(err, delResponse) {
+            client.DELETE(_.assign(options, {
+                uuid: usergridResponse.entity.uuid
+            }), function() {
+                client.GET(config.test.collection, usergridResponse.entity.uuid, function(err, delResponse) {
                     delResponse.error.name.should.equal((config.target === '1.0') ? 'service_resource_not_found' : 'entity_not_found')
                     done()
                 })
@@ -499,9 +501,8 @@ describe('authenticateApp()', function() {
     this.slow(_slow)
     this.timeout(_timeout)
 
-    var response, token, client
+    var response, token, client = new UsergridClient()
     before(function(done) {
-        client = new UsergridClient()
         client.setAppAuth(config.clientId, config.clientSecret, config.tokenTtl)
         client.authenticateApp(function(err, r, t) {
             response = r
@@ -516,6 +517,27 @@ describe('authenticateApp()', function() {
             client.setAppAuth(undefined, undefined, 0)
             client.authenticateApp()
         }).throw()
+    })
+
+    it('should not set client.appAuth when authenticating with a bad UsergridAppAuth instance (using an object)', function(done) {
+        var failClient = new UsergridClient()
+        failClient.authenticateApp(new UsergridAppAuth({
+            clientId: 'BADCLIENTID',
+            clientSecret: 'BADCLIENTSECRET'
+        }), function(e, r, token) {
+            should(token).be.undefined()
+            should(failClient.appAuth).be.undefined()
+            done()
+        })
+    })
+
+    it('should not set client.appAuth when authenticating with a bad UsergridAppAuth instance (using arguments)', function(done) {
+        var failClient = new UsergridClient()
+        failClient.authenticateApp(new UsergridAppAuth('BADCLIENTID', 'BADCLIENTSECRET'), function(e, r, token) {
+            should(token).be.undefined()
+            should(failClient.appAuth).be.undefined()
+            done()
+        })
     })
 
     it('should return a 200 ok', function() {
@@ -537,6 +559,65 @@ describe('authenticateApp()', function() {
 
     it('client.appAuth.expiry should be set to a future date', function() {
         client.appAuth.should.have.property('expiry').greaterThan(Date.now())
+    })
+})
+
+describe('authenticateUser()', function() {
+
+    this.slow(_slow)
+    this.timeout(_timeout)
+
+    var response, token, client = new UsergridClient()
+    before(function(done) {
+        client.authenticateUser({
+            username: config.test.username,
+            password: config.test.password
+        }, function(err, r, t) {
+            response = r
+            token = t
+            done()
+        })
+    })
+
+    it('should fail when called without a email (or username) and password', function() {
+        should(function() {
+            var client = new UsergridClient()
+            client.authenticateUser({})
+        }).throw()
+    })
+
+    it('should return a 200 ok', function() {
+        response.statusCode.should.equal(200)
+    })
+
+    it('should have a valid token', function() {
+        token.should.be.a.String()
+        token.length.should.be.greaterThan(10)
+    })
+
+    it('client.currentUser.auth.token should be set to the token returned from Usergrid', function() {
+        client.currentUser.auth.should.have.property('token').equal(token)
+    })
+
+    it('client.currentUser.auth.isTokenValid should be true', function() {
+        client.currentUser.auth.should.have.property('isTokenValid').which.is.true()
+    })
+
+    it('client.currentUser.auth.expiry should be set to a future date', function() {
+        client.currentUser.auth.should.have.property('expiry').greaterThan(Date.now())
+    })
+
+    it('client.currentUser should have a username', function() {
+        client.currentUser.should.have.property('username')
+    })
+
+    it('client.currentUser should have an email', function() {
+        client.currentUser.should.have.property('email')
+    })    
+
+    it('client.currentUser and client.currentUser.auth should not store password', function() {
+        client.currentUser.should.not.have.property('password')
+        client.currentUser.auth.should.not.have.property('password')
     })
 })
 

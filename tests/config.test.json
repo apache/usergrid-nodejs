@@ -5,7 +5,12 @@
         "clientId": "YXA6GXSAACS2EeOYd20aP4G6Lw",
         "clientSecret": "YXA66BeEvgNpJBwc4PAbvZZGTVS_SSw",
         "orgId": "brandon.apigee",
-        "testCollection": "tests"
+        "test": {
+            "collection": "tests",
+            "email": "authtest@test.com",
+            "password": "P@ssw0rd",
+            "username": "authtest"
+        }
     },
     "2.1": {
         "appId": "sdksandbox",
@@ -13,6 +18,11 @@
         "clientId": "YXA6WMhAuFJTEeWoggrRE9kXrQ",
         "clientSecret": "YXA6zZbat7PKgOlN73rpByc36LWaUhw",
         "orgId": "api-connectors",
-        "testCollection": "nodejs"
+        "test": {
+            "collection": "nodejs",
+            "email": "authtest@test.com",
+            "password": "P@ssw0rd",
+            "username": "authtest"
+        }
     }
 }

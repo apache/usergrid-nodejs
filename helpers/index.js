@@ -4,6 +4,7 @@ var mutability = require('./mutability'),
     userAgent = require('./userAgent'),
     query = require('./query'),
     config = require('./config'),
+    time = require('./time'),
     _ = require('lodash')
 
 module.exports = _.assign(module.exports, {
@@ -11,5 +12,6 @@ module.exports = _.assign(module.exports, {
     build: build,
     userAgent: userAgent,
     query: query,
-    config: config
+    config: config,
+    time: time
 }, mutability)

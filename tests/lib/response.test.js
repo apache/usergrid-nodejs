@@ -19,7 +19,7 @@ before(function(done) {
     this.slow(_slow)
     this.timeout(_timeout)
 
-    client.GET(config.testCollection, function(err, usergridResponse) {
+    client.GET(config.test.collection, function(err, usergridResponse) {
         _response = usergridResponse
         done()
     })
@@ -53,7 +53,7 @@ describe('error', function() {
         this.slow(_slow)
         this.timeout(_timeout)
 
-        client.GET(config.testCollection, 'BADNAMEORUUID', function(err, usergridResponse) {
+        client.GET(config.test.collection, 'BADNAMEORUUID', function(err, usergridResponse) {
             usergridResponse.error.should.be.an.instanceof(UsergridResponseError)
             done()
         })
@@ -137,7 +137,7 @@ describe('hasNextPage', function() {
     this.timeout(_timeout)
 
     it('should be true when more entities exist', function(done) {
-        client.GET(config.testCollection, function(err, usergridResponse) {
+        client.GET(config.test.collection, function(err, usergridResponse) {
             usergridResponse.hasNextPage.should.be.true()
             done()
         })

@@ -18,7 +18,7 @@ describe('name, description, exception', function() {
         this.slow(_slow)
         this.timeout(_timeout)
 
-        client.GET(config.testCollection, 'BADNAMEORUUID', function(err, usergridResponse) {
+        client.GET(config.test.collection, 'BADNAMEORUUID', function(err, usergridResponse) {
             _response = usergridResponse
             done()
         })
@@ -38,7 +38,7 @@ describe('undefined check', function() {
     it('response.error should be undefined on a successful response', function(done) {
         this.slow(_slow)
         this.timeout(_timeout)
-        client.GET(config.testCollection, function(err, usergridResponse) {
+        client.GET(config.test.collection, function(err, usergridResponse) {
             usergridResponse.statusCode.should.equal(200)
             should(usergridResponse.error).be.undefined()
             done()
