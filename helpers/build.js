@@ -14,7 +14,8 @@ module.exports = {
             config.baseUrl,
             options.client.orgId,
             options.client.appId,
-            options.type, (_.isString(options.uuidOrName) ? options.uuidOrName : "")
+            options.type,
+            _.isString(options.uuidOrName) ? options.uuidOrName : ""
         )
     },
     GET: function(client, args) {
@@ -26,7 +27,7 @@ module.exports = {
         client.GET(query, optionalCallback)
         client.GET({
             query: query, // takes precedence
-            type: type, // required only if query not defined
+            type: type, // required if query not defined
             uuid: uuid, // will be set to nameOrUuid on init (priority)
             name: name, // will be set to nameOrUuid on init (if no uuid specified)
             nameOrUuid: nameOrUuid // the definitive key for name or uuid
@@ -39,7 +40,8 @@ module.exports = {
             method: 'GET'
         }
 
-        if (_.isObject(args[0]) && !_.isFunction(args[0]) && !(args[0] instanceof UsergridQuery)) {
+        // if a preformatted options argument passed, assign it to options
+        if (_.isObject(args[0]) && !_.isFunction(args[0]) && args.length <= 2) {
             _.assign(options, args[0])
         }
 
@@ -68,7 +70,7 @@ module.exports = {
         client.PUT({
             *entity = alias to body*
             query: query, // takes precedence over type/body
-            type: type, // required only if query not defined
+            type: type, // required if query not defined
             body: bodyObject or bodyObjectOrEntity, // if includes type, type will be inferred from body
             *uuid, name* = alias to nameOrUuid*
             nameOrUuid: nameOrUuid // the definitive key for name or uuid
@@ -81,7 +83,8 @@ module.exports = {
             method: 'PUT'
         }
 
-        if (_.isObject(args[0]) && !_.isFunction(args[0]) && !(args[0] instanceof UsergridEntity) && !(args[0] instanceof UsergridQuery)) {
+        // if a preformatted options argument passed, assign it to options
+        if (_.isObject(args[0]) && !_.isFunction(args[0]) && args.length <= 2) {
             _.assign(options, args[0])
         }
 
@@ -104,7 +107,6 @@ module.exports = {
 
         return options
     },
-
     POST: function(client, args) {
 
         /* POST supports the following constructor patterns:
@@ -114,7 +116,7 @@ module.exports = {
         client.POST(entityOrEntities, optionalCallback)
         client.POST({
             *entity, entities = alias to body*
-            type: type, // required if type is not inferred
+            type: type, // required
             body: bodyObjectOrArray or entityOrEntities, // if the first entity includes type, type will be inferred from body
         }, optionalCallback)
 
@@ -125,21 +127,22 @@ module.exports = {
             method: 'POST'
         }
 
-        if (_.isObject(args[0]) && !_.isFunction(args[0]) && !(args[0] instanceof UsergridEntity)) {
+        // if a preformatted options argument passed, assign it to options
+        if (_.isObject(args[0]) && !_.isFunction(args[0]) && args.length <= 2) {
             _.assign(options, args[0])
         }
 
-        options.callback = helpers.cb(_.last(args.filter(_.isFunction)))    
+        options.callback = helpers.cb(_.last(args.filter(_.isFunction)))
 
         options.body = _.first([options.entities, options.entity, options.body, args[1], args[0]].filter(function(property) {
             return _.isArray(property) && _.isObject(property[0]) && !_.isFunction(property[0]) || _.isObject(property) && !_.isFunction(property)
         }))
-        
+
         if (typeof options.body !== 'object') {
             throw new Error('"body" parameter is required when making a POST request')
         }
 
-        options.body = _.isArray(options.body) ? options.body : [options.body]        
+        options.body = _.isArray(options.body) ? options.body : [options.body]
         options.type = _.first([options.type, args[0], options.body[0].type].filter(_.isString))
 
         return options
@@ -154,7 +157,7 @@ module.exports = {
         client.DELETE({
             *uuid, name* = alias to nameOrUuid*
             uuidOrName: uuidOrName,
-            type: type, // required if type is not inferred
+            type: type, // required if query not defined
             query: query // takes precedence over type/uuid
         }, optionalCallback)
 
@@ -165,13 +168,13 @@ module.exports = {
             method: 'DELETE'
         }
 
-        if (_.isObject(args[0]) && !_.isFunction(args[0]) && !(args[0] instanceof UsergridQuery)) {
+        // if a preformatted options argument passed, assign it to options
+        if (_.isObject(args[0]) && !_.isFunction(args[0]) && args.length <= 2) {
             _.assign(options, args[0])
         }
 
         options.callback = helpers.cb(_.last(args.filter(_.isFunction)))
-
-        options.type = _.first([options.type, args[0]._type, args[0]].filter(_.isString))
+        options.type = _.first([options.type, ok(options).getIfExists('entity.type'), args[0]._type, args[0]].filter(_.isString))
         options.entity = _.first([options.entity, args[0]].filter(function(property) {
             return (property instanceof UsergridEntity)
         }))
@@ -184,6 +187,153 @@ module.exports = {
         if (!_.isString(options.uuidOrName) && options.query === undefined) {
             throw new Error('"uuidOrName" parameter or "query" is required when making a DELETE request')
         }
+
+        return options
+    },
+    connection: function(client, args) {
+
+        /* connect supports the following constructor patterns:
+
+        client.connect(entity, "relationship", toEntity);
+        // POST entity.type/entity.uuid/"relationship"/toEntity.uuid
+
+        client.connect("type", <uuidOrName>, "relationship", <toUuid>);
+        // POST type/uuidOrName/relationship/toUuid
+
+        client.connect("type", <uuidOrName>, "relationship", "toType", "toName");
+        // POST type/uuidOrName/relationship/toType/toName
+
+        client.connect({
+            entity: { // or UsergridEntity
+                type: "type", 
+                uuidOrName: <uuidOrName>
+            },
+            relationship: "likes",
+            to: { // or UsergridEntity
+                "type": "(required if not using uuid)",
+                "uuidOrName": <uuidOrName>,
+                "name": "alias to uuidOrName" // if uuid not specified, requires "type"
+                "uuid": "alias to uuidOrName" 
+            }
+        );
+
+        disconnect supports the identical patters, but uses DELETE instead of POST; it is therefore a reference to this function
+
+        */
+
+        var options = {
+            entity: {},
+            to: {},
+            callback: helpers.cb(_.last(args.filter(_.isFunction)))
+        }
+
+        // if a preformatted options argument passed, assign it to options
+        if (_.isObject(args[0]) && !_.isFunction(args[0]) && args.length <= 2) {
+            _.assign(options, args[0])
+        }
+
+        // handle DELETE using "from" preposition
+        if (_.isObject(options.from)) {
+            options.to = options.from
+        }
+
+        if (_.isObject(args[0]) && !_.isFunction(args[0]) && _.isString(args[1]) && _.isObject(args[2]) && !_.isFunction(args[2])) {
+            _.assign(options.entity, args[0])
+            options.relationship = _.first([options.relationship, args[1]].filter(_.isString))
+            _.assign(options.to, args[2])
+        } else {
+            options.entity.type = _.first([options.entity.type, args[0]].filter(_.isString))
+            options.relationship = _.first([options.relationship, args[2]].filter(_.isString))
+
+            // when using 'name', arg3 and arg4 must both be strings
+            options.to.type = _.isString(args[3]) && !_.isUuid(args[3]) && _.isString(args[4]) ? args[3] : undefined
+        }
+
+        options.entity.uuidOrName = _.first([options.entity.uuidOrName, options.entity.uuid, options.entity.name, args[1]].filter(_.isString))
+        options.to.uuidOrName = _.first([options.to.uuidOrName, options.to.uuid, options.to.name, args[4], args[3]].filter(_.isString))
+
+        if (!_.isString(options.entity.uuidOrName)) {
+            throw new Error('source entity "uuidOrName" is required when connecting or disconnecting entities')
+        }
+
+        if (!_.isString(options.to.uuidOrName)) {
+            throw new Error('target entity "uuidOrName" is required when connecting or disconnecting entities')
+        }
+
+        if (!_.isString(options.to.type) && !_.isUuid(options.to.uuidOrName)) {
+            throw new Error('target "type" (collection name) parameter is required connecting or disconnecting entities by name')
+        }
+
+        options.uri = urljoin(
+            config.baseUrl,
+            client.orgId,
+            client.appId,
+            _.isString(options.entity.type) ? options.entity.type : "",
+            _.isString(options.entity.uuidOrName) ? options.entity.uuidOrName : "",
+            options.relationship,
+            _.isString(options.to.type) ? options.to.type : "",
+            _.isString(options.to.uuidOrName) ? options.to.uuidOrName : ""
+        )
+
+        return options
+    },
+    getConnections: function(client, args) {
+        /* getConnections supports the following constructor patterns:
+
+        client.getConnections(direction, entity, "relationship");
+        // GET OUT: /entity.type/entity.uuid/connections/relationship
+        // GET IN: /entity.type/entity.uuid/connecting/relationship
+
+        client.getConnections(direction, "type", "<uuidOrName>", "relationship");
+        // GET OUT: /type/uuidOrName/connections/relationship
+        // GET IN: /type/uuidOrName/connecting/relationship
+
+        client.getConnections({
+            type: "type", // or inferred, if second argument is an entity
+            uuidOrName: "<uuidOrName>" // if entity not specified
+            relationship: "relationship",
+            direction: OUT or IN
+        );
+        // GET OUT: /entity.type/entity.uuid/connections/relationship
+        // GET IN: /entity.type/entity.uuid/connecting/relationship
+
+        */
+
+        var options = {
+            callback: helpers.cb(_.last(args.filter(_.isFunction)))
+        }
+
+        // if a preformatted options argument passed, assign it to options
+        if (_.isObject(args[0]) && !_.isFunction(args[0]) && args.length <= 2) {
+            _.assign(options, args[0])
+        } else if (_.isObject(args[1]) && !_.isFunction(args[1])) {
+            _.assign(options, args[1])
+        }
+
+        options.direction = _.first([options.direction, args[0]].filter(function(d) {
+            return (d === "IN" || d === "OUT")
+        }))
+        options.relationship = _.first([options.relationship, args[3], args[2]].filter(_.isString))
+        options.uuidOrName = _.first([options.uuidOrName, options.uuid, options.name, args[2]].filter(_.isString))
+        options.type = _.first([options.type, args[1]].filter(_.isString))
+
+        if (!_.isString(options.type)) {
+            throw new Error('"type" (collection name) parameter is required when retrieving connections')
+        }
+
+        if (!_.isString(options.uuidOrName)) {
+            throw new Error('target entity "uuidOrName" is required when retrieving connections')
+        }
+
+        options.uri = urljoin(
+            config.baseUrl,
+            client.orgId,
+            client.appId,
+            _.isString(options.type) ? options.type : "",
+            _.isString(options.uuidOrName) ? options.uuidOrName : "",
+            options.direction === "IN" ? "connecting" : "connections",
+            options.relationship
+        )
 
         return options
     }
