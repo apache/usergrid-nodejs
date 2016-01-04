@@ -39,6 +39,18 @@ describe('_ql', function() {
         query.should.have.property('_ql').equal("select * where weight > 2.4 and color contains 'bl*' and not color = 'blue' or color = 'orange'")
     })
 
+    it('and operator should be implied when joining multiple conditions', function() {
+        var query1 = new UsergridQuery('cats')
+            .gt('weight', 2.4)
+            .contains('color', 'bl*')
+        query1.should.have.property('_ql').equal("select * where weight > 2.4 and color contains 'bl*'")
+        var query2 = new UsergridQuery('cats')
+            .gt('weight', 2.4)
+            .and
+            .contains('color', 'bl*')
+        query2.should.have.property('_ql').equal("select * where weight > 2.4 and color contains 'bl*'")
+    })
+
     it('not operator should precede conditional statement', function() {
         var query = new UsergridQuery('cats')
             .not
