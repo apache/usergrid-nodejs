@@ -7,6 +7,9 @@ var mutability = require('./mutability'),
     time = require('./time'),
     _ = require('lodash')
 
+// By mixing this in here, lodash-uuid is available everywhere lodash is used.
+_.mixin(require('lodash-uuid'))
+
 module.exports = _.assign(module.exports, {
     cb: cb,
     build: build,

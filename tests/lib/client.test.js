@@ -631,7 +631,7 @@ describe('connect()', function() {
 
     it('should fail to connect entities when specifying target name without type', function() {
         should(function() {
-            client.connect(entity1.type, entity1.name, "fails", 'badName', function(err, usergridResponse) {})
+            client.connect(entity1.type, entity1.name, "fails", 'badName', function() {})
         }).throw()
     })
 })
@@ -777,7 +777,7 @@ describe('disconnect()', function() {
         var entity2 = response.last
 
         should(function() {
-            client.disconnect(entity1.type, entity1.name, "fails", entity2.name, function(err, usergridResponse) {})
+            client.disconnect(entity1.type, entity1.name, "fails", entity2.name, function() {})
         }).throw()
     })
 })

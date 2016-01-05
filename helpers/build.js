@@ -237,11 +237,13 @@ module.exports = {
             options.to = options.from
         }
 
+        // if an entity object or UsergridEntity instance is the first argument (source)
         if (_.isObject(args[0]) && !_.isFunction(args[0]) && _.isString(args[1])) {
             _.assign(options.entity, args[0])
             options.relationship = _.first([options.relationship, args[1]].filter(_.isString))
         }
 
+        // if an entity object or UsergridEntity instance is the third argument (target)
         if (_.isObject(args[2]) && !_.isFunction(args[2])) {
             _.assign(options.to, args[2])
         }
@@ -255,6 +257,7 @@ module.exports = {
         } else if (_.isString(args[2]) && !_.isUuid(args[2]) && _.isString(args[3]) && _.isObject(args[0]) && !_.isFunction(args[0])) {
             options.to.type = args[2]
         }
+        
         options.to.uuidOrName = _.first([options.to.uuidOrName, options.to.uuid, options.to.name, args[4], args[3], args[2]].filter(function(u) {
             return (_.isString(options.to.type) && _.isString(u) || _.isUuid(u))
         }))
@@ -320,6 +323,7 @@ module.exports = {
         options.direction = _.first([options.direction, args[0]].filter(function(d) {
             return (d === "IN" || d === "OUT")
         }))
+
         options.relationship = _.first([options.relationship, args[3], args[2]].filter(_.isString))
         options.uuidOrName = _.first([options.uuidOrName, options.uuid, options.name, args[2]].filter(_.isString))
         options.type = _.first([options.type, args[1]].filter(_.isString))

@@ -5,13 +5,11 @@ var should = require('should'),
     config = require('../../helpers').config,
     UsergridClient = require('../../lib/client'),
     UsergridQuery = require('../../lib/query'),
-    UsergridEntity = require('../../lib/entity'),
     _ = require('lodash')
 
 _.mixin(require('lodash-uuid'))
 
-var _uuid,
-    _slow = 500,
+var _slow = 800,
     _timeout = 4000
 
 describe('connect()', function() {
@@ -103,7 +101,7 @@ describe('connect()', function() {
 
     it('should fail to connect entities when specifying target name without type', function() {
         should(function() {
-            entity1.connect("fails", 'badName', function(err, usergridResponse) {})
+            entity1.connect("fails", 'badName', function() {})
         }).throw()
     })
 })
@@ -230,7 +228,7 @@ describe('disconnect()', function() {
         var entity2 = response.last
 
         should(function() {
-            client.disconnect(entity1.type, entity1.name, "fails", entity2.name, function(err, usergridResponse) {})
+            client.disconnect(entity1.type, entity1.name, "fails", entity2.name, function() {})
         }).throw()
     })
 })
