@@ -10,5 +10,9 @@ if (/mocha$/i.test(process.argv[1])) {
     }
     module.exports = config
 } else {
-    module.exports = require('../config.json')
+    try {
+        module.exports = require('../config.json')
+    } catch (e) {
+        
+    }
 }

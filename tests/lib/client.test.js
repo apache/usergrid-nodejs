@@ -6,6 +6,7 @@ var should = require('should'),
     UsergridClient = require('../../lib/client'),
     UsergridEntity = require('../../lib/entity'),
     UsergridQuery = require('../../lib/query'),
+    UsergridAuth = require('../../lib/auth'),
     UsergridAppAuth = require('../../lib/appAuth'),
     _ = require('lodash')
 
@@ -503,27 +504,28 @@ describe('connect()', function() {
     this.timeout(_timeout)
 
     var response,
+        entity1,
+        entity2,
         client = new UsergridClient(),
-        query = new UsergridQuery(config.test.collection).eq('name', 'testNameOne').or.eq('name', 'testNameTwo').asc('name')
+        query = new UsergridQuery(config.test.collection).eq('name', 'testClientConnectOne').or.eq('name', 'testClientConnectTwo').asc('name')
 
     before(function(done) {
         // Create the entities we're going to use for connections
         client.POST(config.test.collection, [{
-            "name": "testNameOne"
+            "name": "testClientConnectOne"
         }, {
-            "name": "testNameTwo"
+            "name": "testClientConnectTwo"
         }], function() {
             client.GET(query, function(err, usergridResponse) {
                 response = usergridResponse
+                entity1 = response.first
+                entity2 = response.last
                 done()
             })
         })
     })
 
     it('should connect entities by passing UsergridEntity objects as parameters', function(done) {
-        var entity1 = response.first
-        var entity2 = response.last
-
         var relationship = "foos"
 
         client.connect(entity1, relationship, entity2, function(err, usergridResponse) {
@@ -543,11 +545,28 @@ describe('connect()', function() {
         })
     })
 
-    it('should connect entities by passing source type, source uuid, and target uuid as parameters', function(done) {
-        var entity1 = response.first
-        var entity2 = response.last
-
+    it('should connect entities by passing a source UsergridEntity object and a target uuid', function(done) {
         var relationship = "bars"
+
+        client.connect(entity1, relationship, entity2.uuid, function(err, usergridResponse) {
+            usergridResponse.statusCode.should.equal(200)
+            client.getConnections(client.connections.DIRECTION_OUT, entity1, relationship, function(err, usergridResponse) {
+                usergridResponse.first.metadata.connecting[relationship].should.equal(urljoin(
+                    "/",
+                    config.test.collection,
+                    entity1.uuid,
+                    relationship,
+                    entity2.uuid,
+                    "connecting",
+                    relationship
+                ))
+                done()
+            })
+        })
+    })
+
+    it('should connect entities by passing source type, source uuid, and target uuid as parameters', function(done) {
+        var relationship = "bazzes"
 
         client.connect(entity1.type, entity1.uuid, relationship, entity2.uuid, function(err, usergridResponse) {
             usergridResponse.statusCode.should.equal(200)
@@ -567,10 +586,7 @@ describe('connect()', function() {
     })
 
     it('should connect entities by passing source type, source name, target type, and target name as parameters', function(done) {
-        var entity1 = response.first
-        var entity2 = response.last
-
-        var relationship = "bazzes"
+        var relationship = "quxes"
 
         client.connect(entity1.type, entity1.name, relationship, entity2.type, entity2.name, function(err, usergridResponse) {
             usergridResponse.statusCode.should.equal(200)
@@ -590,12 +606,9 @@ describe('connect()', function() {
     })
 
     it('should connect entities by passing a preconfigured options object', function(done) {
-        var entity1 = response.first
-        var entity2 = response.last
-
         var options = {
             entity: entity1,
-            relationship: "quxes",
+            relationship: "quuxes",
             to: entity2
         }
 
@@ -617,11 +630,8 @@ describe('connect()', function() {
     })
 
     it('should fail to connect entities when specifying target name without type', function() {
-        var entity1 = response.first
-        var entity2 = response.last
-
         should(function() {
-            client.connect(entity1.type, entity1.name, "test", entity2.name, function(err, usergridResponse) {})
+            client.connect(entity1.type, entity1.name, "fails", 'badName', function(err, usergridResponse) {})
         }).throw()
     })
 })
@@ -633,7 +643,7 @@ describe('getConnections()', function() {
 
     var response,
         client = new UsergridClient(),
-        query = new UsergridQuery(config.test.collection).eq('name', 'testNameOne').or.eq('name', 'testNameTwo').asc('name')
+        query = new UsergridQuery(config.test.collection).eq('name', 'testClientConnectOne').or.eq('name', 'testClientConnectTwo').asc('name')
 
     before(function(done) {
         client.GET(query, function(err, usergridResponse) {
@@ -689,7 +699,7 @@ describe('disconnect()', function() {
 
     var response,
         client = new UsergridClient(),
-        query = new UsergridQuery(config.test.collection).eq('name', 'testNameOne').or.eq('name', 'testNameTwo').asc('name')
+        query = new UsergridQuery(config.test.collection).eq('name', 'testClientConnectOne').or.eq('name', 'testClientConnectTwo').asc('name')
 
     before(function(done) {
         client.GET(query, function(err, usergridResponse) {
@@ -767,7 +777,7 @@ describe('disconnect()', function() {
         var entity2 = response.last
 
         should(function() {
-            client.disconnect(entity1.type, entity1.name, "test", entity2.name, function(err, usergridResponse) {})
+            client.disconnect(entity1.type, entity1.name, "fails", entity2.name, function(err, usergridResponse) {})
         }).throw()
     })
 })
@@ -902,6 +912,12 @@ describe('appAuth, setAppAuth()', function() {
         var client = new UsergridClient()
         client.setAppAuth(config.clientId, config.clientSecret, config.tokenTtl)
         client.appAuth.should.be.instanceof(UsergridAppAuth)
+    })
+
+    it('should be a subclass of UsergridAuth', function() {
+        var client = new UsergridClient()
+        client.setAppAuth(config.clientId, config.clientSecret, config.tokenTtl)
+        client.appAuth.should.be.instanceof(UsergridAuth)
     })
 
     it('should initialize by passing an object', function() {

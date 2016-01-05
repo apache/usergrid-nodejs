@@ -15,5 +15,4 @@ var Usergrid = {
 }
 
 Usergrid.init = Usergrid.initSharedInstance
-
 module.exports = Usergrid

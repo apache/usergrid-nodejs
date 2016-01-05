@@ -100,7 +100,7 @@ describe('user', function() {
         })
     })
 
-    it('response.user should also be a UsergridEntity object', function(done) {
+    it('response.user should be a subclass of UsergridEntity', function(done) {
         user.isUser.should.be.true()
         user.should.be.an.instanceof(UsergridEntity)
         done()

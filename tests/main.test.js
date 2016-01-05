@@ -19,3 +19,7 @@ describe('UsergridResponse', function() {
 describe('UsergridResponseError', function() {
     return require('./lib/responseError.test')
 })
+
+describe('UsergridEntity', function() {
+    return require('./lib/entity.test')
+})

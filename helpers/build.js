@@ -237,20 +237,27 @@ module.exports = {
             options.to = options.from
         }
 
-        if (_.isObject(args[0]) && !_.isFunction(args[0]) && _.isString(args[1]) && _.isObject(args[2]) && !_.isFunction(args[2])) {
+        if (_.isObject(args[0]) && !_.isFunction(args[0]) && _.isString(args[1])) {
             _.assign(options.entity, args[0])
             options.relationship = _.first([options.relationship, args[1]].filter(_.isString))
-            _.assign(options.to, args[2])
-        } else {
-            options.entity.type = _.first([options.entity.type, args[0]].filter(_.isString))
-            options.relationship = _.first([options.relationship, args[2]].filter(_.isString))
+        }
 
-            // when using 'name', arg3 and arg4 must both be strings
-            options.to.type = _.isString(args[3]) && !_.isUuid(args[3]) && _.isString(args[4]) ? args[3] : undefined
+        if (_.isObject(args[2]) && !_.isFunction(args[2])) {
+            _.assign(options.to, args[2])
         }
 
         options.entity.uuidOrName = _.first([options.entity.uuidOrName, options.entity.uuid, options.entity.name, args[1]].filter(_.isString))
-        options.to.uuidOrName = _.first([options.to.uuidOrName, options.to.uuid, options.to.name, args[4], args[3]].filter(_.isString))
+        options.entity.type = _.first([options.entity.type, args[0]].filter(_.isString))
+        options.relationship = _.first([options.relationship, args[2]].filter(_.isString))
+
+        if (_.isString(args[3]) && !_.isUuid(args[3]) && _.isString(args[4])) {
+            options.to.type = args[3]
+        } else if (_.isString(args[2]) && !_.isUuid(args[2]) && _.isString(args[3]) && _.isObject(args[0]) && !_.isFunction(args[0])) {
+            options.to.type = args[2]
+        }
+        options.to.uuidOrName = _.first([options.to.uuidOrName, options.to.uuid, options.to.name, args[4], args[3], args[2]].filter(function(u) {
+            return (_.isString(options.to.type) && _.isString(u) || _.isUuid(u))
+        }))
 
         if (!_.isString(options.entity.uuidOrName)) {
             throw new Error('source entity "uuidOrName" is required when connecting or disconnecting entities')
