@@ -5,6 +5,8 @@ var should = require('should'),
     UsergridClient = require('../../lib/client'),
     UsergridEntity = require('../../lib/entity'),
     UsergridUser = require('../../lib/user'),
+    UsergridQuery = require('../../lib/query'),
+    UsergridResponse = require('../../lib/response'),
     UsergridResponseError = require('../../lib/responseError'),
     _ = require('lodash')
 
@@ -122,7 +124,7 @@ describe('first, entity', function() {
     })
 
     it('response.entity should be a reference to response.first', function() {
-        _response.entity.should.deepEqual(_response.first)
+        _response.should.have.property('entity').deepEqual(_response.first)
     })
 })
 
@@ -147,6 +149,42 @@ describe('hasNextPage', function() {
         client.GET('users', function(err, usergridResponse) {
             usergridResponse.metadata.count.should.be.lessThan(10)
             usergridResponse.hasNextPage.should.not.be.true()
+            done()
+        })
+    })
+})
+
+describe('loadNextPage()', function() {
+    this.slow(_slow + 800)
+    this.timeout(_timeout + 2000)
+
+    var firstResponse
+
+    before(function(done) {
+
+        this.slow(_slow)
+        this.timeout(_timeout)
+
+        var query = new UsergridQuery(config.test.collection).limit(2)
+
+        client.GET(query, function(err, usergridResponse) {
+            firstResponse = usergridResponse
+            done()
+        })
+    })
+
+    it('should load a new page of entities using the Usergrid shared instance', function(done) {
+        firstResponse.loadNextPage(function(err, usergridResponse) {
+            usergridResponse.first.uuid.should.not.equal(firstResponse.first.uuid)
+            usergridResponse.entities.length.should.equal(2)
+            done()
+        })
+    })
+
+    it('should load a new page of entities using a UsergridClient instance argument', function(done) {
+        firstResponse.loadNextPage(client, function(err, usergridResponse) {
+            usergridResponse.first.uuid.should.not.equal(firstResponse.first.uuid)
+            usergridResponse.entities.length.should.equal(2)
             done()
         })
     })

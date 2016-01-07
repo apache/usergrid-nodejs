@@ -21,6 +21,11 @@ describe('_type', function() {
 })
 
 describe('_limit', function() {
+    it('_limit should equal 2', function() {
+        var query = new UsergridQuery('cats').limit(2)
+        query.should.have.property('_limit').equal(2)
+    })
+
     it('_limit should equal 10', function() {
         var query = new UsergridQuery('cats').limit(10)
         query.should.have.property('_limit').equal(10)
@@ -28,6 +33,11 @@ describe('_limit', function() {
 })
 
 describe('_ql', function() {
+    it('should be an empty string if query or sort are empty or underfined', function() {
+        var query = new UsergridQuery('cats')
+        query.should.have.property('_ql').equal("")
+    })
+
     it('should support complex builder pattern syntax (chained constructor methods)', function() {
         var query = new UsergridQuery('cats')
             .gt('weight', 2.4)

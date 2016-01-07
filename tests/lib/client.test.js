@@ -339,7 +339,7 @@ describe('PUT()', function() {
     it('should support updating a set of entities by passing an UsergridQuery object', function(done) {
 
         this.slow(_slow + 1000)
-        this.timeout(_timeout + 2000)
+        this.timeout(_timeout + 4000)
 
         var query = new UsergridQuery(config.test.collection).eq('cuisine', 'pizza').limit(2)
         var body = {
@@ -395,11 +395,17 @@ describe('DELETE()', function() {
         client.DELETE(config.test.collection, _uuid)
     })
 
-    it('should return a 200 ok', function() {
-        // This should check for 404, but because of a Usergrid bug, it returns 401 instead of 404.
+    if (config.target === '1.0') {
+        // This should check for 404, but because of a Usergrid 1.0 bug, 401 instead of 404.
         // see https://issues.apache.org/jira/browse/USERGRID-1128
-        response.statusCode.should.not.equal(200)
-    })
+        it('should return a 4XX status code', function() {
+            response.statusCode.should.be.greaterThanOrEqual(401)
+        })
+    } else {
+        it('should return a 404 not found', function() {
+            response.statusCode.should.equal(404)
+        })
+    }
 
     if (config.target === '1.0') {
         it('response.error.name should equal "service_resource_not_found"', function() {
