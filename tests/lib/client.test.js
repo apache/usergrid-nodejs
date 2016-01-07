@@ -453,7 +453,7 @@ describe('DELETE()', function() {
     it('should support deleting multiple entities by passing a UsergridQuery object', function(done) {
 
         this.slow(_slow + 1000)
-        this.timeout(_timeout + 1000)
+        this.timeout(_timeout + 4000)
 
         var entity = new UsergridEntity({
             type: config.test.collection,
