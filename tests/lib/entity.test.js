@@ -281,7 +281,24 @@ describe('reload()', function() {
     this.slow(_slow + 1000)
     this.timeout(_timeout + 4000)
 
-    it('should refresh an entity with the latest server copy of itself', function(done) {
+    it('should refresh an entity with the latest server copy of itself using the Usergrid shared instance', function(done) {
+        var client = new UsergridClient(config),
+            now = Date.now()
+        client.GET(config.test.collection, function(err, getResponse) {
+            var entity = new UsergridEntity(getResponse.first)
+            var modified = entity.modified
+            getResponse.first.putProperty('reloadSingletonTest', now)
+            client.PUT(getResponse.first, function(err, putResponse) {
+                entity.reload(function() {
+                    entity.reloadSingletonTest.should.equal(now)
+                    entity.modified.should.not.equal(modified)
+                    done()
+                })
+            })
+        })
+    })
+
+    it('should refresh an entity with the latest server copy of itself using a UsergridClient instance argument', function(done) {
         var client = new UsergridClient(config),
             now = Date.now()
         client.GET(config.test.collection, function(err, getResponse) {
@@ -289,7 +306,7 @@ describe('reload()', function() {
             var modified = entity.modified
             getResponse.first.putProperty('reloadTest', now)
             client.PUT(getResponse.first, function(err, putResponse) {
-                entity.reload(function() {
+                entity.reload(client, function() {
                     entity.reloadTest.should.equal(now)
                     entity.modified.should.not.equal(modified)
                     done()
@@ -304,13 +321,26 @@ describe('save()', function() {
     this.slow(_slow + 1000)
     this.timeout(_timeout + 4000)
 
-    it('should save an updated entity to the server', function(done) {
+    it('should save an updated entity to the server using the Usergrid shared instance', function(done) {
+        var client = new UsergridClient(config),
+            now = Date.now()
+        client.GET(config.test.collection, function(err, getResponse) {
+            var entity = new UsergridEntity(getResponse.first)
+            entity.putProperty('saveSingletonTest', now)
+            entity.save(function() {
+                entity.saveSingletonTest.should.equal(now)
+                done()
+            })
+        })
+    })
+
+    it('should save an updated entity to the server using a UsergridClient instance argument', function(done) {
         var client = new UsergridClient(config),
             now = Date.now()
         client.GET(config.test.collection, function(err, getResponse) {
             var entity = new UsergridEntity(getResponse.first)
             entity.putProperty('saveTest', now)
-            entity.save(function() {
+            entity.save(client, function() {
                 entity.saveTest.should.equal(now)
                 done()
             })
@@ -323,15 +353,30 @@ describe('remove()', function() {
     this.slow(_slow + 1000)
     this.timeout(_timeout + 4000)
 
-    it('should remove an entity from the server', function(done) {
+    it('should remove an entity from the server using the Usergrid shared instance', function(done) {
         var client = new UsergridClient(config)
         client.POST(config.test.collection, {
-            removeTest: 'test'
+            removeSingletonTest: 'test'
         }, function(err, postResponse) {
             var entity = new UsergridEntity(postResponse.first)
             entity.remove(function(err, deleteResponse) {
                 deleteResponse.statusCode.should.equal(200)
                     // best practice is to delete the entity object here, because it no longer exists on the server
+                entity = null
+                done()
+            })
+        })
+    })
+
+    it('should remove an entity from the server using a UsergridClient instance argument', function(done) {
+        var client = new UsergridClient(config)
+        client.POST(config.test.collection, {
+            removeTest: 'test'
+        }, function(err, postResponse) {
+            var entity = new UsergridEntity(postResponse.first)
+            entity.remove(client, function(err, deleteResponse) {
+                deleteResponse.statusCode.should.equal(200)
+                // best practice is to delete the entity object here, because it no longer exists on the server
                 entity = null
                 done()
             })
