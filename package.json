@@ -14,6 +14,10 @@
         "mocha": "latest",
         "should": "latest"
     },
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/r3mus/usergrid-nodejs.git"
+    },
     "keywords": [],
     "license": "MIT",
     "main": "app.js",
@@ -23,5 +27,5 @@
         "start": "node app.js",
         "test": "mocha tests"
     },
-    "version": "2.0.0"
+    "version": "2.0.0-rc.1"
 }

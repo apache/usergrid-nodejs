@@ -500,8 +500,8 @@ describe('DELETE()', function() {
 
 describe('connect()', function() {
 
-    this.slow(_slow)
-    this.timeout(_timeout)
+    this.slow(_slow + 1000)
+    this.timeout(_timeout + 4000)
 
     var response,
         entity1,
@@ -638,8 +638,8 @@ describe('connect()', function() {
 
 describe('getConnections()', function() {
 
-    this.slow(_slow)
-    this.timeout(_timeout)
+    this.slow(_slow + 1000)
+    this.timeout(_timeout + 4000)
 
     var response,
         client = new UsergridClient(),
@@ -694,8 +694,8 @@ describe('getConnections()', function() {
 
 describe('disconnect()', function() {
 
-    this.slow(_slow)
-    this.timeout(_timeout)
+    this.slow(_slow + 1000)
+    this.timeout(_timeout + 4000)
 
     var response,
         client = new UsergridClient(),
@@ -839,8 +839,8 @@ describe('authenticateApp()', function() {
         client.appAuth.should.have.property('token').equal(token)
     })
 
-    it('client.appAuth.isTokenValid should be true', function() {
-        client.appAuth.should.have.property('isTokenValid').which.is.true()
+    it('client.appAuth.isValid should be true', function() {
+        client.appAuth.should.have.property('isValid').which.is.true()
     })
 
     it('client.appAuth.expiry should be set to a future date', function() {
@@ -885,8 +885,8 @@ describe('authenticateUser()', function() {
         client.currentUser.auth.should.have.property('token').equal(token)
     })
 
-    it('client.currentUser.auth.isTokenValid should be true', function() {
-        client.currentUser.auth.should.have.property('isTokenValid').which.is.true()
+    it('client.currentUser.auth.isValid should be true', function() {
+        client.currentUser.auth.should.have.property('isValid').which.is.true()
     })
 
     it('client.currentUser.auth.expiry should be set to a future date', function() {

@@ -1,20 +1,20 @@
 'use strict'
 
-var ok = require('objectkit')
+var ok = require('objectkit'),
+    _ = require('lodash')
 
 module.exports = {
     setReadOnly: function(obj, key) {
-        if (typeof obj[key] === 'array') {
-            return obj[key].forEach(function(k) {
-                setReadOnly(obj, k)
+        if (_.isArray(key)) {
+            return key.forEach(function(k) {
+                module.exports.setReadOnly(obj, k)
             })
-        } else if (typeof obj[key] === 'object') {
+        } else if (_.isPlainObject(obj[key])) {
             return Object.freeze(obj[key])
-        } else if (typeof obj === 'object' && key === undefined) {
+        } else if (_.isPlainObject(obj) && key === undefined) {
             return Object.freeze(obj)
         } else if (ok(obj).has(key)) {
             return Object.defineProperty(obj, key, {
-                configurable: false,
                 writable: false
             })
         } else {
@@ -22,14 +22,17 @@ module.exports = {
         }
     },
     setWritable: function(obj, key) {
-        // Note that once Object.freeze is called on an object, it cannot be unfrozen
-        if (typeof obj[key] === 'array') {
-            return obj[key].forEach(function(k) {
-                setWritable(obj, k)
+        if (_.isArray(key)) {
+            return key.forEach(function(k) {
+                module.exports.setWritable(obj, k)
             })
+        // Note that once Object.freeze is called on an object, it cannot be unfrozen, so we need to clone it
+        } else if (_.isPlainObject(obj[key])) {
+            return _.clone(obj[key])
+        } else if (_.isPlainObject(obj) && key === undefined) {
+            return _.clone(obj)
         } else if (ok(obj).has(key)) {
             return Object.defineProperty(obj, key, {
-                configurable: true,
                 writable: true
             })
         } else {

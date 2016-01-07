@@ -9,11 +9,11 @@ var urljoin = require('url-join'),
     _ = require('lodash')
 
 module.exports = {
-    url: function(options) {
+    url: function(client, options) {
         return urljoin(
             config.baseUrl,
-            options.client.orgId,
-            options.client.appId,
+            client.orgId,
+            client.appId,
             options.type,
             _.isString(options.uuidOrName) ? options.uuidOrName : ""
         )
@@ -54,6 +54,10 @@ module.exports = {
         }))
         options.uuidOrName = _.last([options.uuidOrName, options.uuid, options.name, args[1]].filter(function(property) {
             return (property)
+        }))
+
+        options.entity = _.first([options.entity, args[0]].filter(function(property) {
+            return (property instanceof UsergridEntity)
         }))
 
         return options
@@ -103,6 +107,10 @@ module.exports = {
         options.type = _.first([options.type, args[0]._type, options.body.type, args[0]].filter(_.isString))
         options.query = _.first([options.query, args[0]].filter(function(property) {
             return (property instanceof UsergridQuery)
+        }))
+
+        options.entity = _.first([options.entity, args[0]].filter(function(property) {
+            return (property instanceof UsergridEntity)
         }))
 
         return options
@@ -178,6 +186,7 @@ module.exports = {
         options.entity = _.first([options.entity, args[0]].filter(function(property) {
             return (property instanceof UsergridEntity)
         }))
+
         options.query = _.first([options.query, args[0]].filter(function(property) {
             return (property instanceof UsergridQuery)
         }))
@@ -249,7 +258,9 @@ module.exports = {
         }
 
         options.entity.uuidOrName = _.first([options.entity.uuidOrName, options.entity.uuid, options.entity.name, args[1]].filter(_.isString))
-        options.entity.type = _.first([options.entity.type, args[0]].filter(_.isString))
+        if (!options.entity.type) {
+            options.entity.type = _.first([options.entity.type, args[0]].filter(_.isString))
+        }
         options.relationship = _.first([options.relationship, args[2]].filter(_.isString))
 
         if (_.isString(args[3]) && !_.isUuid(args[3]) && _.isString(args[4])) {
@@ -257,7 +268,7 @@ module.exports = {
         } else if (_.isString(args[2]) && !_.isUuid(args[2]) && _.isString(args[3]) && _.isObject(args[0]) && !_.isFunction(args[0])) {
             options.to.type = args[2]
         }
-        
+
         options.to.uuidOrName = _.first([options.to.uuidOrName, options.to.uuid, options.to.name, args[4], args[3], args[2]].filter(function(u) {
             return (_.isString(options.to.type) && _.isString(u) || _.isUuid(u))
         }))

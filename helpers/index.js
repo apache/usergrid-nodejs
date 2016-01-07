@@ -1,16 +1,20 @@
-var mutability = require('./mutability'),
+'use strict'
+
+var client = require('./client'),
     cb = require('./cb'),
     build = require('./build'),
     userAgent = require('./userAgent'),
     query = require('./query'),
     config = require('./config'),
     time = require('./time'),
+    mutability = require('./mutability'),
     _ = require('lodash')
 
-// By mixing this in here, lodash-uuid is available everywhere lodash is used.
+// by mixing this in here, lodash-uuid is available everywhere lodash is used.
 _.mixin(require('lodash-uuid'))
 
 module.exports = _.assign(module.exports, {
+    client: client,
     cb: cb,
     build: build,
     userAgent: userAgent,
