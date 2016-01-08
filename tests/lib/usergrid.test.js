@@ -17,6 +17,4 @@ describe('init() / initSharedInstance()', function() {
     it(util.format('should be testing against a Usergrid v%s instance', config.target), function() {
         util.format('--target=%s', config.target).should.equal(_.last(process.argv))
     })
-
-    return require('./usergrid.singleton.test')
 })

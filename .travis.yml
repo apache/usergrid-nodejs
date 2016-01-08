@@ -3,10 +3,8 @@ node_js:
 - '5.1.0'
 install: 
 - 'npm install'
-- 'npm install -g grunt-cli'
 - 'npm -g install mocha'
 script: 
-- 'mocha tests --bail --target=1.0'
 - 'mocha tests --bail --target=2.1'
 notifications:
   email:

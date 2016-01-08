@@ -1,17 +1,4 @@
 {
-    "1.0": {
-        "appId": "sandbox",
-        "baseUrl": "https://api.usergrid.com",
-        "clientId": "YXA6GXSAACS2EeOYd20aP4G6Lw",
-        "clientSecret": "YXA66BeEvgNpJBwc4PAbvZZGTVS_SSw",
-        "orgId": "brandon.apigee",
-        "test": {
-            "collection": "tests",
-            "email": "authtest@test.com",
-            "password": "P@ssw0rd",
-            "username": "authtest"
-        }
-    },
     "2.1": {
         "appId": "sdksandbox",
         "baseUrl": "https://api-connectors-prod.apigee.net/appservices",
