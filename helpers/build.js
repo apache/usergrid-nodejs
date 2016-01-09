@@ -11,12 +11,34 @@ var urljoin = require('url-join'),
 module.exports = {
     url: function(client, options) {
         return urljoin(
-            config.baseUrl,
+            client.baseUrl,
             client.orgId,
             client.appId,
             options.type,
             _.isString(options.uuidOrName) ? options.uuidOrName : ""
         )
+    },
+    userLoginBody: function(options) {
+        var body = {
+            grant_type: 'password',
+            password: options.password
+        }
+        if (options.tokenTtl) {
+            body.ttl = options.tokenTtl
+        }
+        body[(options.username) ? "username" : "email"] = (options.username) ? options.username : options.email
+        return body
+    },
+    appLoginBody: function(options) {
+        var body = {
+            grant_type: 'client_credentials',
+            client_id: options.clientId,
+            client_secret: options.clientSecret
+        }
+        if (options.tokenTtl) {
+            body.ttl = options.tokenTtl
+        }
+        return body
     },
     GET: function(client, args) {
 
@@ -150,8 +172,7 @@ module.exports = {
             throw new Error('"body" parameter is required when making a POST request')
         }
 
-        options.body = _.isArray(options.body) ? options.body : [options.body]
-        options.type = _.first([options.type, args[0], options.body[0].type].filter(_.isString))
+        options.type = _.first([options.type, args[0], ok(options).getIfExists('body.0.type'), options.body.type].filter(_.isString))
 
         return options
     },

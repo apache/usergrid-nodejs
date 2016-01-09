@@ -1,5 +1,19 @@
 'use strict'
 
+// module config
+var should = require('should'),
+    _ = require('lodash')
+
+_.mixin(require('lodash-uuid'))
+
+should.Assertion.add('uuid', function() {
+    this.params = {
+        operator: 'to be a valid uuid'
+    };
+    this.assert(_.isUuid(this.obj));
+})
+// end module config
+
 describe('Usergrid', function() {
     return require('./lib/usergrid.test')
 })
@@ -38,4 +52,8 @@ describe('UsergridResponseError', function() {
 
 describe('UsergridEntity', function() {
     return require('./lib/entity.test')
+})
+
+describe('UsergridUser', function() {
+    return require('./lib/user.test')
 })

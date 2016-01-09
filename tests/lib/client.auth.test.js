@@ -1,13 +1,16 @@
 'use strict'
 
 var should = require('should'),
+    chance = new require('chance').Chance(),
     urljoin = require('url-join'),
+    util = require('util'),
     config = require('../../helpers').config,
     UsergridClient = require('../../lib/client'),
     UsergridEntity = require('../../lib/entity'),
     UsergridQuery = require('../../lib/query'),
     UsergridAuth = require('../../lib/auth'),
     UsergridAppAuth = require('../../lib/appAuth'),
+    UsergridUserAuth = require('../../lib/userAuth'),
     _ = require('lodash')
 
 _.mixin(require('lodash-uuid'))
@@ -31,6 +34,27 @@ describe('authenticateApp()', function() {
         })
     })
 
+    it('should return a 200 ok', function() {
+        response.statusCode.should.equal(200)
+    })
+
+    it('should have a valid token', function() {
+        token.should.be.a.String()
+        token.length.should.be.greaterThan(10)
+    })
+
+    it('client.appAuth.token should be set to the token returned from Usergrid', function() {
+        client.appAuth.should.have.property('token').equal(token)
+    })
+
+    it('client.appAuth.isValid should be true', function() {
+        client.appAuth.should.have.property('isValid').which.is.true()
+    })
+
+    it('client.appAuth.expiry should be set to a future date', function() {
+        client.appAuth.should.have.property('expiry').greaterThan(Date.now())
+    })
+
     it('should fail when called without a clientId and clientSecret', function() {
         should(function() {
             var client = new UsergridClient()
@@ -43,6 +67,17 @@ describe('authenticateApp()', function() {
         var isolatedClient = new UsergridClient()
         isolatedClient.authenticateApp(config, function(err, reponse, token) {
             isolatedClient.appAuth.should.have.property('token').equal(token)
+            done()
+        })
+    })
+
+    it('should authenticate by passing a UsergridAppAuth instance with a custom ttl', function(done) {
+        var isolatedClient = new UsergridClient()
+        var ttlInMilliseconds = 500000
+        var appAuth = new UsergridAppAuth(config.clientId, config.clientSecret, ttlInMilliseconds)
+        isolatedClient.authenticateApp(appAuth, function(err, response, token) {
+            isolatedClient.appAuth.should.have.property('token').equal(token)
+            response.body.expires_in.should.equal(ttlInMilliseconds / 1000)
             done()
         })
     })
@@ -92,27 +127,6 @@ describe('authenticateApp()', function() {
             done()
         })
     })
-
-    it('should return a 200 ok', function() {
-        response.statusCode.should.equal(200)
-    })
-
-    it('should have a valid token', function() {
-        token.should.be.a.String()
-        token.length.should.be.greaterThan(10)
-    })
-
-    it('client.appAuth.token should be set to the token returned from Usergrid', function() {
-        client.appAuth.should.have.property('token').equal(token)
-    })
-
-    it('client.appAuth.isValid should be true', function() {
-        client.appAuth.should.have.property('isValid').which.is.true()
-    })
-
-    it('client.appAuth.expiry should be set to a future date', function() {
-        client.appAuth.should.have.property('expiry').greaterThan(Date.now())
-    })
 })
 
 describe('authenticateUser()', function() {
@@ -120,11 +134,12 @@ describe('authenticateUser()', function() {
     this.slow(_slow)
     this.timeout(_timeout)
 
-    var response, token, client = new UsergridClient()
+    var response, token, email = util.format("%s@%s.com", chance.word(), chance.word()), client = new UsergridClient()
     before(function(done) {
         client.authenticateUser({
             username: config.test.username,
-            password: config.test.password
+            password: config.test.password,
+            email: email
         }, function(err, r, t) {
             response = r
             token = t
@@ -160,17 +175,26 @@ describe('authenticateUser()', function() {
         client.currentUser.auth.should.have.property('expiry').greaterThan(Date.now())
     })
 
-    it('client.currentUser should have a username', function() {
+    it('client.currentUser should have a username and email', function() {
         client.currentUser.should.have.property('username')
-    })
-
-    it('client.currentUser should have an email', function() {
-        client.currentUser.should.have.property('email')
+        client.currentUser.should.have.property('email').equal(email)
     })
 
     it('client.currentUser and client.currentUser.auth should not store password', function() {
         client.currentUser.should.not.have.property('password')
         client.currentUser.auth.should.not.have.property('password')
+    })
+
+    it('should support passing a UsergridUserAuth instance with a custom ttl', function(done) {
+        var newClient = new UsergridClient()
+        var ttlInMilliseconds = 500000        
+        var userAuth = new UsergridUserAuth(config.test.username, config.test.password, ttlInMilliseconds)
+        client.authenticateUser(userAuth, function(err, response, token) {
+            response.statusCode.should.equal(200)
+            client.currentUser.auth.token.should.equal(token)
+            response.body.expires_in.should.equal(ttlInMilliseconds / 1000)
+            done()
+        })
     })
 })
 

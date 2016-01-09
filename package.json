@@ -1,31 +1,32 @@
 {
-    "author": "Brandon Shelley",
-    "dependencies": {
-        "async": "latest",
-        "lodash": "latest",
-        "lodash-inflection": "latest",
-        "lodash-uuid": "latest",
-        "objectkit": "latest",
-        "request": "latest",
-        "url-join": "latest"
-    },
-    "description": "The official Node.js SDK for Usergrid",
-    "devDependencies": {
-        "mocha": "latest",
-        "should": "latest"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git://github.com/r3mus/usergrid-nodejs.git"
-    },
-    "keywords": [],
-    "license": "MIT",
-    "main": "app.js",
-    "name": "usergrid",
-    "private": false,
-    "scripts": {
-        "start": "node app.js",
-        "test": "mocha tests"
-    },
-    "version": "2.0.0-rc.1"
+  "author": "Brandon Shelley",
+  "dependencies": {
+    "async": "latest",
+    "lodash": "latest",
+    "lodash-inflection": "latest",
+    "lodash-uuid": "latest",
+    "objectkit": "latest",
+    "request": "latest",
+    "url-join": "latest"
+  },
+  "description": "The official Node.js SDK for Usergrid",
+  "devDependencies": {
+    "chance": "^0.8.0",
+    "mocha": "latest",
+    "should": "latest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/r3mus/usergrid-nodejs.git"
+  },
+  "keywords": [],
+  "license": "MIT",
+  "main": "app.js",
+  "name": "usergrid",
+  "private": false,
+  "scripts": {
+    "start": "node app.js",
+    "test": "mocha tests"
+  },
+  "version": "2.0.0-rc.1"
 }

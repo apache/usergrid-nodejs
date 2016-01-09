@@ -8,8 +8,6 @@ var should = require('should'),
     UsergridQuery = require('../../lib/query'),
     _ = require('lodash')
 
-_.mixin(require('lodash-uuid'))
-
 var _slow = 1500,
     _timeout = 4000
 
@@ -298,7 +296,7 @@ describe('reload()', function() {
         })
     })
 
-    it('should refresh an entity with the latest server copy of itself using a UsergridClient instance argument', function(done) {
+    it('should refresh an entity with the latest server copy of itself by passing an instance of UsergridClient', function(done) {
         var client = new UsergridClient(config),
             now = Date.now()
         client.GET(config.test.collection, function(err, getResponse) {
@@ -334,7 +332,7 @@ describe('save()', function() {
         })
     })
 
-    it('should save an updated entity to the server using a UsergridClient instance argument', function(done) {
+    it('should save an updated entity to the server by passing an instance of UsergridClient', function(done) {
         var client = new UsergridClient(config),
             now = Date.now()
         client.GET(config.test.collection, function(err, getResponse) {
@@ -368,7 +366,7 @@ describe('remove()', function() {
         })
     })
 
-    it('should remove an entity from the server using a UsergridClient instance argument', function(done) {
+    it('should remove an entity from the server by passing an instance of UsergridClient', function(done) {
         var client = new UsergridClient(config)
         client.POST(config.test.collection, {
             removeTest: 'test'

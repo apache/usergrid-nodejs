@@ -43,15 +43,15 @@ describe('GET()', function() {
     })
 
     it('response.first should exist and have a valid uuid', function() {
-        response.first.should.be.an.Object().with.property('uuid').with.a.lengthOf(36)
+        response.first.should.be.an.instanceof(UsergridEntity).with.property('uuid').which.is.a.uuid()
     })
 
     it('response.entity should exist and have a valid uuid', function() {
-        response.entity.should.be.an.Object().with.property('uuid').with.a.lengthOf(36)
+        response.entity.should.be.an.instanceof(UsergridEntity).with.property('uuid').which.is.a.uuid()
     })
 
     it('response.last should exist and have a valid uuid', function() {
-        response.last.should.be.an.Object().with.property('uuid').with.a.lengthOf(36)
+        response.last.should.be.an.instanceof(UsergridEntity).with.property('uuid').which.is.a.uuid()
     })
 
     it('each entity should match the search criteria when passing a UsergridQuery object', function(done) {
@@ -102,7 +102,7 @@ describe('POST()', function() {
     })
 
     it('response.entity should exist and have a valid uuid', function() {
-        response.entity.should.be.an.Object().with.property('uuid').with.a.lengthOf(36)
+        response.entity.should.be.an.instanceof(UsergridEntity).with.property('uuid').which.is.a.uuid()
     })
 
     it('response.entity.author should equal "Sir Arthur Conan Doyle"', function() {
@@ -251,7 +251,7 @@ describe('PUT()', function() {
 
         client.PUT(newEntity, function(err, usergridResponse) {
             usergridResponse.entity.should.be.an.Object()
-            usergridResponse.entity.should.have.property('uuid').with.a.lengthOf(36)
+            usergridResponse.entity.should.be.an.instanceof(UsergridEntity).with.property('uuid').which.is.a.uuid()
             usergridResponse.entity.should.have.property('author').equal('Frank Mills')
             usergridResponse.entity.created.should.equal(usergridResponse.entity.modified)
             done()
@@ -309,7 +309,7 @@ describe('PUT()', function() {
     it('should support updating a set of entities by passing an UsergridQuery object', function(done) {
 
         this.slow(_slow + 1000)
-        this.timeout(_timeout + 4000)
+        this.timeout(_timeout + 6000)
 
         var query = new UsergridQuery(config.test.collection).eq('cuisine', 'pizza').limit(2)
         var body = {
@@ -415,7 +415,7 @@ describe('DELETE()', function() {
     it('should support deleting multiple entities by passing a UsergridQuery object', function(done) {
 
         this.slow(_slow + 1000)
-        this.timeout(_timeout + 4000)
+        this.timeout(_timeout + 6000)
 
         var entity = new UsergridEntity({
             type: config.test.collection,
