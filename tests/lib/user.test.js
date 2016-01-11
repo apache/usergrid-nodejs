@@ -133,12 +133,53 @@ describe('logout()', function() {
     it("it should return an error when attempting to log out a user that does not have a valid token", function(done) {
         _user1.logout(function(err, response, success) {
             err.should.containDeep({
-                    name: 'no_valid_token'
-                })
-                // cleanup
-            _user1.remove(function(err, response) {
+                name: 'no_valid_token'
+            })
+            done()
+        })
+    })
+})
+
+describe('resetPassword()', function() {
+
+    this.slow(_slow)
+    this.timeout(_timeout)
+
+    it(util.format("it should reset the password for '%s' by passing parameters", _username1), function(done) {
+        _user1.resetPassword(config.test.password, '2cool4u', function(err, response, success) {
+            response.statusCode.should.equal(200)
+            response.body.action.should.equal("set user password")
+            done()
+        })
+    })
+
+    it(util.format("it should reset the password for '%s' by passing an object", _username1), function(done) {
+        _user1.resetPassword({
+            oldPassword: '2cool4u',
+            newPassword: config.test.password
+        }, function(err, response, success) {
+            response.statusCode.should.equal(200)
+            response.body.action.should.equal("set user password")
+            done()
+        })
+    })
+
+    it(util.format("it should not reset the password for '%s' when passing a bad old password", _username1), function(done) {
+        _user1.resetPassword({
+            oldPassword: 'BADOLDPASSWORD',
+            newPassword: config.test.password
+        }, function(err, response, success) {
+            response.statusCode.should.be.greaterThanOrEqual(400)
+            err.name.should.equal('auth_invalid_username_or_password')
+             _user1.remove(function(err, response) {
                 done()
             })
         })
+    })
+
+    it("it should return an error when attempting to reset a password with missing arguments", function() {
+        should(function() {
+            _user1.resetPassword('NEWPASSWORD', function() {})
+        }).throw()
     })
 })
