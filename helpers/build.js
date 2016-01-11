@@ -5,6 +5,9 @@ var urljoin = require('url-join'),
     helpers = require('./'),
     UsergridQuery = require('../lib/query'),
     UsergridEntity = require('../lib/entity'),
+    UsergridAuth = require('../lib/auth'),
+    util = require('util'),
+    version = require('../package.json').version,
     ok = require('objectkit'),
     _ = require('lodash')
 
@@ -17,6 +20,28 @@ module.exports = {
             options.type,
             _.isString(options.uuidOrName) ? options.uuidOrName : ""
         )
+    },
+    headers: function(client, auth) {
+        var headers = {
+            'User-Agent': util.format("usergrid-nodejs/v%s", version)
+        }
+        if (ok(auth).getIfExists('isValid')) {
+            // checks if an auth param was passed to the request and uses the token if applicable
+            _.assign(headers, {
+                authorization: util.format("Bearer %s", auth.token)
+            })
+        } else if (ok(client).getIfExists('authFallback') === UsergridAuth.AuthFallback.APP && ok(client).getIfExists('appAuth.isValid')) {
+            // if auth-fallback is set to APP, this request will make a call using the application token
+            _.assign(headers, {
+                authorization: util.format("Bearer %s", client.appAuth.token)
+            })
+        } else if (ok(client).getIfExists('currentUser.auth.isValid')) {
+            // defaults to using the current user's token
+            _.assign(headers, {
+                authorization: util.format("Bearer %s", client.currentUser.auth.token)
+            })
+        }
+        return headers
     },
     userLoginBody: function(options) {
         var body = {
@@ -69,7 +94,7 @@ module.exports = {
 
         options.callback = helpers.cb(_.last(args.filter(_.isFunction)))
 
-        options.type = _.first([options.type, args[0]._type, args[0]].filter(_.isString))
+        options.type = _.first([options.type, ok(args).getIfExists('0._type'), args[0]].filter(_.isString))
 
         options.query = _.first([options.query, args[0]].filter(function(property) {
             return (property instanceof UsergridQuery)

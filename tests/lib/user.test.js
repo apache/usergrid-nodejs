@@ -171,7 +171,7 @@ describe('resetPassword()', function() {
         }, function(err, response, success) {
             response.statusCode.should.be.greaterThanOrEqual(400)
             err.name.should.equal('auth_invalid_username_or_password')
-             _user1.remove(function(err, response) {
+            _user1.remove(function(err, response) {
                 done()
             })
         })
@@ -181,5 +181,90 @@ describe('resetPassword()', function() {
         should(function() {
             _user1.resetPassword('NEWPASSWORD', function() {})
         }).throw()
+    })
+})
+
+describe('CheckAvailable()', function() {
+
+    this.slow(_slow)
+    this.timeout(_timeout)
+
+    var nonExistentEmail = util.format('%s@%s.com', chance.word(), chance.word())
+    var nonExistentUsername = chance.word()
+
+    it(util.format("it should return true for username '%s'", config.test.username), function(done) {
+        UsergridUser.CheckAvailable({
+            username: config.test.username
+        }, function(err, response, exists) {
+            exists.should.be.true()
+            done()
+        })
+    })
+
+    it(util.format("it should return true for email '%s'", config.test.email), function(done) {
+        UsergridUser.CheckAvailable({
+            email: config.test.email
+        }, function(err, response, exists) {
+            exists.should.be.true()
+            done()
+        })
+    })
+
+    it(util.format("it should return true for email '%s' and non-existent username '%s'", config.test.email, nonExistentUsername), function(done) {
+        UsergridUser.CheckAvailable({
+            email: config.test.email,
+            username: nonExistentUsername
+        }, function(err, response, exists) {
+            exists.should.be.true()
+            done()
+        })
+    })
+
+    it(util.format("it should return true for non-existent email '%s' and username '%s'", nonExistentEmail, config.test.username), function(done) {
+        UsergridUser.CheckAvailable({
+            email: nonExistentEmail,
+            username: config.test.username
+        }, function(err, response, exists) {
+            exists.should.be.true()
+            done()
+        })
+    })
+
+    it(util.format("it should return true for email '%s' and username '%s'", config.test.email, config.test.username), function(done) {
+        UsergridUser.CheckAvailable({
+            email: config.test.email,
+            username: config.test.useranme
+        }, function(err, response, exists) {
+            exists.should.be.true()
+            done()
+        })
+    })
+
+    it(util.format("it should return false for non-existent email '%s'", nonExistentEmail), function(done) {
+        UsergridUser.CheckAvailable({
+            email: nonExistentEmail
+        }, function(err, response, exists) {
+            exists.should.be.false()
+            done()
+        })
+    })
+
+    it(util.format("it should return false for non-existent username '%s'", nonExistentUsername), function(done) {
+        UsergridUser.CheckAvailable({
+            username: nonExistentUsername
+        }, function(err, response, exists) {
+            exists.should.be.false()
+            done()
+        })
+    })
+
+    it(util.format("it should return false for non-existent email '%s' and non-existent username '%s'", nonExistentEmail, nonExistentUsername), function(done) {
+        UsergridUser.CheckAvailable({
+            email: nonExistentEmail,
+            username: nonExistentUsername
+        }, function(err, response, exists) {
+            exists.should.be.false()
+            done()
+        })
     })
 })
