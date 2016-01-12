@@ -25,15 +25,19 @@ Please open an [issue](https://github.com/r3mus/usergrid-nodejs/issues/new)
 
 ### Installation
 
-Install from [npm](https://www.npmjs.com/package/usergrid), specifying the version >= 2.0.0-rc.0:
+To install the latest **stable** build:
 
-    npm install usergrid >=2.0.0-rc.0
+    npm install usergrid
 
-If you want to run the latest build, simply:
+To install the 2.0 release candidates, install from [npm](https://www.npmjs.com/package/usergrid), specifying the version `~2.0.0-rc`:
+
+    npm install usergrid@~2.0.0-rc
+
+(Or add `usergrid: ~2.0.0-rc` to your package.json)
+
+If you want access to the latest development build (you will need to run `npm install` to keep it up to date):
 
     npm install r3mus/usergrid-nodejs
-    
-(though you will need to run `npm install` to keep it up to date)
 
 ### Usage
 

@@ -181,7 +181,7 @@ describe('loadNextPage()', function() {
         })
     })
 
-    it('should load a new page of entities using a UsergridClient instance argument', function(done) {
+    it('should load a new page of entities by passing an instance of UsergridClient', function(done) {
         firstResponse.loadNextPage(client, function(err, usergridResponse) {
             usergridResponse.first.uuid.should.not.equal(firstResponse.first.uuid)
             usergridResponse.entities.length.should.equal(2)
