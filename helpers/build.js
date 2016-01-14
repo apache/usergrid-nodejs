@@ -21,24 +21,25 @@ module.exports = {
             _.isString(options.uuidOrName) ? options.uuidOrName : ""
         )
     },
-    headers: function(client, auth) {
+    headers: function(client) {
         var headers = {
             'User-Agent': util.format("usergrid-nodejs/v%s", version)
         }
-        if (ok(auth).getIfExists('isValid')) {
-            // checks if an auth param was passed to the request and uses the token if applicable
-            _.assign(headers, {
-                authorization: util.format("Bearer %s", auth.token)
-            })
+        var token
+        if (ok(client).getIfExists('tempAuth.isValid')) {
+            // if ad-hoc authentication was set in the client, get the token and destroy the auth
+            token = client.tempAuth.token
+            client.tempAuth.destroy()
         } else if (ok(client).getIfExists('authFallback') === UsergridAuth.AuthFallback.APP && ok(client).getIfExists('appAuth.isValid')) {
             // if auth-fallback is set to APP, this request will make a call using the application token
-            _.assign(headers, {
-                authorization: util.format("Bearer %s", client.appAuth.token)
-            })
+            token = client.appAuth.token
         } else if (ok(client).getIfExists('currentUser.auth.isValid')) {
             // defaults to using the current user's token
+            token = client.currentUser.auth.token
+        }
+        if (token) {
             _.assign(headers, {
-                authorization: util.format("Bearer %s", client.currentUser.auth.token)
+                authorization: util.format("Bearer %s", token)
             })
         }
         return headers

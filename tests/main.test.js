@@ -14,6 +14,8 @@ should.Assertion.add('uuid', function() {
 })
 // end module config
 
+/* skip the following test using describe() in order to validate that
+   new tests added pass when the shared instance is not initialized */
 describe('Usergrid', function() {
     return require('./lib/usergrid.test')
 })

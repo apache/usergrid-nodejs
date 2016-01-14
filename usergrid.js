@@ -11,6 +11,7 @@ var Usergrid = {
         Object.setPrototypeOf(Usergrid, new UsergridClient(options))
         UsergridClient.call(self)
         self.isInitialized = true
+        self.isSharedInstance = true
     }
 }
 

@@ -65,7 +65,7 @@ describe('create()', function() {
             err.should.containDeep({
                 name: 'duplicate_unique_property_exists'
             })
-            usergridResponse.statusCode.should.be.greaterThanOrEqual(400)
+            usergridResponse.ok.should.be.false()
             done()
         })
     })
@@ -172,7 +172,7 @@ describe('resetPassword()', function() {
             oldPassword: 'BADOLDPASSWORD',
             newPassword: config.test.password
         }, function(err, response, success) {
-            response.statusCode.should.be.greaterThanOrEqual(400)
+            response.ok.should.be.false()
             err.name.should.equal('auth_invalid_username_or_password')
             _user1.remove(function(err, response) {
                 done()

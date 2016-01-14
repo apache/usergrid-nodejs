@@ -5,4 +5,5 @@ var should = require('should'),
 
 it('should be initialized when defined in another module', function() {
     Usergrid.isInitialized.should.be.true()
+    Usergrid.isSharedInstance.should.be.true()
 })

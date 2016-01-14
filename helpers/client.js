@@ -6,9 +6,10 @@ var Usergrid = require('../usergrid')
 module.exports = {
     validate: function(args) {
         var client
-        if (args[0] instanceof UsergridClient) {
+        if (args instanceof UsergridClient) {
+            client = args
+        } else if (args[0] instanceof UsergridClient) {
             client = args[0]
-            args.shift()
         } else if (Usergrid.isInitialized) {
             client = Usergrid
         } else {

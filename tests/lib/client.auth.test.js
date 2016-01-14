@@ -11,6 +11,7 @@ var should = require('should'),
     UsergridAuth = require('../../lib/auth'),
     UsergridAppAuth = require('../../lib/appAuth'),
     UsergridUserAuth = require('../../lib/userAuth'),
+    UsergridUser = require('../../lib/user'),
     _ = require('lodash')
 
 var _uuid,
@@ -132,7 +133,8 @@ describe('authenticateUser()', function() {
     this.slow(_slow)
     this.timeout(_timeout)
 
-    var response, token, email = util.format("%s@%s.com", chance.word(), chance.word()), client = new UsergridClient()
+    var response, token, email = util.format("%s@%s.com", chance.word(), chance.word()),
+        client = new UsergridClient()
     before(function(done) {
         client.authenticateUser({
             username: config.test.username,
@@ -185,7 +187,7 @@ describe('authenticateUser()', function() {
 
     it('should support passing a UsergridUserAuth instance with a custom ttl', function(done) {
         var newClient = new UsergridClient()
-        var ttlInMilliseconds = 500000        
+        var ttlInMilliseconds = 500000
         var userAuth = new UsergridUserAuth(config.test.username, config.test.password, ttlInMilliseconds)
         client.authenticateUser(userAuth, function(err, response, token) {
             response.ok.should.be.true()
@@ -229,5 +231,37 @@ describe('appAuth, setAppAuth()', function() {
         var client = new UsergridClient()
         client.appAuth = new UsergridAppAuth(config.clientId, config.clientSecret, config.tokenTtl)
         client.appAuth.should.be.instanceof(UsergridAppAuth)
+    })
+})
+
+describe('usingAuth()', function() {
+
+    this.slow(_slow + 500)
+    this.timeout(_timeout)
+
+    var client = new UsergridClient()
+
+    it('should authenticate using an ad-hoc token', function(done) {
+        
+        client.authenticateUser({
+            username: config.test.username,
+            password: config.test.password
+        }, function(err, response, token) {
+            var authFromToken = new UsergridAuth(token)
+            authFromToken.isValid.should.be.true()
+            authFromToken.should.have.property('token')
+            client.usingAuth(authFromToken).GET({
+                path: '/users/me'
+            }, function(error, usergridResponse) {
+                usergridResponse.ok.should.be.true()
+                usergridResponse.should.have.property('user').which.is.an.instanceof(UsergridUser)
+                usergridResponse.user.should.have.property('uuid').which.is.a.uuid()
+                done()
+            })
+        })
+    })
+
+    it('client.tempAuth should be invalid after making a request ad-hoc authentication', function() {
+        client.tempAuth.isValid.should.be.false()
     })
 })
