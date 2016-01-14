@@ -8,13 +8,15 @@ var should = require('should'),
     _ = require('lodash') 
 
 describe('init() / initSharedInstance()', function() {
-    it('should be an instance of UsergridClient', function() {
+    it('should be an instance of UsergridClient', function(done) {
         Usergrid.init()
         Usergrid.initSharedInstance()
         Usergrid.should.be.an.instanceof(UsergridClient)
+        done()
     })
     
-    it(util.format('should be testing against a Usergrid v%s instance', config.target), function() {
+    it(util.format('should be testing against a Usergrid v%s instance', config.target), function(done) {
         util.format('--target=%s', config.target).should.equal(_.last(process.argv))
+        done()
     })
 })

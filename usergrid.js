@@ -3,6 +3,8 @@
 var UsergridClient = require('./lib/client')
 
 var Usergrid = {
+    isInitialized: false,
+    isSharedInstance: true,
     initSharedInstance: function(options) {
         var self = this
         if (self.isInitialized) {

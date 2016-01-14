@@ -70,7 +70,7 @@ describe('create()', function() {
         })
     })
 
-    it('should create a new user on the server by passing an instance of UsergridClient', function(done) {
+    it('should create a new user on the server', function(done) {
         var client = new UsergridClient(config),
             username = chance.word()
         var user = new UsergridUser({
@@ -78,6 +78,7 @@ describe('create()', function() {
             password: config.test.password
         })
         user.create(client, function(err, usergridResponse, user) {
+            client.isSharedInstance.should.be.false()
             user.username.should.equal(username)
             user.should.have.property('uuid').which.is.a.uuid()
             user.should.have.property('created')
