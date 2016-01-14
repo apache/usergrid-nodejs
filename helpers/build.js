@@ -12,12 +12,12 @@ var urljoin = require('url-join'),
     _ = require('lodash')
 
 module.exports = {
-    url: function(client, options) {
+    uri: function(client, options) {
         return urljoin(
             client.baseUrl,
             client.orgId,
             client.appId,
-            options.type,
+            options.path || options.type,
             _.isString(options.uuidOrName) ? options.uuidOrName : ""
         )
     },
@@ -84,15 +84,14 @@ module.exports = {
 
         var options = {
             client: client,
-            method: 'GET'
+            method: 'GET',
+            callback: helpers.cb(args)
         }
 
         // if a preformatted options argument passed, assign it to options
         if (_.isObject(args[0]) && !_.isFunction(args[0]) && args.length <= 2) {
             _.assign(options, args[0])
         }
-
-        options.callback = helpers.cb(_.last(args.filter(_.isFunction)))
 
         options.type = _.first([options.type, ok(args).getIfExists('0._type'), args[0]].filter(_.isString))
 
@@ -131,15 +130,14 @@ module.exports = {
 
         var options = {
             client: client,
-            method: 'PUT'
+            method: 'PUT',
+            callback: helpers.cb(args)
         }
 
         // if a preformatted options argument passed, assign it to options
         if (_.isObject(args[0]) && !_.isFunction(args[0]) && args.length <= 2) {
             _.assign(options, args[0])
         }
-
-        options.callback = helpers.cb(_.last(args.filter(_.isFunction)))
 
         options.body = _.first([options.entity, options.body, args[2], args[1], args[0]].filter(function(property) {
             return _.isObject(property) && !_.isFunction(property) && !(property instanceof UsergridQuery)
@@ -179,15 +177,14 @@ module.exports = {
 
         var options = {
             client: client,
-            method: 'POST'
+            method: 'POST',
+            callback: helpers.cb(args)
         }
 
         // if a preformatted options argument passed, assign it to options
         if (_.isObject(args[0]) && !_.isFunction(args[0]) && args.length <= 2) {
             _.assign(options, args[0])
         }
-
-        options.callback = helpers.cb(_.last(args.filter(_.isFunction)))
 
         options.body = _.first([options.entities, options.entity, options.body, args[1], args[0]].filter(function(property) {
             return _.isArray(property) && _.isObject(property[0]) && !_.isFunction(property[0]) || _.isObject(property) && !_.isFunction(property)
@@ -219,7 +216,8 @@ module.exports = {
 
         var options = {
             client: client,
-            method: 'DELETE'
+            method: 'DELETE',
+            callback: helpers.cb(args)
         }
 
         // if a preformatted options argument passed, assign it to options
@@ -227,7 +225,6 @@ module.exports = {
             _.assign(options, args[0])
         }
 
-        options.callback = helpers.cb(_.last(args.filter(_.isFunction)))
         options.type = _.first([options.type, ok(options).getIfExists('entity.type'), args[0]._type, args[0]].filter(_.isString))
         options.entity = _.first([options.entity, args[0]].filter(function(property) {
             return (property instanceof UsergridEntity)
@@ -245,7 +242,7 @@ module.exports = {
 
         return options
     },
-    connection: function(client, args) {
+    connection: function(client, method, args) {
 
         /* connect supports the following constructor patterns:
 
@@ -277,9 +274,11 @@ module.exports = {
         */
 
         var options = {
+            client: client,
+            method: method,
             entity: {},
             to: {},
-            callback: helpers.cb(_.last(args.filter(_.isFunction)))
+            callback: helpers.cb(args)
         }
 
         // if a preformatted options argument passed, assign it to options
@@ -367,7 +366,9 @@ module.exports = {
         */
 
         var options = {
-            callback: helpers.cb(_.last(args.filter(_.isFunction)))
+            client: client,
+            method: 'GET',
+            callback: helpers.cb(args)
         }
 
         // if a preformatted options argument passed, assign it to options

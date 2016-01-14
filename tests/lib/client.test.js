@@ -1,16 +1,13 @@
 'use strict'
 
 var should = require('should'),
-    chance = new require('chance').Chance(),
     urljoin = require('url-join'),
-    util = require('util'),
     config = require('../../helpers').config,
     UsergridClient = require('../../lib/client'),
     UsergridEntity = require('../../lib/entity'),
     UsergridQuery = require('../../lib/query'),
     UsergridAuth = require('../../lib/auth'),
     UsergridAppAuth = require('../../lib/appAuth'),
-    UsergridUserAuth = require('../../lib/userAuth'),
     _ = require('lodash')
 
 var _uuid,
@@ -28,6 +25,43 @@ describe('authenticateApp()', function() {
         client.authenticateApp(function(err, r, t) {
             response = r
             token = t
+            done()
+        })
+    })
+
+    it('should fail when called without a clientId and clientSecret', function() {
+        should(function() {
+            var client = new UsergridClient()
+            client.setAppAuth(undefined, undefined, 0)
+            client.authenticateApp()
+        }).throw()
+    })
+
+    it('should authenticate by passing clientId and clientSecret in an object', function(done) {
+        var isolatedClient = new UsergridClient()
+        isolatedClient.authenticateApp(config, function(err, reponse, token) {
+            isolatedClient.appAuth.should.have.property('token').equal(token)
+            done()
+        })
+    })
+
+    it('should not set client.appAuth when authenticating with a bad UsergridAppAuth instance (using an object)', function(done) {
+        var failClient = new UsergridClient()
+        failClient.authenticateApp(new UsergridAppAuth({
+            clientId: 'BADCLIENTID',
+            clientSecret: 'BADCLIENTSECRET'
+        }), function(e, r, token) {
+            should(token).be.undefined()
+            should(failClient.appAuth).be.undefined()
+            done()
+        })
+    })
+
+    it('should not set client.appAuth when authenticating with a bad UsergridAppAuth instance (using arguments)', function(done) {
+        var failClient = new UsergridClient()
+        failClient.authenticateApp(new UsergridAppAuth('BADCLIENTID', 'BADCLIENTSECRET'), function(e, r, token) {
+            should(token).be.undefined()
+            should(failClient.appAuth).be.undefined()
             done()
         })
     })
@@ -52,79 +86,6 @@ describe('authenticateApp()', function() {
     it('client.appAuth.expiry should be set to a future date', function() {
         client.appAuth.should.have.property('expiry').greaterThan(Date.now())
     })
-
-    it('should fail when called without a clientId and clientSecret', function() {
-        should(function() {
-            var client = new UsergridClient()
-            client.setAppAuth(undefined, undefined, 0)
-            client.authenticateApp()
-        }).throw()
-    })
-
-    it('should authenticate by passing clientId and clientSecret in an object', function(done) {
-        var isolatedClient = new UsergridClient()
-        isolatedClient.authenticateApp(config, function(err, reponse, token) {
-            isolatedClient.appAuth.should.have.property('token').equal(token)
-            done()
-        })
-    })
-
-    it('should authenticate by passing a UsergridAppAuth instance with a custom ttl', function(done) {
-        var isolatedClient = new UsergridClient()
-        var ttlInMilliseconds = 500000
-        var appAuth = new UsergridAppAuth(config.clientId, config.clientSecret, ttlInMilliseconds)
-        isolatedClient.authenticateApp(appAuth, function(err, response, token) {
-            isolatedClient.appAuth.should.have.property('token').equal(token)
-            response.body.expires_in.should.equal(ttlInMilliseconds / 1000)
-            done()
-        })
-    })
-
-    it('should not set client.appAuth when authenticating with a bad clientId and clientSecret in an object', function(done) {
-        var failClient = new UsergridClient()
-        failClient.authenticateApp({
-            clientId: 'BADCLIENTID',
-            clientSecret: 'BADCLIENTSECRET'
-        }, function(e, r, token) {
-            e.should.containDeep({
-                name: 'invalid_grant',
-                description: 'invalid username or password'
-            })
-            should(token).be.undefined()
-            should(failClient.appAuth).be.undefined()
-            done()
-        })
-    })
-
-    it('should not set client.appAuth when authenticating with a bad UsergridAppAuth instance (using an object)', function(done) {
-        var failClient = new UsergridClient()
-        failClient.authenticateApp(new UsergridAppAuth({
-            clientId: 'BADCLIENTID',
-            clientSecret: 'BADCLIENTSECRET'
-        }), function(e, r, token) {
-            e.should.containDeep({
-                name: 'invalid_grant',
-                description: 'invalid username or password'
-            })
-            should(token).be.undefined()
-            should(failClient.appAuth).be.undefined()
-            done()
-        })
-    })
-
-
-    it('should not set client.appAuth when authenticating with a bad UsergridAppAuth instance (using arguments)', function(done) {
-        var failClient = new UsergridClient()
-        failClient.authenticateApp(new UsergridAppAuth('BADCLIENTID', 'BADCLIENTSECRET'), function(e, r, token) {
-            e.should.containDeep({
-                name: 'invalid_grant',
-                description: 'invalid username or password'
-            })
-            should(token).be.undefined()
-            should(failClient.appAuth).be.undefined()
-            done()
-        })
-    })
 })
 
 describe('authenticateUser()', function() {
@@ -132,12 +93,11 @@ describe('authenticateUser()', function() {
     this.slow(_slow)
     this.timeout(_timeout)
 
-    var response, token, email = util.format("%s@%s.com", chance.word(), chance.word()), client = new UsergridClient()
+    var response, token, client = new UsergridClient()
     before(function(done) {
         client.authenticateUser({
             username: config.test.username,
-            password: config.test.password,
-            email: email
+            password: config.test.password
         }, function(err, r, t) {
             response = r
             token = t
@@ -173,26 +133,17 @@ describe('authenticateUser()', function() {
         client.currentUser.auth.should.have.property('expiry').greaterThan(Date.now())
     })
 
-    it('client.currentUser should have a username and email', function() {
+    it('client.currentUser should have a username', function() {
         client.currentUser.should.have.property('username')
-        client.currentUser.should.have.property('email').equal(email)
+    })
+
+    it('client.currentUser should have an email', function() {
+        client.currentUser.should.have.property('email')
     })
 
     it('client.currentUser and client.currentUser.auth should not store password', function() {
         client.currentUser.should.not.have.property('password')
         client.currentUser.auth.should.not.have.property('password')
-    })
-
-    it('should support passing a UsergridUserAuth instance with a custom ttl', function(done) {
-        var newClient = new UsergridClient()
-        var ttlInMilliseconds = 500000        
-        var userAuth = new UsergridUserAuth(config.test.username, config.test.password, ttlInMilliseconds)
-        client.authenticateUser(userAuth, function(err, response, token) {
-            response.ok.should.be.true()
-            client.currentUser.auth.token.should.equal(token)
-            response.body.expires_in.should.equal(ttlInMilliseconds / 1000)
-            done()
-        })
     })
 })
 

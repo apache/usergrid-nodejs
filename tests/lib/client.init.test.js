@@ -10,8 +10,6 @@ var should = require('should'),
     UsergridAppAuth = require('../../lib/appAuth'),
     _ = require('lodash')
 
-_.mixin(require('lodash-uuid'))
-
 describe('initialization', function() {
     it('should fail to initialize without an orgId and appId', function() {
         should(function() {

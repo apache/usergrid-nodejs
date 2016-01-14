@@ -1,7 +1,10 @@
 'use strict'
 
-var _ = require('lodash')
+var ok = require('objectkit'),
+    _ = require('lodash')
 
-module.exports = function(callback) {
-    return _.isFunction(callback) ? callback : function() {}
+module.exports = function() {
+    var args = _.flattenDeep(Array.prototype.slice.call(arguments))
+    var emptyFunc = function() {}
+    return _.first(_.flattenDeep([args.reverse(), ok(args).getIfExists('0.callback'), emptyFunc]).filter(_.isFunction))
 }

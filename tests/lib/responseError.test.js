@@ -25,11 +25,11 @@ describe('name, description, exception', function() {
     })
 
     it('response.statusCode should be greater than or equal to 400', function() {
-        _response.statusCode.should.be.greaterThanOrEqual(400)
+        _response.ok.should.be.false()
     })
 
     it('response.error should be a UsergridResponseError object with name, description, and exception keys', function() {
-        _response.statusCode.should.not.equal(200)
+        _response.ok.should.be.false()
         _response.error.should.be.an.instanceof(UsergridResponseError).with.keys(['name', 'description', 'exception'])
     })
 })
@@ -39,7 +39,7 @@ describe('undefined check', function() {
         this.slow(_slow)
         this.timeout(_timeout)
         client.GET(config.test.collection, function(err, usergridResponse) {
-            usergridResponse.statusCode.should.equal(200)
+            usergridResponse.ok.should.be.true()
             should(usergridResponse.error).be.undefined()
             done()
         })

@@ -47,7 +47,7 @@ describe('connect()', function() {
         var relationship = "foos"
 
         client.connect(entity1, relationship, entity2, function(err, usergridResponse) {
-            usergridResponse.statusCode.should.equal(200)
+            usergridResponse.ok.should.be.true()
             client.getConnections(UsergridClient.Connections.DIRECTION_OUT, entity1, relationship, function(err, usergridResponse) {
                 usergridResponse.first.metadata.connecting[relationship].should.equal(urljoin(
                     "/",
@@ -67,7 +67,7 @@ describe('connect()', function() {
         var relationship = "bars"
 
         client.connect(entity1, relationship, entity2.uuid, function(err, usergridResponse) {
-            usergridResponse.statusCode.should.equal(200)
+            usergridResponse.ok.should.be.true()
             client.getConnections(UsergridClient.Connections.DIRECTION_OUT, entity1, relationship, function(err, usergridResponse) {
                 usergridResponse.first.metadata.connecting[relationship].should.equal(urljoin(
                     "/",
@@ -87,7 +87,7 @@ describe('connect()', function() {
         var relationship = "bazzes"
 
         client.connect(entity1.type, entity1.uuid, relationship, entity2.uuid, function(err, usergridResponse) {
-            usergridResponse.statusCode.should.equal(200)
+            usergridResponse.ok.should.be.true()
             client.getConnections(UsergridClient.Connections.DIRECTION_OUT, entity1, relationship, function(err, usergridResponse) {
                 usergridResponse.first.metadata.connecting[relationship].should.equal(urljoin(
                     "/",
@@ -107,7 +107,7 @@ describe('connect()', function() {
         var relationship = "quxes"
 
         client.connect(entity1.type, entity1.name, relationship, entity2.type, entity2.name, function(err, usergridResponse) {
-            usergridResponse.statusCode.should.equal(200)
+            usergridResponse.ok.should.be.true()
             client.getConnections(UsergridClient.Connections.DIRECTION_OUT, entity1, relationship, function(err, usergridResponse) {
                 usergridResponse.first.metadata.connecting[relationship].should.equal(urljoin(
                     "/",
@@ -131,7 +131,7 @@ describe('connect()', function() {
         }
 
         client.connect(options, function(err, usergridResponse) {
-            usergridResponse.statusCode.should.equal(200)
+            usergridResponse.ok.should.be.true()
             client.getConnections(UsergridClient.Connections.DIRECTION_OUT, entity1, options.relationship, function(err, usergridResponse) {
                 usergridResponse.first.metadata.connecting[options.relationship].should.equal(urljoin(
                     "/",
@@ -233,7 +233,7 @@ describe('disconnect()', function() {
         var relationship = "foos"
 
         client.disconnect(entity1, relationship, entity2, function(err, usergridResponse) {
-            usergridResponse.statusCode.should.equal(200)
+            usergridResponse.ok.should.be.true()
             client.getConnections(UsergridClient.Connections.DIRECTION_OUT, entity1, relationship, function(err, usergridResponse) {
                 usergridResponse.entities.should.be.an.Array().with.lengthOf(0)
                 done()
@@ -248,7 +248,7 @@ describe('disconnect()', function() {
         var relationship = "bars"
 
         client.disconnect(entity1.type, entity1.uuid, relationship, entity2.uuid, function(err, usergridResponse) {
-            usergridResponse.statusCode.should.equal(200)
+            usergridResponse.ok.should.be.true()
             client.getConnections(UsergridClient.Connections.DIRECTION_OUT, entity1, relationship, function(err, usergridResponse) {
                 usergridResponse.entities.should.be.an.Array().with.lengthOf(0)
                 done()
@@ -263,7 +263,7 @@ describe('disconnect()', function() {
         var relationship = "bazzes"
 
         client.disconnect(entity1.type, entity1.name, relationship, entity2.type, entity2.name, function(err, usergridResponse) {
-            usergridResponse.statusCode.should.equal(200)
+            usergridResponse.ok.should.be.true()
             client.getConnections(UsergridClient.Connections.DIRECTION_OUT, entity1, relationship, function(err, usergridResponse) {
                 usergridResponse.entities.should.be.an.Array().with.lengthOf(0)
                 done()
@@ -282,7 +282,7 @@ describe('disconnect()', function() {
         }
 
         client.disconnect(options, function(err, usergridResponse) {
-            usergridResponse.statusCode.should.equal(200)
+            usergridResponse.ok.should.be.true()
             client.getConnections(UsergridClient.Connections.DIRECTION_OUT, entity1, options.relationship, function(err, usergridResponse) {
                 usergridResponse.entities.should.be.an.Array().with.lengthOf(0)
                 done()

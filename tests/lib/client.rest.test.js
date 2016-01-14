@@ -10,8 +10,6 @@ var should = require('should'),
     UsergridAppAuth = require('../../lib/appAuth'),
     _ = require('lodash')
 
-_.mixin(require('lodash-uuid'))
-
 var _uuid,
     _slow = 500,
     _timeout = 4000
@@ -34,8 +32,8 @@ describe('GET()', function() {
         client.GET(config.test.collection)
     })
 
-    it('should return a 200 ok', function() {
-        response.statusCode.should.equal(200)
+    it('response.ok should be true', function() {
+        response.ok.should.be.true()
     })
 
     it('response.entities should be an array', function() {
@@ -93,8 +91,8 @@ describe('POST()', function() {
         client.POST(config.test.collection, {})
     })
 
-    it('should return a 200 ok', function() {
-        response.statusCode.should.equal(200)
+    it('response.ok should be true', function() {
+        response.ok.should.be.true()
     })
 
     it('response.entities should be an array', function() {
@@ -223,8 +221,8 @@ describe('PUT()', function() {
         client.PUT(config.test.collection, _uuid, {})
     })
 
-    it('should return a 200 ok', function() {
-        response.statusCode.should.equal(200)
+    it('response.ok should be true', function() {
+        response.ok.should.be.true()
     })
 
     it('response.entities should be an array with a single entity', function() {

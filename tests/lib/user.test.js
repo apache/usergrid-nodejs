@@ -10,8 +10,6 @@ var should = require('should'),
     UsergridQuery = require('../../lib/query'),
     _ = require('lodash')
 
-_.mixin(require('lodash-uuid'))
-
 var _slow = 1500,
     _timeout = 4000,
     _username1 = chance.word(),
@@ -25,8 +23,13 @@ before(function(done) {
     this.slow(_slow)
     this.timeout(_timeout)
 
-    _user1.create(function(err, usergridResponse, user) {
-        done()
+    var client = new UsergridClient()
+    var query = new UsergridQuery('users').not.eq('username', config.test.username).limit(20)
+    // clean up old user entities as the UsergridResponse tests rely on this collection containing less than 10 entities
+    client.DELETE(query, function() {
+        _user1.create(function(err, usergridResponse, user) {
+            done()
+        })
     })
 })
 
@@ -111,7 +114,7 @@ describe('logout()', function() {
 
     it(util.format("it should log out '%s' and destroy the saved UsergridUserAuth instance", _username1), function(done) {
         _user1.logout(function(err, response, success) {
-            response.statusCode.should.equal(200)
+            response.ok.should.be.true()
             response.body.action.should.equal("revoked user token")
             _user1.auth.isValid.should.be.false()
             done()
@@ -122,7 +125,7 @@ describe('logout()', function() {
         _user1.password = config.test.password
         _user1.login(function(err, response, token) {
             _user1.logoutAllSessions(function(err, response, success) {
-                response.statusCode.should.equal(200)
+                response.ok.should.be.true()
                 response.body.action.should.equal("revoked user tokens")
                 _user1.auth.isValid.should.be.false()
                 done()
@@ -147,7 +150,7 @@ describe('resetPassword()', function() {
 
     it(util.format("it should reset the password for '%s' by passing parameters", _username1), function(done) {
         _user1.resetPassword(config.test.password, '2cool4u', function(err, response, success) {
-            response.statusCode.should.equal(200)
+            response.ok.should.be.true()
             response.body.action.should.equal("set user password")
             done()
         })
@@ -158,7 +161,7 @@ describe('resetPassword()', function() {
             oldPassword: '2cool4u',
             newPassword: config.test.password
         }, function(err, response, success) {
-            response.statusCode.should.equal(200)
+            response.ok.should.be.true()
             response.body.action.should.equal("set user password")
             done()
         })

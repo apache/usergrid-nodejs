@@ -10,7 +10,7 @@ should.Assertion.add('uuid', function() {
     this.params = {
         operator: 'to be a valid uuid'
     };
-    this.assert(_.isUuid(this.obj));
+    this.assert(_.isUuid(this.obj))
 })
 // end module config
 

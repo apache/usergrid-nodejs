@@ -39,6 +39,12 @@ describe('statusCode', function() {
     })
 })
 
+describe('ok', function() {
+    it('should be a bool', function() {
+        _response.ok.should.be.a.Boolean()
+    })
+})
+
 describe('metadata', function() {
     it('should be a read-only object', function() {
         _response.metadata.should.be.an.Object().with.any.properties(['action', 'application', 'path', 'uri', 'timestamp', 'duration'])
@@ -70,9 +76,9 @@ describe('users', function() {
     it('response.users should be an array of UsergridUser objects', function(done) {
         client.setAppAuth(config.clientId, config.clientSecret, config.tokenTtl)
         client.authenticateApp(function(err, response) {
-            should(err).be.null()
+            should(err).be.undefined()
             client.GET('users', function(err, usergridResponse) {
-                usergridResponse.statusCode.should.equal(200)
+                usergridResponse.ok.should.be.true()
                 usergridResponse.users.should.be.an.Array()
                 usergridResponse.users.forEach(function(user) {
                     user.should.be.an.instanceof(UsergridUser)
@@ -93,7 +99,7 @@ describe('user', function() {
     it('response.user should be a UsergridUser object and have a valid uuid matching the first object in response.users', function(done) {
         client.setAppAuth(config.clientId, config.clientSecret, config.tokenTtl)
         client.authenticateApp(function(err) {
-            should(err).be.null()
+            should(err).be.undefined()
             client.GET('users', function(err, usergridResponse) {
                 user = usergridResponse.user
                 user.should.be.an.instanceof(UsergridUser).with.property('uuid').equal(_.first(usergridResponse.entities).uuid)
