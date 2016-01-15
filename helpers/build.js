@@ -11,6 +11,71 @@ var urljoin = require('url-join'),
     ok = require('objectkit'),
     _ = require('lodash')
 
+var assignPrefabOptions = function(args) {
+    // if a preformatted options argument passed, assign it to options
+    if (_.isObject(args[0]) && !_.isFunction(args[0]) && args.length <= 2) {
+        _.assign(this, args[0])
+    }
+    return this
+}
+
+var setPathOrType = function(args) {
+    var pathOrType = _.first([
+        this.type,
+        ok(args).getIfExists('0._type'),
+        ok(this).getIfExists('entity.type'),
+        ok(this).getIfExists('body.type'),
+        ok(this).getIfExists('body.0.type'),
+        _.isArray(args) ? args[0] : undefined
+    ].filter(_.isString))
+    this[(/\//.test(pathOrType)) ? 'path' : 'type'] = pathOrType
+    return this
+}
+
+var setQs = function(args) {
+    if (this.path) {
+        this.qs = _.first([this.qs, args[2], args[1], args[0]].filter(_.isPlainObject))
+    }
+    return this
+}
+
+var setQuery = function(args) {
+    this.query = _.first([this.query, args[0]].filter(function(property) {
+        return (property instanceof UsergridQuery)
+    }))
+    return this
+}
+
+var setBody = function(args) {
+    this.body = _.first([this.entity, this.body, args[2], args[1], args[0]].filter(function(property) {
+        return _.isObject(property) && !_.isFunction(property) && !(property instanceof UsergridQuery)
+    }))
+    if (this.body === undefined) {
+        throw new Error(util.format('"body" is required when making a %s request', this.method))
+    }
+    return this
+}
+
+var setUuidOrName = function(args) {
+    this.uuidOrName = _.first([
+        this.uuidOrName,
+        this.uuid,
+        this.name,
+        ok(this).getIfExists('entity.uuid'),
+        ok(this).getIfExists('body.uuid'),
+        _.isArray(args) ? args[2] : undefined,
+        _.isArray(args) ? args[1] : undefined
+    ].filter(_.isString))
+    return this
+}
+
+var setEntity = function(args) {
+    this.entity = _.first([this.entity, args[0]].filter(function(property) {
+        return (property instanceof UsergridEntity)
+    }))
+    return this
+}
+
 module.exports = {
     uri: function(client, options) {
         return urljoin(
@@ -36,7 +101,7 @@ module.exports = {
             } else if (ok(client).getIfExists('currentUser.auth.isValid')) {
                 // defaults to using the current user's token
                 token = client.currentUser.auth.token
-            } else if (ok(client).getIfExists('authFallback') === UsergridAuth.AuthFallback.APP && ok(client).getIfExists('appAuth.isValid')) {
+            } else if (ok(client).getIfExists('authFallback') === UsergridAuth.AUTH_FALLBACK_APP && ok(client).getIfExists('appAuth.isValid')) {
                 // if auth-fallback is set to APP request will make a call using the application token
                 token = client.appAuth.token
             }
@@ -80,9 +145,9 @@ module.exports = {
         client.GET({
             query: query, // takes precedence
             type: type, // required if query not defined
-            uuid: uuid, // will be set to nameOrUuid on init (priority)
-            name: name, // will be set to nameOrUuid on init (if no uuid specified)
-            nameOrUuid: nameOrUuid // the definitive key for name or uuid
+            uuid: uuid, // will be set to uuidOrName on init (priority)
+            name: name, // will be set to uuidOrName on init (if no uuid specified)
+            uuidOrName: uuidOrName // the definitive key for name or uuid
         }, optionalCallback)
 
         */
@@ -92,23 +157,12 @@ module.exports = {
             method: 'GET',
             callback: helpers.cb(args)
         }
-
-        // if a preformatted options argument passed, assign it to options
-        if (_.isObject(args[0]) && !_.isFunction(args[0]) && args.length <= 2) {
-            _.assign(options, args[0])
-        }
-
-        options.type = _.first([options.type, ok(args).getIfExists('0._type'), args[0]].filter(_.isString))
-
-        options.query = _.first([options.query, args[0]].filter(function(property) {
-            return (property instanceof UsergridQuery)
-        }))
-        options.uuidOrName = _.last([options.uuidOrName, options.uuid, options.name, args[1]].filter(_.isString))
-
-        options.entity = _.first([options.entity, args[0]].filter(function(property) {
-            return (property instanceof UsergridEntity)
-        }))
-
+        assignPrefabOptions.call(options, args)
+        setUuidOrName.call(options, args)
+        setPathOrType.call(options, args)
+        setQs.call(options, args)
+        setQuery.call(options, args)
+        setEntity.call(options, args)
         return options
     },
     PUT: function(client, args) {
@@ -125,8 +179,8 @@ module.exports = {
             query: query, // takes precedence over type/body
             type: type, // required if query not defined
             body: bodyObject or bodyObjectOrEntity, // if includes type, type will be inferred from body
-            *uuid, name* = alias to nameOrUuid*
-            nameOrUuid: nameOrUuid // the definitive key for name or uuid
+            *uuid, name* = alias to uuidOrName*
+            uuidOrName: uuidOrName // the definitive key for name or uuid
         }, optionalCallback)
 
         */
@@ -136,30 +190,12 @@ module.exports = {
             method: 'PUT',
             callback: helpers.cb(args)
         }
-
-        // if a preformatted options argument passed, assign it to options
-        if (_.isObject(args[0]) && !_.isFunction(args[0]) && args.length <= 2) {
-            _.assign(options, args[0])
-        }
-
-        options.body = _.first([options.entity, options.body, args[2], args[1], args[0]].filter(function(property) {
-            return _.isObject(property) && !_.isFunction(property) && !(property instanceof UsergridQuery)
-        }))
-
-        if (typeof options.body !== 'object') {
-            throw new Error('"body" parameter is required when making a PUT request')
-        }
-
-        options.uuidOrName = _.first([options.nameOrUuid, options.uuid, options.name, options.body.uuid, args[2], args[1], args[0]].filter(_.isString))
-
-        options.type = _.first([options.type, args[0]._type, options.body.type, args[0]].filter(_.isString))
-        options.query = _.first([options.query, args[0]].filter(function(property) {
-            return (property instanceof UsergridQuery)
-        }))
-
-        options.entity = _.first([options.entity, args[0]].filter(function(property) {
-            return (property instanceof UsergridEntity)
-        }))
+        assignPrefabOptions.call(options, args)
+        setBody.call(options, args)
+        setUuidOrName.call(options, args)
+        setPathOrType.call(options, args)
+        setQuery.call(options, args)
+        setEntity.call(options, args)
 
         return options
     },
@@ -183,22 +219,9 @@ module.exports = {
             method: 'POST',
             callback: helpers.cb(args)
         }
-
-        // if a preformatted options argument passed, assign it to options
-        if (_.isObject(args[0]) && !_.isFunction(args[0]) && args.length <= 2) {
-            _.assign(options, args[0])
-        }
-
-        options.body = _.first([options.entities, options.entity, options.body, args[1], args[0]].filter(function(property) {
-            return _.isArray(property) && _.isObject(property[0]) && !_.isFunction(property[0]) || _.isObject(property) && !_.isFunction(property)
-        }))
-
-        if (typeof options.body !== 'object') {
-            throw new Error('"body" parameter is required when making a POST request')
-        }
-
-        options.type = _.first([options.type, args[0], ok(options).getIfExists('body.0.type'), options.body.type].filter(_.isString))
-
+        assignPrefabOptions.call(options, args)
+        setBody.call(options, args)
+        setPathOrType.call(options, args)
         return options
     },
     DELETE: function(client, args) {
@@ -209,7 +232,7 @@ module.exports = {
         client.DELETE(entity, optionalCallback) // must include type in body
         client.DELETE(query, optionalCallback)
         client.DELETE({
-            *uuid, name* = alias to nameOrUuid*
+            *uuid, name* = alias to uuidOrName*
             uuidOrName: uuidOrName,
             type: type, // required if query not defined
             query: query // takes precedence over type/uuid
@@ -222,27 +245,15 @@ module.exports = {
             method: 'DELETE',
             callback: helpers.cb(args)
         }
-
-        // if a preformatted options argument passed, assign it to options
-        if (_.isObject(args[0]) && !_.isFunction(args[0]) && args.length <= 2) {
-            _.assign(options, args[0])
-        }
-
-        options.type = _.first([options.type, ok(options).getIfExists('entity.type'), args[0]._type, args[0]].filter(_.isString))
-        options.entity = _.first([options.entity, args[0]].filter(function(property) {
-            return (property instanceof UsergridEntity)
-        }))
-
-        options.query = _.first([options.query, args[0]].filter(function(property) {
-            return (property instanceof UsergridQuery)
-        }))
-
-        options.uuidOrName = _.first([options.uuidOrName, options.uuid, options.name, ok(options).getIfExists('entity.uuid'), args[1]].filter(_.isString))
-
+        assignPrefabOptions.call(options, args)
+        setUuidOrName.call(options, args)
+        setPathOrType.call(options, args)
+        setQs.call(options, args)
+        setEntity.call(options, args)
+        setQuery.call(options, args)
         if (!_.isString(options.uuidOrName) && options.query === undefined) {
-            throw new Error('"uuidOrName" parameter or "query" is required when making a DELETE request')
+            throw new Error('"uuidOrName" or "query" is required when making a DELETE request')
         }
-
         return options
     },
     connection: function(client, method, args) {
@@ -284,10 +295,7 @@ module.exports = {
             callback: helpers.cb(args)
         }
 
-        // if a preformatted options argument passed, assign it to options
-        if (_.isObject(args[0]) && !_.isFunction(args[0]) && args.length <= 2) {
-            _.assign(options, args[0])
-        }
+        assignPrefabOptions.call(options, args)
 
         // handle DELETE using "from" preposition
         if (_.isObject(options.from)) {
@@ -317,8 +325,8 @@ module.exports = {
             options.to.type = args[2]
         }
 
-        options.to.uuidOrName = _.first([options.to.uuidOrName, options.to.uuid, options.to.name, args[4], args[3], args[2]].filter(function(u) {
-            return (_.isString(options.to.type) && _.isString(u) || _.isUuid(u))
+        options.to.uuidOrName = _.first([options.to.uuidOrName, options.to.uuid, options.to.name, args[4], args[3], args[2]].filter(function(property) {
+            return (_.isString(options.to.type) && _.isString(property) || _.isUuid(property))
         }))
 
         if (!_.isString(options.entity.uuidOrName)) {
@@ -374,15 +382,13 @@ module.exports = {
             callback: helpers.cb(args)
         }
 
-        // if a preformatted options argument passed, assign it to options
-        if (_.isObject(args[0]) && !_.isFunction(args[0]) && args.length <= 2) {
-            _.assign(options, args[0])
-        } else if (_.isObject(args[1]) && !_.isFunction(args[1])) {
+        assignPrefabOptions.call(options, args)
+        if (_.isObject(args[1]) && !_.isFunction(args[1])) {
             _.assign(options, args[1])
         }
 
-        options.direction = _.first([options.direction, args[0]].filter(function(d) {
-            return (d === "IN" || d === "OUT")
+        options.direction = _.first([options.direction, args[0]].filter(function(property) {
+            return (property === "IN" || property === "OUT")
         }))
 
         options.relationship = _.first([options.relationship, args[3], args[2]].filter(_.isString))

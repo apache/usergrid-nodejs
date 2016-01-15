@@ -10,8 +10,6 @@ var should = require('should'),
     UsergridAppAuth = require('../../lib/appAuth'),
     _ = require('lodash')
 
-_.mixin(require('lodash-uuid'))
-
 var _uuid,
     _slow = 500,
     _timeout = 4000

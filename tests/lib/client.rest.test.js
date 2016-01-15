@@ -18,7 +18,7 @@ describe('GET()', function() {
     this.slow(_slow)
     this.timeout(_timeout)
 
-    var response, client, query
+    var response, client
     before(function(done) {
         client = new UsergridClient(config)
         client.GET(config.test.collection, function(err, usergridResponse) {
@@ -57,13 +57,24 @@ describe('GET()', function() {
         this.slow(_slow)
         this.timeout(_timeout)
 
-        client = new UsergridClient(config)
-        query = new UsergridQuery(config.test.collection).eq('color', 'black')
+        var query = new UsergridQuery(config.test.collection).eq('color', 'black')
 
         client.GET(query, function(err, usergridResponse) {
             usergridResponse.entities.forEach(function(entity) {
                 entity.should.be.an.Object().with.property('color').equal('black')
             })
+            done()
+        })
+    })
+
+    it('a single entity should be retrieved when specifying a uuid', function(done) {
+
+        this.slow(_slow)
+        this.timeout(_timeout)
+
+        client.GET(config.test.collection, response.entity.uuid, function(err, usergridResponse) {
+            usergridResponse.should.have.property('entity').which.is.an.instanceof(UsergridEntity)
+            usergridResponse.body.entities.should.be.an.Array().with.a.lengthOf(1)
             done()
         })
     })
@@ -384,7 +395,8 @@ describe('DELETE()', function() {
         client.POST(entity, function(err, usergridResponse) {
             client.DELETE(usergridResponse.entity, function() {
                 client.GET(config.test.collection, usergridResponse.entity.uuid, function(err, delResponse) {
-                    delResponse.error.name.should.equal((config.target === '1.0') ? 'service_resource_not_found' : 'entity_not_found')
+                    delResponse.ok.should.be.false()
+                    delResponse.error.name.should.equal('entity_not_found')
                     done()
                 })
             })
