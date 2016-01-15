@@ -568,44 +568,56 @@ describe('usingAuth()', function() {
     this.timeout(_timeout)
 
     var client = new UsergridClient(),
-        authFromToken = new UsergridAuth('BADTOKEN')
+        authFromToken = new UsergridAuth('BADTOKEN'),
+        _entity
 
-    it('should fail reload an entity when using a bad ad-hoc token', function(done) {
+    it('should fail to reload an entity when using a bad ad-hoc token', function(done) {
         client.GET(config.test.collection, function(err, getResponse) {
-            var entity = new UsergridEntity(getResponse.first)
-            entity.usingAuth(authFromToken).reload(client, function(error, usergridResponse) {
-                usergridResponse.ok.should.be.false()
+            _entity = new UsergridEntity(getResponse.first)
+            _entity.usingAuth(authFromToken).reload(client, function(error, usergridResponse) {
                 usergridResponse.request.headers.should.not.have.property('authentication')
+                usergridResponse.ok.should.be.false()
                 error.name.should.equal('auth_bad_access_token')
                 done()
             })
         })
     })
 
-    // it('client.tempAuth should be destroyed after making a request with ad-hoc authentication', function(done) {
-    //     should(client.tempAuth).be.undefined()
-    //     done()
-    // })
+    it('client.tempAuth should be destroyed after making a request with ad-hoc authentication', function(done) {
+        should(client.tempAuth).be.undefined()
+        done()
+    })
 
-    // it('should send an unauthenticated request when UsergridAuth.NO_AUTH is passed to .usingAuth()', function(done) {
-    //     client.usingAuth(UsergridAuth.NO_AUTH).GET({
-    //         path: '/users/me'
-    //     }, function(error, usergridResponse) {
-    //         usergridResponse.ok.should.be.false()
-    //         usergridResponse.request.headers.should.not.have.property('authentication')
-    //         usergridResponse.should.not.have.property('user')
-    //         done()
-    //     })
-    // })
+    it('entity.tempAuth should be destroyed after making a request with ad-hoc authentication', function(done) {
+        should(_entity.tempAuth).be.undefined()
+        done()
+    })
 
-    // it('should send an unauthenticated request when no arguments are passed to .usingAuth()', function(done) {
-    //     client.usingAuth().GET({
-    //         path: '/users/me'
-    //     }, function(error, usergridResponse) {
-    //         usergridResponse.ok.should.be.false()
-    //         usergridResponse.request.headers.should.not.have.property('authentication')
-    //         usergridResponse.should.not.have.property('user')
-    //         done()
-    //     })
-    // })
+    it('should send an unauthenticated request when UsergridAuth.NO_AUTH is passed to .usingAuth()', function(done) {
+        // hack this using 'me' in case test apps have sandbox permissions
+        var entity = new UsergridEntity({
+            uuid: 'me',
+            type: 'users'
+        })
+        entity.usingAuth(UsergridAuth.NO_AUTH).reload(client, function(error, usergridResponse) {
+            usergridResponse.request.headers.should.not.have.property('authentication')
+            usergridResponse.ok.should.be.false()
+            error.name.should.equal('service_resource_not_found')
+            done()
+        })
+    })
+
+    it('should send an unauthenticated request when no arguments are passed to .usingAuth()', function(done) {
+        // hack this using 'me' in case test apps have sandbox permissions
+        var entity = new UsergridEntity({
+            uuid: 'me',
+            type: 'users'
+        })
+        entity.usingAuth().reload(client, function(error, usergridResponse) {
+            usergridResponse.request.headers.should.not.have.property('authentication')
+            usergridResponse.ok.should.be.false()
+            error.name.should.equal('service_resource_not_found')
+            done()
+        })
+    })
 })
