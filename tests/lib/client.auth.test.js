@@ -265,8 +265,8 @@ describe('usingAuth()', function() {
         })
     })
 
-    it('client.tempAuth should be invalid after making a request ad-hoc authentication', function(done) {
-        client.tempAuth.isValid.should.be.false()
+    it('client.tempAuth should be destroyed after making a request with ad-hoc authentication', function(done) {
+        should(client.tempAuth).be.undefined()
         done()
     })
 

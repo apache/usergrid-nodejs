@@ -32,7 +32,7 @@ module.exports = {
             if (ok(client).getIfExists('tempAuth.isValid')) {
                 // if ad-hoc authentication was set in the client, get the token and destroy the auth
                 token = client.tempAuth.token
-                client.tempAuth.destroy()
+                client.tempAuth = undefined
             } else if (ok(client).getIfExists('currentUser.auth.isValid')) {
                 // defaults to using the current user's token
                 token = client.currentUser.auth.token
