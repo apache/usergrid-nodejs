@@ -3,7 +3,8 @@
 var UsergridClient = require('../lib/client'),
     UsergridAuth = require('../lib/auth'),
     Usergrid = require('../usergrid'),
-    helpers = require('../helpers')
+    helpers = require('../helpers'),
+    _ = require('lodash')
 
 
 module.exports = {
@@ -21,7 +22,9 @@ module.exports = {
         return client
     },
     configureTempAuth: function(auth) {
-        if (auth instanceof UsergridAuth) {
+        if (_.isString(auth)) {
+            return new UsergridAuth(auth)
+        } else if (auth instanceof UsergridAuth) {
             return auth
         } else if (!auth || auth === UsergridAuth.NO_AUTH) {
             return UsergridAuth.NO_AUTH
