@@ -18,6 +18,59 @@ var _uuid,
     _slow = 500,
     _timeout = 4000
 
+describe('authFallback', function() {
+
+    this.slow(_slow)
+    this.timeout(_timeout)
+
+    var response, token, client = new UsergridClient()
+    before(function(done) {
+        // authenticate app and remove sandbox permissions
+        client.setAppAuth(config.clientId, config.clientSecret)
+        client.authenticateApp(function(e, r, t) {
+            response = r
+            token = t
+            client.usingAuth(client.appAuth).DELETE('roles/guest/permissions', {
+                permission: "get,post,put,delete:/**"
+            }, function() {
+                done()
+            })
+        })
+    })
+
+    it('should fall back to using no authentication when currentUser is not authenticated and authFallback is set to NONE', function(done) {
+        client.authFallback = UsergridAuth.AUTH_FALLBACK_NONE
+        client.GET('users', function(error, usergridResponse) {
+            should(client.currentUser).be.undefined()
+            usergridResponse.request.headers.should.not.have.property('authorization')
+            error.name.should.equal('unauthorized')
+            usergridResponse.ok.should.be.false()
+            done()
+        })
+    })
+
+    it('should fall back to using the app token when currentUser is not authenticated and authFallback is set to APP', function(done) {
+        client.authFallback = UsergridAuth.AUTH_FALLBACK_APP
+        client.GET('users', function(error, usergridResponse, user) {
+            should(client.currentUser).be.undefined()
+            usergridResponse.request.headers.should.have.property('authorization').equal(util.format('Bearer %s', token))
+            usergridResponse.ok.should.be.true()
+            user.should.be.an.instanceof(UsergridUser)
+            done()
+        })
+    })
+
+    after(function(done) {
+        // re-add sandbox permissions
+        client.authFallback = UsergridAuth.AUTH_FALLBACK_NONE
+        client.usingAuth(client.appAuth).POST('roles/guest/permissions', {
+            permission: "get,post,put,delete:/**"
+        }, function(error, usergridResponse) {
+            done()
+        })
+    })
+})
+
 describe('authenticateApp()', function() {
 
     this.slow(_slow)

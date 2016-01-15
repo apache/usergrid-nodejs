@@ -251,8 +251,8 @@ module.exports = {
         setQs.call(options, args)
         setEntity.call(options, args)
         setQuery.call(options, args)
-        if (!_.isString(options.uuidOrName) && options.query === undefined) {
-            throw new Error('"uuidOrName" or "query" is required when making a DELETE request')
+        if (!_.isString(options.uuidOrName) && options.query === undefined && options.path === undefined) {
+            throw new Error('"uuidOrName", "query", or "path" is required when making a DELETE request')
         }
         return options
     },
