@@ -22,12 +22,12 @@ module.exports = {
         return client
     },
     configureTempAuth: function(auth) {
-        if (_.isString(auth)) {
+        if (_.isString(auth) && auth !== UsergridAuth.NO_AUTH) {
             return new UsergridAuth(auth)
-        } else if (auth instanceof UsergridAuth) {
-            return auth
         } else if (!auth || auth === UsergridAuth.NO_AUTH) {
             return UsergridAuth.NO_AUTH
+        } else if (auth instanceof UsergridAuth) {
+            return auth
         } else {
             return undefined
         }
