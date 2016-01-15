@@ -13,7 +13,6 @@ var urljoin = require('url-join'),
 
 module.exports = {
     uri: function(client, options) {
-        console.log(options.uuidOrName)
         return urljoin(
             client.baseUrl,
             client.orgId,
@@ -104,9 +103,7 @@ module.exports = {
         options.query = _.first([options.query, args[0]].filter(function(property) {
             return (property instanceof UsergridQuery)
         }))
-        options.uuidOrName = _.last([options.uuidOrName, options.uuid, options.name, args[1]].filter(function(property) {
-            return (property)
-        }))
+        options.uuidOrName = _.last([options.uuidOrName, options.uuid, options.name, args[1]].filter(_.isString))
 
         options.entity = _.first([options.entity, args[0]].filter(function(property) {
             return (property instanceof UsergridEntity)
