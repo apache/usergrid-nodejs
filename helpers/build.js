@@ -26,21 +26,25 @@ module.exports = {
             'User-Agent': util.format("usergrid-nodejs/v%s", version)
         }
         var token
-        if (ok(client).getIfExists('tempAuth.isValid')) {
-            // if ad-hoc authentication was set in the client, get the token and destroy the auth
-            token = client.tempAuth.token
-            client.tempAuth.destroy()
-        } else if (ok(client).getIfExists('authFallback') === UsergridAuth.AuthFallback.APP && ok(client).getIfExists('appAuth.isValid')) {
-            // if auth-fallback is set to APP, this request will make a call using the application token
-            token = client.appAuth.token
-        } else if (ok(client).getIfExists('currentUser.auth.isValid')) {
-            // defaults to using the current user's token
-            token = client.currentUser.auth.token
-        }
-        if (token) {
-            _.assign(headers, {
-                authorization: util.format("Bearer %s", token)
-            })
+        if (ok(client).getIfExists('tempAuth') === UsergridAuth.NO_AUTH) {
+            client.tempAuth = undefined
+        } else {
+            if (ok(client).getIfExists('tempAuth.isValid')) {
+                // if ad-hoc authentication was set in the client, get the token and destroy the auth
+                token = client.tempAuth.token
+                client.tempAuth.destroy()
+            } else if (ok(client).getIfExists('currentUser.auth.isValid')) {
+                // defaults to using the current user's token
+                token = client.currentUser.auth.token
+            } else if (ok(client).getIfExists('authFallback') === UsergridAuth.AuthFallback.APP && ok(client).getIfExists('appAuth.isValid')) {
+                // if auth-fallback is set to APP request will make a call using the application token
+                token = client.appAuth.token
+            }
+            if (token) {
+                _.assign(headers, {
+                    authorization: util.format("Bearer %s", token)
+                })
+            }
         }
         return headers
     },

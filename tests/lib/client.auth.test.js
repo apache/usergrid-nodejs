@@ -239,29 +239,56 @@ describe('usingAuth()', function() {
     this.slow(_slow + 500)
     this.timeout(_timeout)
 
-    var client = new UsergridClient()
+    var client = new UsergridClient(),
+        authFromToken
 
-    it('should authenticate using an ad-hoc token', function(done) {
-        
+    before(function(done) {
         client.authenticateUser({
             username: config.test.username,
             password: config.test.password
-        }, function(err, response, token) {
-            var authFromToken = new UsergridAuth(token)
-            authFromToken.isValid.should.be.true()
-            authFromToken.should.have.property('token')
-            client.usingAuth(authFromToken).GET({
-                path: '/users/me'
-            }, function(error, usergridResponse) {
-                usergridResponse.ok.should.be.true()
-                usergridResponse.should.have.property('user').which.is.an.instanceof(UsergridUser)
-                usergridResponse.user.should.have.property('uuid').which.is.a.uuid()
-                done()
-            })
+        }, function(error, response, token) {
+            authFromToken = new UsergridAuth(token)
+            done()
         })
     })
 
-    it('client.tempAuth should be invalid after making a request ad-hoc authentication', function() {
+    it('should authenticate using an ad-hoc token', function(done) {
+        authFromToken.isValid.should.be.true()
+        authFromToken.should.have.property('token')
+        client.usingAuth(authFromToken).GET({
+            path: '/users/me'
+        }, function(error, usergridResponse) {
+            usergridResponse.ok.should.be.true()
+            usergridResponse.should.have.property('user').which.is.an.instanceof(UsergridUser)
+            usergridResponse.user.should.have.property('uuid').which.is.a.uuid()
+            done()
+        })
+    })
+
+    it('client.tempAuth should be invalid after making a request ad-hoc authentication', function(done) {
         client.tempAuth.isValid.should.be.false()
+        done()
+    })
+
+    it('should send an unauthenticated request when UsergridAuth.NO_AUTH is passed to .usingAuth()', function(done) {
+        client.usingAuth(UsergridAuth.NO_AUTH).GET({
+            path: '/users/me'
+        }, function(error, usergridResponse) {
+            usergridResponse.ok.should.be.false()
+            usergridResponse.request.headers.should.not.have.property('authentication')
+            usergridResponse.should.not.have.property('user')
+            done()
+        })
+    })
+
+    it('should send an unauthenticated request when no arguments are passed to .usingAuth()', function(done) {
+        client.usingAuth().GET({
+            path: '/users/me'
+        }, function(error, usergridResponse) {
+            usergridResponse.ok.should.be.false()
+            usergridResponse.request.headers.should.not.have.property('authentication')
+            usergridResponse.should.not.have.property('user')
+            done()
+        })
     })
 })
