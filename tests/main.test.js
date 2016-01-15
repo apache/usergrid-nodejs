@@ -14,8 +14,8 @@ should.Assertion.add('uuid', function() {
 })
 // end module config
 
-describe('Usergrid', function() {
-    return require('./lib/usergrid.test')
+describe('Usergrid initialization', function() {
+    return require('./lib/usergrid.init.test')
 })
 
 describe('Usergrid singleton', function() {
