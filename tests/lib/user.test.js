@@ -16,18 +16,18 @@ var _slow = 1500,
     _user1 = new UsergridUser({
         username: _username1,
         password: config.test.password
-    })
+    }),
+    client = new UsergridClient(config)
 
 before(function(done) {
 
     this.slow(_slow)
     this.timeout(_timeout)
 
-    var client = new UsergridClient()
     var query = new UsergridQuery('users').not.eq('username', config.test.username).limit(20)
     // clean up old user entities as the UsergridResponse tests rely on this collection containing less than 10 entities
     client.DELETE(query, function() {
-        _user1.create(function(err, usergridResponse, user) {
+        _user1.create(client, function(err, usergridResponse, user) {
             done()
         })
     })
@@ -60,7 +60,7 @@ describe('create()', function() {
             username: _username1,
             password: config.test.password
         })
-        user.create(function(err, usergridResponse) {
+        user.create(client, function(err, usergridResponse) {
             err.should.not.be.null()
             err.should.containDeep({
                 name: 'duplicate_unique_property_exists'
@@ -71,8 +71,7 @@ describe('create()', function() {
     })
 
     it('should create a new user on the server', function(done) {
-        var client = new UsergridClient(config),
-            username = chance.word()
+        var username = chance.word()
         var user = new UsergridUser({
             username: username,
             password: config.test.password
@@ -85,7 +84,7 @@ describe('create()', function() {
             user.should.have.property('activated').true()
             user.should.not.have.property('password')
                 // cleanup
-            user.remove(function(err, response) {
+            user.remove(client, function(err, response) {
                 done()
             })
         })
@@ -99,7 +98,7 @@ describe('login()', function() {
 
     it(util.format("it should log in the user '%s' and receive a token", _username1), function(done) {
         _user1.password = config.test.password
-        _user1.login(function(err, response, token) {
+        _user1.login(client, function(err, response, token) {
             _user1.auth.should.have.property('token').equal(token)
             _user1.should.not.have.property('password')
             _user1.auth.should.not.have.property('password')
@@ -114,7 +113,7 @@ describe('logout()', function() {
     this.timeout(_timeout)
 
     it(util.format("it should log out '%s' and destroy the saved UsergridUserAuth instance", _username1), function(done) {
-        _user1.logout(function(err, response, success) {
+        _user1.logout(client, function(err, response, success) {
             response.ok.should.be.true()
             response.body.action.should.equal("revoked user token")
             _user1.auth.isValid.should.be.false()
@@ -122,24 +121,26 @@ describe('logout()', function() {
         })
     })
 
+    it("it should return an error when attempting to log out a user that does not have a valid token", function(done) {
+        _user1.logout(client, function(err, response, success) {
+            err.should.containDeep({
+                name: 'no_valid_token'
+            })
+            done()
+        })
+    })
+})
+
+describe('logoutAllSessions()', function() {
     it(util.format("it should log out all tokens for the user '%s' destroy the saved UsergridUserAuth instance", _username1), function(done) {
         _user1.password = config.test.password
-        _user1.login(function(err, response, token) {
-            _user1.logoutAllSessions(function(err, response, success) {
+        _user1.login(client, function(err, response, token) {
+            _user1.logoutAllSessions(client, function(err, response, success) {
                 response.ok.should.be.true()
                 response.body.action.should.equal("revoked user tokens")
                 _user1.auth.isValid.should.be.false()
                 done()
             })
-        })
-    })
-
-    it("it should return an error when attempting to log out a user that does not have a valid token", function(done) {
-        _user1.logout(function(err, response, success) {
-            err.should.containDeep({
-                name: 'no_valid_token'
-            })
-            done()
         })
     })
 })
@@ -150,7 +151,7 @@ describe('resetPassword()', function() {
     this.timeout(_timeout)
 
     it(util.format("it should reset the password for '%s' by passing parameters", _username1), function(done) {
-        _user1.resetPassword(config.test.password, '2cool4u', function(err, response, success) {
+        _user1.resetPassword(client, config.test.password, '2cool4u', function(err, response, success) {
             response.ok.should.be.true()
             response.body.action.should.equal("set user password")
             done()
@@ -158,7 +159,7 @@ describe('resetPassword()', function() {
     })
 
     it(util.format("it should reset the password for '%s' by passing an object", _username1), function(done) {
-        _user1.resetPassword({
+        _user1.resetPassword(client, {
             oldPassword: '2cool4u',
             newPassword: config.test.password
         }, function(err, response, success) {
@@ -169,13 +170,13 @@ describe('resetPassword()', function() {
     })
 
     it(util.format("it should not reset the password for '%s' when passing a bad old password", _username1), function(done) {
-        _user1.resetPassword({
+        _user1.resetPassword(client, {
             oldPassword: 'BADOLDPASSWORD',
             newPassword: config.test.password
         }, function(err, response, success) {
             response.ok.should.be.false()
             err.name.should.equal('auth_invalid_username_or_password')
-            _user1.remove(function(err, response) {
+            _user1.remove(client, function(err, response) {
                 done()
             })
         })
@@ -183,7 +184,7 @@ describe('resetPassword()', function() {
 
     it("it should return an error when attempting to reset a password with missing arguments", function() {
         should(function() {
-            _user1.resetPassword('NEWPASSWORD', function() {})
+            _user1.resetPassword(client, 'NEWPASSWORD', function() {})
         }).throw()
     })
 })
@@ -197,7 +198,7 @@ describe('CheckAvailable()', function() {
     var nonExistentUsername = chance.word()
 
     it(util.format("it should return true for username '%s'", config.test.username), function(done) {
-        UsergridUser.CheckAvailable({
+        UsergridUser.CheckAvailable(client, {
             username: config.test.username
         }, function(err, response, exists) {
             exists.should.be.true()
@@ -206,7 +207,7 @@ describe('CheckAvailable()', function() {
     })
 
     it(util.format("it should return true for email '%s'", config.test.email), function(done) {
-        UsergridUser.CheckAvailable({
+        UsergridUser.CheckAvailable(client, {
             email: config.test.email
         }, function(err, response, exists) {
             exists.should.be.true()
@@ -215,7 +216,7 @@ describe('CheckAvailable()', function() {
     })
 
     it(util.format("it should return true for email '%s' and non-existent username '%s'", config.test.email, nonExistentUsername), function(done) {
-        UsergridUser.CheckAvailable({
+        UsergridUser.CheckAvailable(client, {
             email: config.test.email,
             username: nonExistentUsername
         }, function(err, response, exists) {
@@ -225,7 +226,7 @@ describe('CheckAvailable()', function() {
     })
 
     it(util.format("it should return true for non-existent email '%s' and username '%s'", nonExistentEmail, config.test.username), function(done) {
-        UsergridUser.CheckAvailable({
+        UsergridUser.CheckAvailable(client, {
             email: nonExistentEmail,
             username: config.test.username
         }, function(err, response, exists) {
@@ -235,7 +236,7 @@ describe('CheckAvailable()', function() {
     })
 
     it(util.format("it should return true for email '%s' and username '%s'", config.test.email, config.test.username), function(done) {
-        UsergridUser.CheckAvailable({
+        UsergridUser.CheckAvailable(client, {
             email: config.test.email,
             username: config.test.useranme
         }, function(err, response, exists) {
@@ -245,7 +246,7 @@ describe('CheckAvailable()', function() {
     })
 
     it(util.format("it should return false for non-existent email '%s'", nonExistentEmail), function(done) {
-        UsergridUser.CheckAvailable({
+        UsergridUser.CheckAvailable(client, {
             email: nonExistentEmail
         }, function(err, response, exists) {
             exists.should.be.false()
@@ -254,7 +255,7 @@ describe('CheckAvailable()', function() {
     })
 
     it(util.format("it should return false for non-existent username '%s'", nonExistentUsername), function(done) {
-        UsergridUser.CheckAvailable({
+        UsergridUser.CheckAvailable(client, {
             username: nonExistentUsername
         }, function(err, response, exists) {
             exists.should.be.false()
@@ -263,7 +264,7 @@ describe('CheckAvailable()', function() {
     })
 
     it(util.format("it should return false for non-existent email '%s' and non-existent username '%s'", nonExistentEmail, nonExistentUsername), function(done) {
-        UsergridUser.CheckAvailable({
+        UsergridUser.CheckAvailable(client, {
             email: nonExistentEmail,
             username: nonExistentUsername
         }, function(err, response, exists) {

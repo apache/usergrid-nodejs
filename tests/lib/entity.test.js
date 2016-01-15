@@ -6,6 +6,7 @@ var should = require('should'),
     UsergridClient = require('../../lib/client'),
     UsergridEntity = require('../../lib/entity'),
     UsergridQuery = require('../../lib/query'),
+    UsergridAuth = require('../../lib/auth'),
     _ = require('lodash')
 
 var _slow = 1500,
@@ -332,7 +333,7 @@ describe('remove()', function() {
             entity.remove(client, function(err, deleteResponse) {
                 client.isSharedInstance.should.be.false()
                 deleteResponse.ok.should.be.true()
-                // best practice is to desroy the 'entity' instance here, because it no longer exists on the server
+                    // best practice is to desroy the 'entity' instance here, because it no longer exists on the server
                 entity = null
                 done()
             })
@@ -370,7 +371,7 @@ describe('connect()', function() {
     it('should connect entities by passing a target UsergridEntity object as a parameter', function(done) {
         var relationship = "foos"
 
-        entity1.connect(relationship, entity2, function(err, usergridResponse) {
+        entity1.connect(client, relationship, entity2, function(err, usergridResponse) {
             usergridResponse.ok.should.be.true()
             client.getConnections(UsergridClient.Connections.DIRECTION_OUT, entity1, relationship, function(err, usergridResponse) {
                 usergridResponse.first.metadata.connecting[relationship].should.equal(urljoin(
@@ -390,7 +391,7 @@ describe('connect()', function() {
     it('should connect entities by passing target uuid as a parameter', function(done) {
         var relationship = "bars"
 
-        entity1.connect(relationship, entity2.uuid, function(err, usergridResponse) {
+        entity1.connect(client, relationship, entity2.uuid, function(err, usergridResponse) {
             usergridResponse.ok.should.be.true()
             client.getConnections(UsergridClient.Connections.DIRECTION_OUT, entity1, relationship, function(err, usergridResponse) {
                 usergridResponse.first.metadata.connecting[relationship].should.equal(urljoin(
@@ -410,7 +411,7 @@ describe('connect()', function() {
     it('should connect entities by passing target type and name as parameters', function(done) {
         var relationship = "bazzes"
 
-        entity1.connect(relationship, entity2.type, entity2.name, function(err, usergridResponse) {
+        entity1.connect(client, relationship, entity2.type, entity2.name, function(err, usergridResponse) {
             usergridResponse.ok.should.be.true()
             client.getConnections(UsergridClient.Connections.DIRECTION_OUT, entity1, relationship, function(err, usergridResponse) {
                 usergridResponse.first.metadata.connecting[relationship].should.equal(urljoin(
@@ -456,7 +457,7 @@ describe('getConnections()', function() {
 
         var relationship = "foos"
 
-        entity1.getConnections(UsergridClient.Connections.DIRECTION_OUT, relationship, function(err, usergridResponse) {
+        entity1.getConnections(client, UsergridClient.Connections.DIRECTION_OUT, relationship, function(err, usergridResponse) {
             usergridResponse.first.metadata.connecting[relationship].should.equal(urljoin(
                 "/",
                 config.test.collection,
@@ -476,7 +477,7 @@ describe('getConnections()', function() {
 
         var relationship = "foos"
 
-        entity2.getConnections(UsergridClient.Connections.DIRECTION_IN, relationship, function(err, usergridResponse) {
+        entity2.getConnections(client, UsergridClient.Connections.DIRECTION_IN, relationship, function(err, usergridResponse) {
             usergridResponse.first.metadata.connections[relationship].should.equal(urljoin(
                 "/",
                 config.test.collection,
@@ -512,7 +513,7 @@ describe('disconnect()', function() {
 
         var relationship = "foos"
 
-        entity1.disconnect(relationship, entity2, function(err, usergridResponse) {
+        entity1.disconnect(client, relationship, entity2, function(err, usergridResponse) {
             usergridResponse.ok.should.be.true()
             client.getConnections(UsergridClient.Connections.DIRECTION_OUT, entity1, relationship, function(err, usergridResponse) {
                 usergridResponse.entities.should.be.an.Array().with.lengthOf(0)
@@ -521,13 +522,13 @@ describe('disconnect()', function() {
         })
     })
 
-    it('should disconnect entities by passing source type, source uuid, and target uuid as parameters', function(done) {
+    it('should disconnect entities by passing target uuid as a parameter', function(done) {
         var entity1 = response.first
         var entity2 = response.last
 
         var relationship = "bars"
 
-        entity1.disconnect(relationship, entity2.uuid, function(err, usergridResponse) {
+        entity1.disconnect(client, relationship, entity2.uuid, function(err, usergridResponse) {
             usergridResponse.ok.should.be.true()
             client.getConnections(UsergridClient.Connections.DIRECTION_OUT, entity1, relationship, function(err, usergridResponse) {
                 usergridResponse.entities.should.be.an.Array().with.lengthOf(0)
@@ -542,7 +543,7 @@ describe('disconnect()', function() {
 
         var relationship = "bazzes"
 
-        client.disconnect(entity1.type, entity1.name, relationship, entity2.type, entity2.name, function(err, usergridResponse) {
+        entity1.disconnect(client, relationship, entity2.type, entity2.name, function(err, usergridResponse) {
             usergridResponse.ok.should.be.true()
             client.getConnections(UsergridClient.Connections.DIRECTION_OUT, entity1, relationship, function(err, usergridResponse) {
                 usergridResponse.entities.should.be.an.Array().with.lengthOf(0)
@@ -556,7 +557,55 @@ describe('disconnect()', function() {
         var entity2 = response.last
 
         should(function() {
-            client.disconnect(entity1.type, entity1.name, "fails", entity2.name, function() {})
+            entity1.disconnect("fails", entity2.name, function() {})
         }).throw()
     })
+})
+
+describe('usingAuth()', function() {
+
+    this.slow(_slow + 500)
+    this.timeout(_timeout)
+
+    var client = new UsergridClient(),
+        authFromToken = new UsergridAuth('BADTOKEN')
+
+    it('should fail reload an entity when using a bad ad-hoc token', function(done) {
+        client.GET(config.test.collection, function(err, getResponse) {
+            var entity = new UsergridEntity(getResponse.first)
+            entity.usingAuth(authFromToken).reload(client, function(error, usergridResponse) {
+                usergridResponse.ok.should.be.false()
+                usergridResponse.request.headers.should.not.have.property('authentication')
+                error.name.should.equal('auth_bad_access_token')
+                done()
+            })
+        })
+    })
+
+    // it('client.tempAuth should be destroyed after making a request with ad-hoc authentication', function(done) {
+    //     should(client.tempAuth).be.undefined()
+    //     done()
+    // })
+
+    // it('should send an unauthenticated request when UsergridAuth.NO_AUTH is passed to .usingAuth()', function(done) {
+    //     client.usingAuth(UsergridAuth.NO_AUTH).GET({
+    //         path: '/users/me'
+    //     }, function(error, usergridResponse) {
+    //         usergridResponse.ok.should.be.false()
+    //         usergridResponse.request.headers.should.not.have.property('authentication')
+    //         usergridResponse.should.not.have.property('user')
+    //         done()
+    //     })
+    // })
+
+    // it('should send an unauthenticated request when no arguments are passed to .usingAuth()', function(done) {
+    //     client.usingAuth().GET({
+    //         path: '/users/me'
+    //     }, function(error, usergridResponse) {
+    //         usergridResponse.ok.should.be.false()
+    //         usergridResponse.request.headers.should.not.have.property('authentication')
+    //         usergridResponse.should.not.have.property('user')
+    //         done()
+    //     })
+    // })
 })

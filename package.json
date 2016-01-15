@@ -2,7 +2,7 @@
   "author": "Brandon Shelley",
   "dependencies": {
     "async": "latest",
-    "lodash": "latest",
+    "lodash": "~4.0",
     "lodash-inflection": "latest",
     "lodash-uuid": "latest",
     "objectkit": "latest",

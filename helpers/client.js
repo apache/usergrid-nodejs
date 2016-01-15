@@ -1,7 +1,10 @@
 'use strict'
 
-var UsergridClient = require('../lib/client')
-var Usergrid = require('../usergrid')
+var UsergridClient = require('../lib/client'),
+    UsergridAuth = require('../lib/auth'),
+    Usergrid = require('../usergrid'),
+    helpers = require('../helpers')
+
 
 module.exports = {
     validate: function(args) {
@@ -13,8 +16,17 @@ module.exports = {
         } else if (Usergrid.isInitialized) {
             client = Usergrid
         } else {
-            throw new Error("This method requires a valid UsergridClient instance as an argument (or the Usergrid shared instance to be initialized)")
+            throw new Error("this method requires either the Usergrid shared instance to be initialized or a UsergridClient instance as the first argument")
         } 
         return client
+    },
+    configureTempAuth: function(auth) {
+        if (auth instanceof UsergridAuth) {
+            return auth
+        } else if (!auth || auth === UsergridAuth.NO_AUTH) {
+            return UsergridAuth.NO_AUTH
+        } else {
+            return undefined
+        }
     }
 }
