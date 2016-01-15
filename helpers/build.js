@@ -13,12 +13,13 @@ var urljoin = require('url-join'),
 
 module.exports = {
     uri: function(client, options) {
+        console.log(options.uuidOrName)
         return urljoin(
             client.baseUrl,
             client.orgId,
             client.appId,
             options.path || options.type,
-            _.isString(options.uuidOrName) ? options.uuidOrName : ""
+            _.first([options.uuidOrName, options.uuid, options.name, ""].filter(_.isString))
         )
     },
     headers: function(client) {
