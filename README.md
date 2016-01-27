@@ -6,6 +6,8 @@ Node.js SDK 2.0 for Usergrid
 
 Currently a work in progress; documentation and implementation are subject to change.
 
+> **Note:** Usergrid 2.0 SDK is **not** backwards compatible with 0.1X.XX versions of the SDK as 2.0. If you are currently using 0.1X in a production application, see below for using the 0.1X version with your application.
+
 ### Current release
 
 [Release Candidate 0](https://github.com/r3mus/usergrid-nodejs/releases), available here or on npm
@@ -25,15 +27,17 @@ Please open an [issue](https://github.com/r3mus/usergrid-nodejs/issues/new)
 
 ### Installation
 
-To install the latest **stable** build:
+To install the latest **stable** 0.1X build:
 
     npm install usergrid
+
+(Or add `"usergrid": "~0.10.11"` to your package.json)
 
 To install the 2.0 release candidates, install from [npm](https://www.npmjs.com/package/usergrid), specifying the version `~2.0.0-rc`:
 
     npm install usergrid@~2.0.0-rc
 
-(Or add `usergrid: ~2.0.0-rc` to your package.json)
+(Or add `"usergrid": "~2.0.0-rc"` to your package.json)
 
 If you want access to the latest development build (you will need to run `npm install` to keep it up to date):
 
@@ -51,7 +55,7 @@ There are two fundamental ways to use the new Node SDK:
 	    Usergrid.init({
 	        orgId: ...,
 	        appId: ...
-	    }
+	    })
 	    
 	    // or from a config file, see config.sample.json
 	    
