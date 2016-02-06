@@ -6,7 +6,7 @@ Node.js SDK 2.0 for Usergrid
 
 Currently a work in progress; documentation and implementation are subject to change.
 
-> **Note:** Node.js SDK 2.0 for Usergrid is **not** backwards compatible with 0.1X versions of the SDK. If your application is dependent on the 0.1X set of Node.js APIs, you will need to continue using the 0.1X version (see below for installation instructions).
+_**Note:** This Node.js SDK 2.0 for Usergrid is **not** backwards compatible with 0.1X versions of the SDK. If your application is dependent on the 0.1X set of Node.js APIs, you will need to continue using the 0.1X version (see below for installation instructions)._
 
 ### Current release
 
