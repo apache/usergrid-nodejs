@@ -2,6 +2,7 @@
 
 // module config
 var should = require('should'),
+    validator = require('validator'),
     _ = require('lodash')
 
 _.mixin(require('lodash-uuid'))
@@ -9,9 +10,17 @@ _.mixin(require('lodash-uuid'))
 should.Assertion.add('uuid', function() {
     this.params = {
         operator: 'to be a valid uuid'
-    };
+    }
     this.assert(_.isUuid(this.obj))
 })
+
+should.Assertion.add('buffer', function() {
+    this.params = {
+        operator: 'to be buffer data'
+    }
+    this.assert(Buffer.isBuffer(this.obj))
+})
+
 // end module config
 
 describe('Usergrid initialization', function() {
@@ -60,4 +69,8 @@ describe('UsergridEntity', function() {
 
 describe('UsergridUser', function() {
     return require('./lib/user.test')
+})
+
+describe('UsergridAsset', function() {
+    return require('./lib/asset.test')
 })

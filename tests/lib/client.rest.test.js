@@ -3,6 +3,7 @@
 var should = require('should'),
     urljoin = require('url-join'),
     config = require('../../helpers').config,
+    chance = new require('chance').Chance(),
     UsergridClient = require('../../lib/client'),
     UsergridEntity = require('../../lib/entity'),
     UsergridQuery = require('../../lib/query'),
@@ -135,6 +136,22 @@ describe('POST()', function() {
         })
     })
 
+    it('should support creating an entity by passing a UsergridEntity object with a unique name', function(done) {
+
+        this.slow(_slow)
+        this.timeout(_timeout)
+
+        var entity = new UsergridEntity({
+            type: config.test.collection,
+            name: chance.word()
+        })
+        client.POST(entity, function(err, usergridResponse) {
+            usergridResponse.entity.should.be.an.Object().with.property('name').equal(entity.name)
+            usergridResponse.entity.remove(client)
+            done()
+        })
+    })
+
     it('should support creating an entity by passing type and a body object', function(done) {
 
         this.slow(_slow)
@@ -203,9 +220,7 @@ describe('POST()', function() {
         }
 
         client.POST(options, function(err, usergridResponse) {
-            usergridResponse.entities.forEach(function(entity) {
-                entity.should.be.an.Object().with.property('restaurant').equal(entity.restaurant)
-            })
+            usergridResponse.entity.should.be.an.Object().with.property('restaurant').equal(usergridResponse.entity.restaurant)
             done()
         })
     })

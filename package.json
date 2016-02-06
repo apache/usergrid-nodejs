@@ -2,12 +2,16 @@
   "author": "Brandon Shelley",
   "dependencies": {
     "async": "latest",
+    "file-type": "^3.4.0",
     "lodash": "~4.0",
     "lodash-inflection": "latest",
     "lodash-uuid": "latest",
     "objectkit": "latest",
+    "read-chunk": "^1.0.1",
     "request": "latest",
-    "url-join": "latest"
+    "through2": "^2.0.0",
+    "url-join": "latest",
+    "validator": "^4.5.0"
   },
   "description": "The official Node.js SDK for Usergrid",
   "devDependencies": {

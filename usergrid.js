@@ -1,7 +1,5 @@
 'use strict'
 
-var UsergridClient = require('./lib/client')
-
 var Usergrid = {
     isInitialized: false,
     isSharedInstance: true,
@@ -10,6 +8,7 @@ var Usergrid = {
         if (self.isInitialized) {
             return self
         }
+        var UsergridClient = require('./lib/client')
         Object.setPrototypeOf(Usergrid, new UsergridClient(options))
         UsergridClient.call(self)
         self.isInitialized = true

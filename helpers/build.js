@@ -6,6 +6,7 @@ var urljoin = require('url-join'),
     UsergridQuery = require('../lib/query'),
     UsergridEntity = require('../lib/entity'),
     UsergridAuth = require('../lib/auth'),
+    UsergridAsset = require('../lib/asset'),
     util = require('util'),
     version = require('../package.json').version,
     ok = require('objectkit'),
@@ -13,9 +14,41 @@ var urljoin = require('url-join'),
 
 var assignPrefabOptions = function(args) {
     // if a preformatted options argument passed, assign it to options
-    if (_.isObject(args[0]) && !_.isFunction(args[0]) && args.length <= 2) {
+    if (_.isObject(args[0]) && !_.isFunction(args[0]) && ok(this).has("method")) {
         _.assign(this, args[0])
     }
+    return this
+}
+
+var setEntity = function(args) {
+    this.entity = _.first([this.entity, args[0]].filter(function(property) {
+        return (property instanceof UsergridEntity)
+    }))
+    if (this.entity !== undefined) {
+        this.type = this.entity.type
+    }
+    return this
+}
+
+var setAsset = function(args) {
+    this.asset = _.first([this.asset, ok(this).getIfExists('entity.asset'), args[1], args[0]].filter(function(property) {
+        return (property instanceof UsergridAsset)
+    }))
+    return this
+}
+
+var setUuidOrName = function(args) {
+    this.uuidOrName = _.first([
+        this.uuidOrName,
+        this.uuid,
+        this.name,
+        ok(this).getIfExists('entity.uuid'),
+        ok(this).getIfExists('body.uuid'),
+        ok(this).getIfExists('entity.name'),
+        ok(this).getIfExists('body.name'),
+        ok(args).getIfExists('2'),
+        ok(args).getIfExists('1')
+    ].filter(_.isString))
     return this
 }
 
@@ -48,31 +81,11 @@ var setQuery = function(args) {
 
 var setBody = function(args) {
     this.body = _.first([this.entity, this.body, args[2], args[1], args[0]].filter(function(property) {
-        return _.isObject(property) && !_.isFunction(property) && !(property instanceof UsergridQuery)
+        return _.isObject(property) && !_.isFunction(property) && !(property instanceof UsergridQuery) && !(property instanceof UsergridAsset)
     }))
-    if (this.body === undefined) {
+    if (this.body === undefined && this.asset === undefined) {
         throw new Error(util.format('"body" is required when making a %s request', this.method))
     }
-    return this
-}
-
-var setUuidOrName = function(args) {
-    this.uuidOrName = _.first([
-        this.uuidOrName,
-        this.uuid,
-        this.name,
-        ok(this).getIfExists('entity.uuid'),
-        ok(this).getIfExists('body.uuid'),
-        _.isArray(args) ? args[2] : undefined,
-        _.isArray(args) ? args[1] : undefined
-    ].filter(_.isString))
-    return this
-}
-
-var setEntity = function(args) {
-    this.entity = _.first([this.entity, args[0]].filter(function(property) {
-        return (property instanceof UsergridEntity)
-    }))
     return this
 }
 
@@ -83,7 +96,14 @@ module.exports = {
             client.orgId,
             client.appId,
             options.path || options.type,
-            _.first([options.uuidOrName, options.uuid, options.name, ""].filter(_.isString))
+            options.method !== "POST" ? _.first([
+                options.uuidOrName,
+                options.uuid,
+                options.name,
+                ok(options).getIfExists('entity.uuid'),
+                ok(options).getIfExists('entity.name'),
+                ""
+            ].filter(_.isString)) : ""
         )
     },
     headers: function(client) {
@@ -158,11 +178,11 @@ module.exports = {
             callback: helpers.cb(args)
         }
         assignPrefabOptions.call(options, args)
+        setEntity.call(options, args)
         setUuidOrName.call(options, args)
         setPathOrType.call(options, args)
         setQs.call(options, args)
         setQuery.call(options, args)
-        setEntity.call(options, args)
         return options
     },
     PUT: function(client, args) {
@@ -191,12 +211,12 @@ module.exports = {
             callback: helpers.cb(args)
         }
         assignPrefabOptions.call(options, args)
+        setEntity.call(options, args)
+        setAsset.call(options, args)
         setBody.call(options, args)
         setUuidOrName.call(options, args)
         setPathOrType.call(options, args)
         setQuery.call(options, args)
-        setEntity.call(options, args)
-
         return options
     },
     POST: function(client, args) {
@@ -220,6 +240,8 @@ module.exports = {
             callback: helpers.cb(args)
         }
         assignPrefabOptions.call(options, args)
+        setEntity.call(options, args)
+        setAsset.call(options, args)
         setBody.call(options, args)
         setPathOrType.call(options, args)
         return options
@@ -246,14 +268,11 @@ module.exports = {
             callback: helpers.cb(args)
         }
         assignPrefabOptions.call(options, args)
+        setEntity.call(options, args)
         setUuidOrName.call(options, args)
         setPathOrType.call(options, args)
         setQs.call(options, args)
-        setEntity.call(options, args)
         setQuery.call(options, args)
-        if (!_.isString(options.uuidOrName) && options.query === undefined && options.path === undefined) {
-            throw new Error('"uuidOrName", "query", or "path" is required when making a DELETE request')
-        }
         return options
     },
     connection: function(client, method, args) {
@@ -414,5 +433,30 @@ module.exports = {
         )
 
         return options
+    },
+    qs: function(options) {
+        return (options.query instanceof UsergridQuery) ? {
+            ql: options.query._ql || undefined,
+            limit: options.query._limit,
+            cursor: options.query._cursor
+        } : options.qs
+    },
+    formData: function(options) {
+        if (ok(options).getIfExists('asset.data')) {
+            var formData = {}
+            formData.file = {
+                value: options.asset.data,
+                options: {
+                    filename: ok(options).getIfExists('asset.filename') || UsergridAsset.DEFAULT_FILE_NAME,
+                    contentType: ok(options).getIfExists('asset.contentType') || 'application/octet-stream'
+                }
+            } 
+            if (ok(options).has('asset.name')) {
+                formData.name = options.asset.name
+            }
+            return formData
+        } else {
+            return undefined
+        }
     }
 }
