@@ -333,7 +333,7 @@ describe('PUT()', function() {
     it('should support updating a set of entities by passing an UsergridQuery object', function(done) {
 
         this.slow(_slow + 1000)
-        this.timeout(_timeout + 6000)
+        this.timeout(_timeout + 10000)
 
         var query = new UsergridQuery(config.test.collection).eq('cuisine', 'pizza').limit(2)
         var body = {

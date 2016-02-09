@@ -16,7 +16,11 @@ var _slow = 1500,
     filename = 'old_man',
     file = __dirname + '/image.jpg',
     testFile = __dirname + '/image_test.jpg',
-    expectedContentLength = 109055    
+    expectedContentLength = 109055,
+    assetEntity = new UsergridEntity({
+        type: config.test.collection,
+        info: "assetTestEntity"
+    })
 
 describe('putProperty()', function() {
     it('should set the value for a given key if the key does not exist', function() {
@@ -348,7 +352,7 @@ describe('remove()', function() {
 })
 
 describe('attachAsset()', function(done) {
-    
+
     var asset = new UsergridAsset(filename, file),
         entity = new UsergridEntity({
             type: config.test.collection,
@@ -373,11 +377,7 @@ describe('uploadAsset()', function(done) {
     this.slow(_slow)
     this.timeout(_timeout)
 
-    var asset = new UsergridAsset(filename, file),
-        entity = new UsergridEntity({
-            type: config.test.collection,
-            info: "attachAssetTest"
-        })
+    var asset = new UsergridAsset(filename, file)
     before(function(done) {
         fs.readFile(file, function(err, data) {
             asset.data = data
@@ -385,13 +385,32 @@ describe('uploadAsset()', function(done) {
         })
     })
 
-    it('should attach a UsergridAsset to the entity', function(done) {
+    it('should upload an image asset to the remote entity', function(done) {
         var client = new UsergridClient(config)
-        entity.attachAsset(asset)
-        entity.uploadAsset(client, function(err, usergridResponse, entity) {
+        assetEntity.attachAsset(asset)
+        assetEntity.uploadAsset(client, function(err, usergridResponse, entity) {
+            assetEntity = entity
             entity.should.have.property('file-metadata')
             entity['file-metadata'].should.have.property('content-length').equal(expectedContentLength)
             entity['file-metadata'].should.have.property('content-type').equal('image/jpeg')
+            done()
+        })
+    })
+})
+
+describe('downloadAsset()', function(done) {
+
+    this.slow(_slow)
+    this.timeout(_timeout)
+
+    it('should download a an image from the remote entity', function(done) {
+        var client = new UsergridClient(config)
+        assetEntity.downloadAsset(client, 'image/jpeg', function(err, usergridResponse, entityWithAsset) {
+            entityWithAsset.should.have.property('asset').which.is.an.instanceof(UsergridAsset)
+            entityWithAsset.asset.should.have.property('contentType').equal(assetEntity['file-metadata']['content-type'])
+            entityWithAsset.asset.should.have.property('contentLength').equal(assetEntity['file-metadata']['content-length'])
+            // clean up the now un-needed asset entity
+            entityWithAsset.remove(client)
             done()
         })
     })

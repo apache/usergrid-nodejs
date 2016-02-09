@@ -106,10 +106,11 @@ module.exports = {
             ].filter(_.isString)) : ""
         )
     },
-    headers: function(client) {
+    headers: function(client, options) {
         var headers = {
             'User-Agent': util.format("usergrid-nodejs/v%s", version)
         }
+        _.assign(headers, options.headers)
         var token
         if (ok(client).getIfExists('tempAuth') === UsergridAuth.NO_AUTH) {
             client.tempAuth = undefined

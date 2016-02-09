@@ -242,10 +242,10 @@ describe('authenticateUser()', function() {
         var newClient = new UsergridClient()
         var ttlInMilliseconds = 500000
         var userAuth = new UsergridUserAuth(config.test.username, config.test.password, ttlInMilliseconds)
-        client.authenticateUser(userAuth, function(err, response, token) {
-            response.ok.should.be.true()
+        client.authenticateUser(userAuth, function(err, usergridResponse, token) {
+            usergridResponse.ok.should.be.true()
             client.currentUser.auth.token.should.equal(token)
-            response.body.expires_in.should.equal(ttlInMilliseconds / 1000)
+            usergridResponse.body.expires_in.should.equal(ttlInMilliseconds / 1000)
             done()
         })
     })

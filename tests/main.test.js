@@ -23,43 +23,43 @@ should.Assertion.add('buffer', function() {
 
 // end module config
 
-describe.skip('Usergrid initialization', function() {
+describe('Usergrid initialization', function() {
     return require('./lib/usergrid.init.test')
 })
 
-describe.skip('Usergrid singleton', function() {
+describe('Usergrid singleton', function() {
     return require('./lib/usergrid.singleton.test')
 })
 
-describe.skip('Usergrid teardown', function() {
+describe('Usergrid teardown', function() {
     return require('./lib/usergrid.teardown.test')
 })
 
-describe.skip('UsergridClient initialization', function() {
+describe('UsergridClient initialization', function() {
     return require('./lib/client.init.test')
 })
 
-describe.skip('UsergridClient REST operations', function() {
+describe('UsergridClient REST operations', function() {
     return require('./lib/client.rest.test')
 })
 
-describe.skip('UsergridClient connections', function() {
+describe('UsergridClient connections', function() {
     return require('./lib/client.connections.test')
 })
 
-describe.skip('UsergridClient authentication', function() {
+describe('UsergridClient authentication', function() {
     return require('./lib/client.auth.test')
 })
 
-describe.skip('UsergridQuery', function() {
+describe('UsergridQuery', function() {
     return require('./lib/query.test')
 })
 
-describe.skip('UsergridResponse', function() {
+describe('UsergridResponse', function() {
     return require('./lib/response.test')
 })
 
-describe.skip('UsergridResponseError', function() {
+describe('UsergridResponseError', function() {
     return require('./lib/responseError.test')
 })
 
@@ -67,10 +67,10 @@ describe('UsergridEntity', function() {
     return require('./lib/entity.test')
 })
 
-describe.skip('UsergridUser', function() {
+describe('UsergridUser', function() {
     return require('./lib/user.test')
 })
 
-describe.skip('UsergridAsset', function() {
+describe('UsergridAsset', function() {
     return require('./lib/asset.test')
 })
