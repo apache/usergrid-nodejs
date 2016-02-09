@@ -7,10 +7,16 @@ var should = require('should'),
     UsergridEntity = require('../../lib/entity'),
     UsergridQuery = require('../../lib/query'),
     UsergridAuth = require('../../lib/auth'),
+    UsergridAsset = require('../../lib/asset'),
+    fs = require('fs'),
     _ = require('lodash')
 
 var _slow = 1500,
-    _timeout = 4000
+    _timeout = 4000,
+    filename = 'old_man',
+    file = __dirname + '/image.jpg',
+    testFile = __dirname + '/image_test.jpg',
+    expectedContentLength = 109055    
 
 describe('putProperty()', function() {
     it('should set the value for a given key if the key does not exist', function() {
@@ -337,6 +343,56 @@ describe('remove()', function() {
                 entity = null
                 done()
             })
+        })
+    })
+})
+
+describe('attachAsset()', function(done) {
+    
+    var asset = new UsergridAsset(filename, file),
+        entity = new UsergridEntity({
+            type: config.test.collection,
+            info: "attachAssetTest"
+        })
+    before(function(done) {
+        fs.readFile(file, function(err, data) {
+            asset.data = data
+            done()
+        })
+    })
+
+    it('should attach a UsergridAsset to the entity', function(done) {
+        entity.attachAsset(asset)
+        entity.should.have.property('asset').equal(asset)
+        done()
+    })
+})
+
+describe('uploadAsset()', function(done) {
+
+    this.slow(_slow)
+    this.timeout(_timeout)
+
+    var asset = new UsergridAsset(filename, file),
+        entity = new UsergridEntity({
+            type: config.test.collection,
+            info: "attachAssetTest"
+        })
+    before(function(done) {
+        fs.readFile(file, function(err, data) {
+            asset.data = data
+            done()
+        })
+    })
+
+    it('should attach a UsergridAsset to the entity', function(done) {
+        var client = new UsergridClient(config)
+        entity.attachAsset(asset)
+        entity.uploadAsset(client, function(err, usergridResponse, entity) {
+            entity.should.have.property('file-metadata')
+            entity['file-metadata'].should.have.property('content-length').equal(expectedContentLength)
+            entity['file-metadata'].should.have.property('content-type').equal('image/jpeg')
+            done()
         })
     })
 })

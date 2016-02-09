@@ -9,7 +9,6 @@
     "objectkit": "latest",
     "read-chunk": "^1.0.1",
     "request": "latest",
-    "through2": "^2.0.0",
     "url-join": "latest",
     "validator": "^4.5.0"
   },
