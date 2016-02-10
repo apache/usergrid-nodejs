@@ -202,8 +202,8 @@ describe('authenticateUser()', function() {
 
     it('should fail when called without a email (or username) and password', function() {
         should(function() {
-            var client = new UsergridClient()
-            client.authenticateUser({})
+            var badClient = new UsergridClient()
+            badClient.authenticateUser({})
         }).throw()
     })
 
@@ -236,6 +236,18 @@ describe('authenticateUser()', function() {
     it('client.currentUser and client.currentUser.auth should not store password', function() {
         client.currentUser.should.not.have.property('password')
         client.currentUser.auth.should.not.have.property('password')
+    })
+
+    it('should support an optional bool to not set as current user', function(done) {
+        var noCurrentUserClient = new UsergridClient()
+        noCurrentUserClient.authenticateUser({
+            username: config.test.username,
+            password: config.test.password,
+            email: email
+        }, false, function(err, r, t) {
+            should(noCurrentUserClient.currentUser).be.undefined()
+            done()
+        })
     })
 
     it('should support passing a UsergridUserAuth instance with a custom ttl', function(done) {
