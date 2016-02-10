@@ -75,7 +75,7 @@ The Usergrid Node.js SDK is built on top of [request](https://github.com/request
 
 When making any RESTful call, a `type` parameter (or `path`) is always required. Whether you specify this as an argument or in an object as a parameter is up to you.
 
-### GET requests
+### GET
 
 **GET entities in a collection**
 
@@ -106,7 +106,7 @@ When making any RESTful call, a `type` parameter (or `path`) is always required.
         // entities is an array of UsergridEntity objects matching the specified query
     })
     
-### POST and PUT requests
+### POST and PUT
 
 POST and PUT requests both require a JSON body payload. You can pass either a standard JavaScript object or a `UsergridEntity` instance. While the former works in principle, best practise is to use a `UsergridEntity` wherever practical. When an entity has a uuid or name property and already exists on the server, use a PUT request to update it. If it does not, use POST to create it.
 
@@ -196,7 +196,7 @@ POST and PUT requests both require a JSON body payload. You can pass either a st
         /*
     })
     
-### DELETE requests
+### DELETE
 
 DELETE requests require either a specific entity or a `UsergridQuery` object to be passed as an argument.
     
@@ -243,7 +243,7 @@ DELETE requests require either a specific entity or a `UsergridQuery` object to 
         // entity is now deleted on the server and the local instance should be destroyed
     })
 
-## UsergridResponse
+## UsergridResponse object
 
 `UsergridResponse` implements several Usergrid-specific enhancements to [request](https://github.com/request/request). Notably:
 
@@ -298,6 +298,42 @@ Examples:
         // third param is a single user object
         // you can also access:
         //     usergridResponse.user
+    })
+    
+## Connections
+
+Connections can be managed using `Usergrid.connect()`, `Usergrid.disconnect()`, and `Usergrid.getConnections()`, or entity convenience methods of the same name.
+
+### connect
+
+**Create a connection between two entities**
+
+    Usergrid.connect(entity1, 'relationship', entity2, function(err, usergridResponse) {
+        // entity1 now has an outbound connection to entity2
+    })
+    
+### getConnections
+
+**Retrieve outbound connections**
+
+    client.getConnections(UsergridClient.Connections.DIRECTION_OUT, entity1, 'relationship', function(err, usergridResponse, entities) {
+        // entities is an array of entities that entity1 is connected to via 'relationship'
+        // in this case, we'll see entity2 in the array
+    })
+    
+**Retrieve inbound connections**
+
+    client.getConnections(UsergridClient.Connections.DIRECTION_IN, entity2, 'relationship', function(err, usergridResponse, entities) {
+        // entities is an array of entities that connect to entity2 via 'relationship'
+        // in this case, we'll see entity1 in the array
+    })
+    
+### disconnect
+
+**Delete a connection between two entities**
+
+    Usergrid.disconnect(entity1, 'relationship', entity2, function(err, usergridResponse) {
+        // entity1's outbound connection to entity2 has been destroyed
     })
     
 ## Assets
