@@ -75,14 +75,14 @@ describe('init from piped writable stream', function() {
 })
 
 describe('upload via client.POST to a specific entity', function() {
-    
+
     this.slow(_slow)
     this.timeout(_timeout)
 
     var client = new UsergridClient()
     it('should upload a binary asset and create a new entity', function(done) {
         var asset = new UsergridAsset(filename, file)
-            fs.createReadStream(file).pipe(asset).on('finish', function() {
+        fs.createReadStream(file).pipe(asset).on('finish', function() {
             client.POST(config.test.collection, asset, function(err, assetResponse, entityWithAsset) {
                 assetResponse.statusCode.should.equal(200)
                 entityWithAsset.should.have.property('file-metadata')
@@ -91,7 +91,7 @@ describe('upload via client.POST to a specific entity', function() {
                 entityWithAsset.remove(client)
                 done()
             })
-        })  
+        })
     })
 })
 
@@ -117,6 +117,6 @@ describe('upload via client.PUT to a specific entity', function() {
                     done()
                 })
             })
-        })  
+        })
     })
 })
