@@ -293,7 +293,6 @@ Usergrid.authenticateApp(function(error, usergridResponse, token) {
 ```js
 Usergrid.authenticateUser({
     username: '<username>',
-    email: '<email-address>', // either username or email is required
     password: '<password>'
 }, function(error, usergridResponse, token) {
     // Usergrid.currentUser is set to the authenticated user and the token is stored within that context
@@ -305,7 +304,6 @@ If you want to utilize authenticateUser without setting as the current user, sim
 ```js
 Usergrid.authenticateUser({
     username: '<username>',
-    email: '<email-address>', // either username or email is required
     password: '<password>'
 }, false, function(error, usergridResponse, token) {
     
