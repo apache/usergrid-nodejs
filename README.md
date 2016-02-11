@@ -206,7 +206,7 @@ Usergrid.PUT(query, { keywords: ['pasta'] }, function(error, usergridResponse) {
                ]
            }
         ]
-    /*
+    */
 })
 ```
     
