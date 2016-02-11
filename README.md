@@ -49,9 +49,9 @@ The Usergrid Node.js SDK is built on top of [request](https://github.com/request
 
 ### Initialization
 
-There are two fundamental ways to implement the Usergrid Node.js SDK: 
+There are two different ways of initializing the Usergrid Node.js SDK: 
 
-1. The singleton pattern is both convenient and enables the developer to use a globally available and always-initialized instance of Usergrid. 
+1. The singleton pattern is both convenient and enables the developer to use a globally available and always-initialized shared instance of Usergrid. 
 
 	    var Usergrid = require('usergrid')
 	    Usergrid.init({
@@ -64,7 +64,7 @@ There are two fundamental ways to implement the Usergrid Node.js SDK:
 	    var Usergrid = require('usergrid')
 	    Usergrid.init() // defaults to use config.json
     
-2. The Instance pattern enables the developer to manage instances of the Usergrid client independently and in an isolated fashion. The primary use-case for this is when an application connects to multiple Usergrid targets.
+2. The instance pattern enables the developer to manage instances of the Usergrid client independently and in an isolated fashion. The primary use-case for this is when an application connects to multiple Usergrid targets.
 
 	    var UsergridClient = require('./node_modules/usergrid/lib/client')
 	    var client = new UsergridClient(config)
