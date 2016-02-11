@@ -45,6 +45,8 @@ If you want access to the latest development build (you will need to run `npm in
 
 _**Note:** This section is a work in progress. In its current release candidate state, this SDK is only recommended for developers familiar with Usergrid, Node.js, and ideally Mocha tests. It is not recommended for production applications. For additional advanced/comprehensive usage, see `/tests`._
 
+The Usergrid Node.js SDK is built on top of [request](https://github.com/request/request). As such, it behaves almost as a drop-in replacement. Where you would expect a standard error-first callback from request, the same is true of the Usergrid SDK methods. Where you would expect a response object as the second parameter in the callback, the same is true for the Usergrid SDK.
+
 ### Initialization
 
 There are two fundamental ways to implement the Usergrid Node.js SDK: 
@@ -62,16 +64,14 @@ There are two fundamental ways to implement the Usergrid Node.js SDK:
 	    var Usergrid = require('usergrid')
 	    Usergrid.init() // defaults to use config.json
     
-2. The Instance pattern enables the develper to manage instances of the Usergrid client independently and in an isolated fashion. The primary use-case for this is when an application connects to multiple Usergrid targets:
+2. The Instance pattern enables the developer to manage instances of the Usergrid client independently and in an isolated fashion. The primary use-case for this is when an application connects to multiple Usergrid targets.
 
 	    var UsergridClient = require('./node_modules/usergrid/lib/client')
 	    var client = new UsergridClient(config)
 
-_Note: The following examples assume you are using the `Usergrid` shared instance. If you've implemented the instance pattern instead, simply replace `Usergrid` with your client instance variable. See `/tests` for advanced usage._
+_**Note:** Examples in this readme assume you are using the `Usergrid` shared instance. If you've implemented the instance pattern instead, simply replace `Usergrid` with your client instance variable. See `/tests` for additional examples._
 
 ## RESTful operations
-
-The Usergrid Node.js SDK is built on top of [request](https://github.com/request/request). As such behaves almost as a drop-in replacement. Where you would expect a standard error-first callback from request, the same is true of the Usergrid SDK methods.
 
 When making any RESTful call, a `type` parameter (or `path`) is always required. Whether you specify this as an argument or in an object as a parameter is up to you.
 
