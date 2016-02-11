@@ -285,25 +285,6 @@ Usergrid.authenticateApp(function(error, usergridResponse, token) {
     // Usergrid.appAuth is created automatically when this call is successful
 })
 ```
-    
-### authFallback
-
-Auth-fallback defines what the client should do when a user token is not present. By default, `Usergrid.authFallback` is set to `UsergridAuth.AUTH_FALLBACK_NONE`, whereby when a token is *not* present, an API call will be performed unauthenticated. If instead `Usergrid.authFallback` is set to `UsergridAuth.AUTH_FALLBACK_APP`, the API call will instead be performed using client credentials, _if_ they're available (i.e. `authenticateApp()` was performed at some point). 
-
-### usingAuth()
-
-At times it is desireable to have complete, granular control over the authentication context of an API call. To facilitate this, the passthrough function `.usingAuth()` allows you to pre-define the auth context of the next API call.
-
-```js
-// assume Usergrid.authFallback = UsergridAuth.AUTH_FALLBACK_NONE
-    
-Usergrid.usingAuth(Usergrid.appAuth).POST('roles/guest/permissions', {
-    permission: "get,post,put,delete:/**"
-}, function(error, usergridResponse) {
-    // here we've temporarily used the client credentials to modify permissions
-    // subsequent calls will not use this auth context
-})
-```
 
 ### currentUser and authenticateUser()
 
@@ -328,6 +309,25 @@ Usergrid.authenticateUser({
     password: '<password>'
 }, false, function(error, usergridResponse, token) {
     
+})
+```
+
+### authFallback
+
+Auth-fallback defines what the client should do when a user token is not present. By default, `Usergrid.authFallback` is set to `UsergridAuth.AUTH_FALLBACK_NONE`, whereby when a token is *not* present, an API call will be performed unauthenticated. If instead `Usergrid.authFallback` is set to `UsergridAuth.AUTH_FALLBACK_APP`, the API call will instead be performed using client credentials, _if_ they're available (i.e. `authenticateApp()` was performed at some point). 
+
+### usingAuth()
+
+At times it is desireable to have complete, granular control over the authentication context of an API call. To facilitate this, the passthrough function `.usingAuth()` allows you to pre-define the auth context of the next API call.
+
+```js
+// assume Usergrid.authFallback = UsergridAuth.AUTH_FALLBACK_NONE
+    
+Usergrid.usingAuth(Usergrid.appAuth).POST('roles/guest/permissions', {
+    permission: "get,post,put,delete:/**"
+}, function(error, usergridResponse) {
+    // here we've temporarily used the client credentials to modify permissions
+    // subsequent calls will not use this auth context
 })
 ```
     
