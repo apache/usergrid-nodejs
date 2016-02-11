@@ -75,17 +75,17 @@ The Usergrid Node.js SDK is built on top of [request](https://github.com/request
 
 When making any RESTful call, a `type` parameter (or `path`) is always required. Whether you specify this as an argument or in an object as a parameter is up to you.
 
-### GET
+### GET()
 
 **GET entities in a collection**
 
-    Usergrid.GET('collection', function(err, usergridResponse, entities) {
+    Usergrid.GET('collection', function(error, usergridResponse, entities) {
         // entities is an array of UsergridEntity objects
     })
     
 **GET a specific entity in a collection by uuid or name**
 
-    Usergrid.GET('collection', '<uuid-or-name>', function(err, usergridResponse, entity) {
+    Usergrid.GET('collection', '<uuid-or-name>', function(error, usergridResponse, entity) {
         // entity, if found, is a UsergridEntity object
     })
     
@@ -102,11 +102,11 @@ When making any RESTful call, a `type` parameter (or `path`) is always required.
     // this will build out the following query:
     // select * where weight > 2.4 and color contains 'bl*' and not color = 'blue' or color = 'orange'
     
-    Usergrid.GET(query, function(err, usergridResponse) {
+    Usergrid.GET(query, function(error, usergridResponse) {
         // entities is an array of UsergridEntity objects matching the specified query
     })
     
-### POST and PUT
+### POST() and PUT()
 
 POST and PUT requests both require a JSON body payload. You can pass either a standard JavaScript object or a `UsergridEntity` instance. While the former works in principle, best practise is to use a `UsergridEntity` wherever practical. When an entity has a uuid or name property and already exists on the server, use a PUT request to update it. If it does not, use POST to create it.
 
@@ -126,7 +126,7 @@ POST and PUT requests both require a JSON body payload. You can pass either a st
         cuisine: 'pizza'
     }
     
-    Usergrid.POST(entity, function(err, usergridResponse, entity) {
+    Usergrid.POST(entity, function(error, usergridResponse, entity) {
         // entity should now have a uuid property and be created
     })
     
@@ -145,7 +145,7 @@ POST and PUT requests both require a JSON body payload. You can pass either a st
 	    })
     ]
     
-    Usergrid.POST(entities, function(err, usergridResponse, entities) {
+    Usergrid.POST(entities, function(error, usergridResponse, entities) {
         //
     })
     
@@ -157,9 +157,9 @@ POST and PUT requests both require a JSON body payload. You can pass either a st
         cuisine: 'pizza'
     })
     
-    Usergrid.POST(entity, function(err, usergridResponse, entity) {
+    Usergrid.POST(entity, function(error, usergridResponse, entity) {
         entity.owner = 'Mia Carrara'
-        Usergrid.PUT(entity, function(err, usergridResponse, entity) {
+        Usergrid.PUT(entity, function(error, usergridResponse, entity) {
             // entity now has the property 'owner'
         })
     })
@@ -172,7 +172,7 @@ POST and PUT requests both require a JSON body payload. You can pass either a st
     // this will build out the following query:
     // select * where cuisine = 'italian'
     
-    Usergrid.PUT(query, { keywords: ['pasta'] }, function(err, usergridResponse) {
+    Usergrid.PUT(query, { keywords: ['pasta'] }, function(error, usergridResponse) {
         /* the first 10 entities matching this query criteria will be updated:
            e.g.:
            [
@@ -196,13 +196,13 @@ POST and PUT requests both require a JSON body payload. You can pass either a st
         /*
     })
     
-### DELETE
+### DELETE()
 
 DELETE requests require either a specific entity or a `UsergridQuery` object to be passed as an argument.
     
 **DELETE a specific entity in a collection by uuid or name**
 
-    Usergrid.DELETE('collection', '<uuid-or-name>', function(err, usergridResponse) {
+    Usergrid.DELETE('collection', '<uuid-or-name>', function(error, usergridResponse) {
         // if successful, entity will now be deleted
     })
     
@@ -216,31 +216,162 @@ DELETE requests require either a specific entity or a `UsergridQuery` object to 
     // this will build out the following query:
     // select * where color = 'black' or color = 'white'
     
-    Usergrid.DELETE(query, function(err, usergridResponse) {
+    Usergrid.DELETE(query, function(error, usergridResponse) {
         // the first 10 entities matching this query criteria will be deleted
     })
 
 ## Entity operations and convenience methods
 
-`UsergridEntity` has a number of helper/convenience methods to make working with entities more convenient.
+`UsergridEntity` has a number of helper/convenience methods to make working with entities more convenient. If you are _not_ utilizing the `Usergrid` shared instance, you must pass an instance of `UsergridClient` as the first argument to any of these helper methods.
 
-### reload
+### reload()
 
-    entity.reload(function(err, usergridResponse) {
+    entity.reload(function(error, usergridResponse) {
         // entity is now reloaded from the server
     })
     
-### save
+### save()
 
     entity.aNewProperty = 'A new value'
-    entity.save(function(err, usergridResponse) {
+    entity.save(function(error, usergridResponse) {
         // entity is now updated on the server
     })
     
-### remove
+### remove()
 
-    entity.remove(function(err, usergridResponse) {
+    entity.remove(function(error, usergridResponse) {
         // entity is now deleted on the server and the local instance should be destroyed
+    })
+    
+## Authentication, current user, and auth-fallback
+
+### appAuth and authenticateApp()
+
+`Usergrid` can use the app client ID and secret that were passed upon initialization and automatically retrieve an app-level token for these credentials.
+
+    Usergrid.setAppAuth('<client-id>', '<client-secret>')
+    Usergrid.authenticateApp(function(error, usergridResponse, token) {
+        // Usergrid.appAuth is created automatically when this call is successful
+    })
+    
+### authFallback
+
+Auth-fallback defines what the client should do when a user token is not present. By default, `Usergrid.authFallback` is set to `UsergridAuth.AUTH_FALLBACK_NONE`, whereby when a token is *not* present, an API call will be performed unauthenticated. If instead `Usergrid.authFallback` is set to `UsergridAuth.AUTH_FALLBACK_APP`, the API call will instead be performed using client credentials, _if_ they're available (i.e. `authenticateApp()` was performed at some point). 
+
+### usingAuth()
+
+At times it is desireable to have complete, granular control over the authentication context of an API call. To facilitate this, the passthrough function `.usingAuth()` allows you to pre-define the auth context of the next API call.
+
+    // assume Usergrid.authFallback = UsergridAuth.AUTH_FALLBACK_NONE
+    
+    Usergrid.usingAuth(Usergrid.appAuth).POST('roles/guest/permissions', {
+        permission: "get,post,put,delete:/**"
+    }, function(error, usergridResponse) {
+        // here we've temporarily used the client credentials to modify permissions
+        // subsequent calls will not use this auth context
+    })
+
+### currentUser and authenticateUser()
+
+`Usergrid` has a special `currentUser` property. By default, when calling `authenticateUser()`, `.currentUser` will be set to this user if the authentication flow is successful.
+
+    Usergrid.authenticateUser({
+        username: '<username>',
+        email: '<email-address>', // either username or email is required
+        password: '<password>'
+    }, function(error, usergridResponse, token) {
+        // Usergrid.currentUser is set to the authenticated user and the token is stored within that context
+    })
+    
+If you want to utilize authenticateUser without setting as the current user, simply pass a `false` boolean value as the second parameter:
+
+    Usergrid.authenticateUser({
+        username: '<username>',
+        email: '<email-address>', // either username or email is required
+        password: '<password>'
+    }, false, function(error, usergridResponse, token) {
+    
+    })
+    
+## User operations and convenience methods
+
+`UsergridUser` has a number of helper/convenience methods to make working with user entities more convenient. If you are _not_ utilizing the `Usergrid` shared instance, you must pass an instance of `UsergridClient` as the first argument to any of these helper methods.
+    
+### create()
+
+Creating a new user:
+
+    var user = new UsergridUser({
+        username: 'username',
+        password: 'password'
+    })
+    
+    user.create(function(error, usergridResponse, user) {
+        // user has now been created and should have a valid uuid
+    })
+    
+### login()
+
+A simpler means of retrieving a user-level token:
+
+    var user = new UsergridUser({
+        username: 'username',
+        password: 'password'
+    })
+    
+    user.login(function(error, usergridResponse, token) {
+        // user is now logged in
+    })
+
+### logout()
+
+Logs out the selected user. You can also use this convenience method on `Usergrid.currentUser`.
+
+    user.logout(function(error, usergridResponse) {
+        // user is now logged out
+    })
+    
+### logoutAllSessions()
+
+Logs out all sessions for the selected user and destroys all active tokens. You can also use this convenience method on `Usergrid.currentUser`.
+
+    user.logoutAllSessions(function(error, usergridResponse) {
+        // user is now logged out from everywhere
+    })
+    
+### resetPassword()
+
+Resets the password for the selected user.
+
+    user.resetPassword({
+        oldPassword: '2cool4u',
+        newPassword: 'correct-horse-battery-staple',
+    }, function(error, response, success) {
+        // if it was done correctly, the new password will be changed
+        // 'success' is a boolean value that indicates whether it was changed successfully
+    })
+    
+### UsergridUser.CheckAvailable()
+
+This is a class (static) method that allows you to check whether a username or email address is available or not.
+
+    UsergridUser.CheckAvailable(client, {
+        email: 'email'
+    }, function(err, response, exists) {
+       // 'exists' is a boolean value that indicates whether a user already exists
+    })
+    
+    UsergridUser.CheckAvailable(client, {
+        username: 'username'
+    }, function(err, response, exists) {
+       
+    })
+    
+    UsergridUser.CheckAvailable(client, {
+        email: 'email',
+        username: 'username', // checks both email and username
+    }, function(err, response, exists) {
+        // 'exists' returns true if either username or email exist
     })
 
 ## UsergridResponse object
@@ -251,7 +382,7 @@ DELETE requests require either a specific entity or a `UsergridQuery` object to 
 
 You can check `usergridResponse.ok`, a `bool` value, to see if the response was successful. Any status code < 400 returns true.
 
-    Usergrid.GET('collection', function(err, usergridResponse, entities) {
+    Usergrid.GET('collection', function(error, usergridResponse, entities) {
         if (usergridResponse.ok) {
             // woo!
         }
@@ -269,7 +400,7 @@ Depending on the call you make, you will receive either an array of UsergridEnti
 
 Examples:
 
-    Usergrid.GET('collection', function(err, usergridResponse, entities) {
+    Usergrid.GET('collection', function(error, usergridResponse, entities) {
         // third param is an array of entities because no specific entity was referenced
         // you can also access:
         //     usergridResponse.entities
@@ -278,7 +409,7 @@ Examples:
         //     usergridResponse.last		 
     })
     
-    Usergrid.GET('collection', '<uuid or name>', function(err, usergridResponse, entity) {
+    Usergrid.GET('collection', '<uuid or name>', function(error, usergridResponse, entity) {
         // third param is a single entity object
         // you can also access:
         //     usergridResponse.entity
@@ -286,7 +417,7 @@ Examples:
         //     usergridResponse.last                
     })
     
-    Usergrid.GET('users', function(err, usergridResponse, users) {
+    Usergrid.GET('users', function(error, usergridResponse, users) {
         // third param is an array of users because no specific user was referenced
         // you can also access:
         //     usergridResponse.users
@@ -294,7 +425,7 @@ Examples:
         //     usergridResponse.last 
     })
     
-    Usergrid.GET('users', '<uuid, username, or email>', function(err, usergridResponse, user) {
+    Usergrid.GET('users', '<uuid, username, or email>', function(error, usergridResponse, user) {
         // third param is a single user object
         // you can also access:
         //     usergridResponse.user
@@ -308,7 +439,7 @@ Connections can be managed using `Usergrid.connect()`, `Usergrid.disconnect()`, 
 
 **Create a connection between two entities**
 
-    Usergrid.connect(entity1, 'relationship', entity2, function(err, usergridResponse) {
+    Usergrid.connect(entity1, 'relationship', entity2, function(error, usergridResponse) {
         // entity1 now has an outbound connection to entity2
     })
     
@@ -316,14 +447,14 @@ Connections can be managed using `Usergrid.connect()`, `Usergrid.disconnect()`, 
 
 **Retrieve outbound connections**
 
-    client.getConnections(UsergridClient.Connections.DIRECTION_OUT, entity1, 'relationship', function(err, usergridResponse, entities) {
+    client.getConnections(UsergridClient.Connections.DIRECTION_OUT, entity1, 'relationship', function(error, usergridResponse, entities) {
         // entities is an array of entities that entity1 is connected to via 'relationship'
         // in this case, we'll see entity2 in the array
     })
     
 **Retrieve inbound connections**
 
-    client.getConnections(UsergridClient.Connections.DIRECTION_IN, entity2, 'relationship', function(err, usergridResponse, entities) {
+    client.getConnections(UsergridClient.Connections.DIRECTION_IN, entity2, 'relationship', function(error, usergridResponse, entities) {
         // entities is an array of entities that connect to entity2 via 'relationship'
         // in this case, we'll see entity1 in the array
     })
@@ -332,7 +463,7 @@ Connections can be managed using `Usergrid.connect()`, `Usergrid.disconnect()`, 
 
 **Delete a connection between two entities**
 
-    Usergrid.disconnect(entity1, 'relationship', entity2, function(err, usergridResponse) {
+    Usergrid.disconnect(entity1, 'relationship', entity2, function(error, usergridResponse) {
         // entity1's outbound connection to entity2 has been destroyed
     })
     
@@ -345,7 +476,7 @@ Assets can be uploaded and downloaded either directly using `Usergrid.POST` or `
 **Loading a file system image via `fs.readFile()`**
 
     var asset = new UsergridAsset('myImage')
-    fs.readFile(_dirname + '/image.jpg', function(err, data) {
+    fs.readFile(_dirname + '/image.jpg', function(error, data) {
         asset.data = data
     })
     
@@ -364,7 +495,7 @@ You can also access `asset.contentType` and `asset.contentLength` once data has 
 
     var asset = new UsergridAsset('myImage')
     fs.createReadStream(_dirname + '/image.jpg').pipe(asset).on('finish', function() {
-        client.POST('collection', asset, function(err, assetResponse, entityWithAsset) {
+        client.POST('collection', asset, function(error, assetResponse, entityWithAsset) {
             // asset is now uploaded to Usergrid
         })
     })
@@ -375,7 +506,7 @@ You can also access `asset.contentType` and `asset.contentLength` once data has 
     fs.createReadStream(_dirname + '/image.jpg').pipe(asset).on('finish', function() {
         // assume entity already exists; attach it to the entity:
         entity.attachAsset(asset)
-        client.PUT(entity, asset, function(err, assetResponse, entityWithAsset) {
+        client.PUT(entity, asset, function(error, assetResponse, entityWithAsset) {
             // asset is now uploaded to Usergrid
         })
     })
@@ -388,13 +519,13 @@ You can also access `asset.contentType` and `asset.contentLength` once data has 
     fs.createReadStream(_dirname + '/image.jpg').pipe(asset).on('finish', function() {
         // assume entity already exists; attach it to the entity:
         entity.attachAsset(asset)
-        entity.uploadAsset(function(err, assetResponse, entityWithAsset) {
+        entity.uploadAsset(function(error, assetResponse, entityWithAsset) {
             // asset is now uploaded to Usergrid
         })
     })
     
 **entity.downloadAsset() allows you to download a binary asset**
 
-    entity.uploadAsset(function(err, assetResponse, entityWithAsset) {
+    entity.uploadAsset(function(error, assetResponse, entityWithAsset) {
         // access the asset via entityWithAsset.asset
     })
