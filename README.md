@@ -6,7 +6,7 @@ Node.js SDK 2.0 for Usergrid
 
 Version 2.0 of this SDK is currently a work in progress; documentation and implementation are subject to change.
 
-**Note:** This Node.js SDK 2.0 for Usergrid is **not** backwards compatible with 0.1X versions of the SDK. If your application is dependent on the 0.1X set of Node.js APIs, you will need to continue using the 0.1X version (see below for installation instructions)._
+_**Note:** This Node.js SDK 2.0 for Usergrid is **not** backwards compatible with 0.1X versions of the SDK. If your application is dependent on the 0.1X set of Node.js APIs, you will need to continue using the 0.1X version (see below for installation instructions)._
 
 ## Current Release
 
@@ -20,7 +20,7 @@ Please open an [issue](https://github.com/r3mus/usergrid-nodejs/issues/new)
 ## Known Issues
 
 - Native support for push notifications is slated for RC2. Workaround is to send a regular POST request to `'devices/<device_ID>/notifications'`
-- There is no clean way to require submodules (e.g. `UsergridClient` or `UsergridEntity`) modules without referencing the full path to `../lib/client`.
+- There is no clean way to require submodules (e.g. `UsergridClient` or `UsergridEntity`) modules without referencing the full path to `../lib/<class>`.
 - Any other functionality that is missing or expected, please open an issue.
 
 ## Installation
@@ -43,7 +43,7 @@ If you want access to the latest development build (you will need to run `npm in
 
 ## Usage
 
-_Note: This section is a work in progress. In its current release candidate state, this SDK is only recommended for developers familiar with Usergrid, Node.js, and preferably Mocha tests, and is not recommended for production applications. For more advance and comprehensive usage, see `/tests`._
+_**Note:** This section is a work in progress. In its current release candidate state, this SDK is only recommended for developers familiar with Usergrid, Node.js, and ideally Mocha tests. It is not recommended for production applications. For additional advanced/comprehensive usage, see `/tests`._
 
 ### Initialization
 
