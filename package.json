@@ -2,6 +2,7 @@
   "author": "Brandon Shelley",
   "dependencies": {
     "async": "latest",
+    "file": "latest",
     "file-type": "^3.4.0",
     "lodash": "~4.0",
     "lodash-inflection": "latest",
