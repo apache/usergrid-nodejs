@@ -24,7 +24,7 @@
   },
   "keywords": [],
   "license": "MIT",
-  "main": "app.js",
+  "main": "usergrid.js",
   "name": "usergrid",
   "private": false,
   "scripts": {
