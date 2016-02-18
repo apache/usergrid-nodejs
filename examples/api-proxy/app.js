@@ -6,7 +6,8 @@ var express = require('express'),
 
 Usergrid.init()
 
-console.log(Usergrid.appAuth)
+// Usergrid.setAppAuth(id, secret)
+// console.log(Usergrid.appAuth)
 Usergrid.authenticateApp(function(err, usergridResponse) {
     if (usergridResponse.ok) {
         console.log('app is now authenticated')
@@ -19,7 +20,7 @@ app.get('/:collection/:uuidOrName?', function(req, res) {
     })
 })
 
-app.listen(process.env.port || 9000)
+// app.listen(process.env.port || 9000)
 
 /*
 

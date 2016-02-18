@@ -14,17 +14,20 @@ limitations under the License.
 
 'use strict'
 
+var _ = require('lodash')
+
 var Usergrid = {
     isInitialized: false,
     isSharedInstance: true,
     initSharedInstance: function(options) {
         var self = this
         if (self.isInitialized) {
+            console.log('Usergrid shared instance is already initialized')
             return self
         }
         var UsergridClient = require('./lib/client')
-        Object.setPrototypeOf(Usergrid, new UsergridClient(options))
-        UsergridClient.call(self)
+        Object.setPrototypeOf(self, new UsergridClient(options))
+        _.assign(self, new UsergridClient(options))
         self.isInitialized = true
         self.isSharedInstance = true
     }
