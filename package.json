@@ -24,7 +24,7 @@
     "url": "git://github.com/r3mus/usergrid-nodejs.git"
   },
   "keywords": [],
-  "license": "MIT",
+  "license": "Apache 2.0",
   "main": "usergrid.js",
   "name": "usergrid",
   "private": false,

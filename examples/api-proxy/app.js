@@ -6,6 +6,13 @@ var express = require('express'),
 
 Usergrid.init()
 
+console.log(Usergrid.appAuth)
+Usergrid.authenticateApp(function(err, usergridResponse) {
+    if (usergridResponse.ok) {
+        console.log('app is now authenticated')
+    }
+})
+
 app.get('/:collection/:uuidOrName?', function(req, res) {
     Usergrid.GET(req.params.collection, req.params.uuidOrName, function(error, usergridResponse, entities) {
         res.json(entities);
