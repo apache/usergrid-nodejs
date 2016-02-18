@@ -1,14 +1,13 @@
 'use strict'
 
-var UsergridClient = require('../lib/client'),
-    UsergridAuth = require('../lib/auth'),
-    Usergrid = require('../usergrid'),
+var Usergrid = require('../usergrid'),
     helpers = require('../helpers'),
     _ = require('lodash')
 
 
 module.exports = {
     validate: function(args) {
+        var UsergridClient = require('../lib/client')
         var client
         if (args instanceof UsergridClient) {
             client = args
@@ -22,6 +21,7 @@ module.exports = {
         return client
     },
     configureTempAuth: function(auth) {
+        var UsergridAuth = require('../lib/auth')
         if (_.isString(auth) && auth !== UsergridAuth.NO_AUTH) {
             return new UsergridAuth(auth)
         } else if (!auth || auth === UsergridAuth.NO_AUTH) {
