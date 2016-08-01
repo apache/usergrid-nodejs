@@ -48,6 +48,7 @@ _**Note:** This section is a work in progress. In its current release candidate 
 
 The Usergrid Node.js SDK is built on top of [request](https://github.com/request/request). As such, it behaves almost as a drop-in replacement. Where you would expect a standard error-first callback from request, the same is true of the Usergrid SDK methods. Where you would expect a response object as the second parameter in the callback, the same is true for the Usergrid SDK.
 
+
 ### Initialization
 
 There are two different ways of initializing the Usergrid Node.js SDK: 
@@ -66,7 +67,8 @@ There are two different ways of initializing the Usergrid Node.js SDK:
 	var Usergrid = require('usergrid')
 	Usergrid.init() // defaults to use config.json
 	```
-    
+**Config File:**  Optionally, you can use a config file to provide the usergrid credentials for your app.  The usergrid module crawls your App file structure to find files named `usergrid.json` or a `config.json`.  If there are multiple files with one of these names present at different locations under the app, only one of them will be used and the others are ignored.  This may cause use of an unintended backend.  Please make sure you have only one of these files present in the root and subdirectories of your app.
+
 2. The instance pattern enables the developer to manage instances of the Usergrid client independently and in an isolated fashion. The primary use-case for this is when an application connects to multiple Usergrid targets.
 
 	```js
