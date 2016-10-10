@@ -2,6 +2,7 @@
   "author": "Brandon Shelley",
   "dependencies": {
     "async": "latest",
+    "file": "latest",
     "file-type": "^3.4.0",
     "lodash": "~4.0",
     "lodash-inflection": "latest",
@@ -23,13 +24,13 @@
     "url": "git://github.com/r3mus/usergrid-nodejs.git"
   },
   "keywords": [],
-  "license": "MIT",
-  "main": "app.js",
+  "license": "Apache 2.0",
+  "main": "usergrid.js",
   "name": "usergrid",
   "private": false,
   "scripts": {
-    "start": "node app.js",
+    "start": "node usergrid.js",
     "test": "mocha tests"
   },
-  "version": "2.0.0-rc.0"
+  "version": "2.0.0-rc.1"
 }
