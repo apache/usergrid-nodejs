@@ -33,9 +33,9 @@ describe('_limit', function() {
 })
 
 describe('_ql', function() {
-    it('should be an empty string if query or sort are empty or underfined', function() {
+    it('should equal \'select *\' if query or sort are empty or underfined', function() {
         var query = new UsergridQuery('cats')
-        query.should.have.property('_ql').equal("")
+        query.should.have.property('_ql').equal('select * ')
     })
 
     it('should support complex builder pattern syntax (chained constructor methods)', function() {
