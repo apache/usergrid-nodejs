@@ -170,7 +170,7 @@ describe('loadNextPage()', function() {
         this.slow(_slow)
         this.timeout(_timeout)
 
-        var query = new UsergridQuery(config.test.collection).limit(2)
+        var query = new UsergridQuery(config.test.collection).limit(10)
 
         client.GET(query, function(err, usergridResponse) {
             firstResponse = usergridResponse
@@ -181,7 +181,7 @@ describe('loadNextPage()', function() {
     it('should load a new page of entities by passing an instance of UsergridClient', function(done) {
         firstResponse.loadNextPage(client, function(err, usergridResponse) {
             usergridResponse.first.uuid.should.not.equal(firstResponse.first.uuid)
-            usergridResponse.entities.length.should.equal(2)
+            usergridResponse.entities.length.should.equal(10)
             done()
         })
     })
