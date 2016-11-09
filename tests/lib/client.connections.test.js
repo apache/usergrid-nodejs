@@ -6,8 +6,6 @@ var should = require('should'),
     UsergridClient = require('../../lib/client'),
     UsergridEntity = require('../../lib/entity'),
     UsergridQuery = require('../../lib/query'),
-    UsergridAuth = require('../../lib/auth'),
-    UsergridAppAuth = require('../../lib/appAuth'),
     _ = require('lodash')
 
 var _uuid,
@@ -48,7 +46,7 @@ describe('connect()', function() {
             usergridResponse.ok.should.be.true()
             client.getConnections(UsergridClient.Connections.DIRECTION_OUT, entity1, relationship, function(err, usergridResponse) {
                 usergridResponse.first.metadata.connecting[relationship].should.equal(urljoin(
-                    "/",
+                    "",
                     config.test.collection,
                     entity1.uuid,
                     relationship,
@@ -68,7 +66,7 @@ describe('connect()', function() {
             usergridResponse.ok.should.be.true()
             client.getConnections(UsergridClient.Connections.DIRECTION_OUT, entity1, relationship, function(err, usergridResponse) {
                 usergridResponse.first.metadata.connecting[relationship].should.equal(urljoin(
-                    "/",
+                    "",
                     config.test.collection,
                     entity1.uuid,
                     relationship,
@@ -88,7 +86,7 @@ describe('connect()', function() {
             usergridResponse.ok.should.be.true()
             client.getConnections(UsergridClient.Connections.DIRECTION_OUT, entity1, relationship, function(err, usergridResponse) {
                 usergridResponse.first.metadata.connecting[relationship].should.equal(urljoin(
-                    "/",
+                    "",
                     config.test.collection,
                     entity1.uuid,
                     relationship,
@@ -108,7 +106,7 @@ describe('connect()', function() {
             usergridResponse.ok.should.be.true()
             client.getConnections(UsergridClient.Connections.DIRECTION_OUT, entity1, relationship, function(err, usergridResponse) {
                 usergridResponse.first.metadata.connecting[relationship].should.equal(urljoin(
-                    "/",
+                    "",
                     config.test.collection,
                     entity1.uuid,
                     relationship,
@@ -132,7 +130,7 @@ describe('connect()', function() {
             usergridResponse.ok.should.be.true()
             client.getConnections(UsergridClient.Connections.DIRECTION_OUT, entity1, options.relationship, function(err, usergridResponse) {
                 usergridResponse.first.metadata.connecting[options.relationship].should.equal(urljoin(
-                    "/",
+                    "",
                     config.test.collection,
                     entity1.uuid,
                     options.relationship,
@@ -176,7 +174,7 @@ describe('getConnections()', function() {
 
         client.getConnections(UsergridClient.Connections.DIRECTION_OUT, entity1, relationship, function(err, usergridResponse) {
             usergridResponse.first.metadata.connecting[relationship].should.equal(urljoin(
-                "/",
+                "",
                 config.test.collection,
                 entity1.uuid,
                 relationship,
@@ -196,7 +194,7 @@ describe('getConnections()', function() {
 
         client.getConnections(UsergridClient.Connections.DIRECTION_IN, entity2, relationship, function(err, usergridResponse) {
             usergridResponse.first.metadata.connections[relationship].should.equal(urljoin(
-                "/",
+                "",
                 config.test.collection,
                 entity2.uuid,
                 "connecting",

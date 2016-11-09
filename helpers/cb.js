@@ -14,11 +14,11 @@ limitations under the License.
 
 'use strict'
 
-var ok = require('objectkit'),
-    _ = require('lodash')
+var _ = require('lodash')
 
 module.exports = function() {
-    var args = _.flattenDeep(Array.prototype.slice.call(arguments))
+    var args = _.flattenDeep(Array.prototype.slice.call(arguments)).reverse()
     var emptyFunc = function() {}
-    return _.first(_.flattenDeep([args.reverse(), ok(args).getIfExists('0.callback'), emptyFunc]).filter(_.isFunction))
+    return _.first(_.flattenDeep([args, _.get(args,'0.callback'), emptyFunc]).filter(_.isFunction))
+
 }

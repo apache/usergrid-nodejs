@@ -3,7 +3,6 @@
 var should = require('should'),
     util = require('util'),
     chance = new require('chance').Chance(),
-    urljoin = require('url-join'),
     config = require('../../helpers').config,
     UsergridClient = require('../../lib/client'),
     UsergridUser = require('../../lib/user'),

@@ -23,12 +23,11 @@ var urljoin = require('url-join'),
     UsergridAsset = require('../lib/asset'),
     util = require('util'),
     version = require('../package.json').version,
-    ok = require('objectkit'),
     _ = require('lodash')
 
 var assignPrefabOptions = function(args) {
     // if a preformatted options argument passed, assign it to options
-    if (_.isObject(args[0]) && !_.isFunction(args[0]) && ok(this).has("method")) {
+    if (_.isObject(args[0]) && !_.isFunction(args[0]) && _.has(this,"method")) {
         _.assign(this, args[0])
     }
     return this
@@ -45,7 +44,7 @@ var setEntity = function(args) {
 }
 
 var setAsset = function(args) {
-    this.asset = _.first([this.asset, ok(this).getIfExists('entity.asset'), args[1], args[0]].filter(function(property) {
+    this.asset = _.first([this.asset, _.get(this,'entity.asset'), args[1], args[0]].filter(function(property) {
         return (property instanceof UsergridAsset)
     }))
     return this
@@ -56,12 +55,12 @@ var setUuidOrName = function(args) {
         this.uuidOrName,
         this.uuid,
         this.name,
-        ok(this).getIfExists('entity.uuid'),
-        ok(this).getIfExists('body.uuid'),
-        ok(this).getIfExists('entity.name'),
-        ok(this).getIfExists('body.name'),
-        ok(args).getIfExists('2'),
-        ok(args).getIfExists('1')
+        _.get(this,'entity.uuid'),
+        _.get(this,'body.uuid'),
+        _.get(this,'entity.name'),
+        _.get(this,'body.name'),
+        _.get(args,'2'),
+        _.get(args,'1')
     ].filter(_.isString))
     return this
 }
@@ -69,10 +68,10 @@ var setUuidOrName = function(args) {
 var setPathOrType = function(args) {
     var pathOrType = _.first([
         this.type,
-        ok(args).getIfExists('0._type'),
-        ok(this).getIfExists('entity.type'),
-        ok(this).getIfExists('body.type'),
-        ok(this).getIfExists('body.0.type'),
+        _.get(args,'0._type'),
+        _.get(this,'entity.type'),
+        _.get(this,'body.type'),
+        _.get(this,'body.0.type'),
         _.isArray(args) ? args[0] : undefined
     ].filter(_.isString))
     this[(/\//.test(pathOrType)) ? 'path' : 'type'] = pathOrType
@@ -114,8 +113,8 @@ module.exports = {
                 options.uuidOrName,
                 options.uuid,
                 options.name,
-                ok(options).getIfExists('entity.uuid'),
-                ok(options).getIfExists('entity.name'),
+                _.get(options,'entity.uuid'),
+                _.get(options,'entity.name'),
                 ""
             ].filter(_.isString)) : ""
         )
@@ -124,28 +123,31 @@ module.exports = {
         var headers = {
             'User-Agent': util.format("usergrid-nodejs/v%s", version)
         }
+
         _.assign(headers, options.headers)
+
         var token
-        if (ok(client).getIfExists('tempAuth') === UsergridAuth.NO_AUTH) {
+        var clientTempAuth = _.get(client,"tempAuth")
+        if( !_.isUndefined(clientTempAuth) ) {
+            if( clientTempAuth !== UsergridAuth.NO_AUTH && clientTempAuth.isValid ) {
+                token = client.tempAuth.token;
+            }
             client.tempAuth = undefined
         } else {
-            if (ok(client).getIfExists('tempAuth.isValid')) {
-                // if ad-hoc authentication was set in the client, get the token and destroy the auth
-                token = client.tempAuth.token
-                client.tempAuth = undefined
-            } else if (ok(client).getIfExists('currentUser.auth.isValid')) {
-                // defaults to using the current user's token
-                token = client.currentUser.auth.token
-            } else if (ok(client).getIfExists('authFallback') === UsergridAuth.AUTH_FALLBACK_APP && ok(client).getIfExists('appAuth.isValid')) {
-                // if auth-fallback is set to APP request will make a call using the application token
-                token = client.appAuth.token
-            }
-            if (token) {
-                _.assign(headers, {
-                    authorization: util.format("Bearer %s", token)
-                })
+            var clientAuthMode = _.get(client,"authMode");
+            if( _.get(client,"currentUser.auth.isValid") && clientAuthMode === UsergridAuth.AUTH_MODE_USER ) {
+                token = client.currentUser.auth.token;
+            } else if( _.get(client,"appAuth.isValid") && clientAuthMode === UsergridAuth.AUTH_MODE_APP ) {
+                token = client.appAuth.token;
             }
         }
+
+        if (token) {
+            _.assign(headers, {
+                authorization: util.format("Bearer %s", token)
+            })
+        }
+
         return headers
     },
     userLoginBody: function(options) {
@@ -457,16 +459,16 @@ module.exports = {
         } : options.qs
     },
     formData: function(options) {
-        if (ok(options).getIfExists('asset.data')) {
+        if (_.get(options,'asset.data')) {
             var formData = {}
             formData.file = {
                 value: options.asset.data,
                 options: {
-                    filename: ok(options).getIfExists('asset.filename') || UsergridAsset.DEFAULT_FILE_NAME,
-                    contentType: ok(options).getIfExists('asset.contentType') || 'application/octet-stream'
+                    filename: _.get(options,'asset.filename') || UsergridAsset.DEFAULT_FILE_NAME,
+                    contentType: _.get(options,'asset.contentType') || 'application/octet-stream'
                 }
             } 
-            if (ok(options).has('asset.name')) {
+            if (_.has(options,'asset.name')) {
                 formData.name = options.asset.name
             }
             return formData

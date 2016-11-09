@@ -6,7 +6,6 @@ var should = require('should'),
     UsergridEntity = require('../../lib/entity'),
     UsergridUser = require('../../lib/user'),
     UsergridQuery = require('../../lib/query'),
-    UsergridResponse = require('../../lib/response'),
     UsergridResponseError = require('../../lib/responseError'),
     _ = require('lodash')
 

@@ -1,6 +1,6 @@
 {
     "appId": "yourAppId",
-    "authFallback": "NONE",
+    "authMode": "NONE",
     "baseUrl": "https://api.usergrid.com",
     "clientId": "yourClientId",
     "clientSecret": "yourClientSecret",

@@ -450,7 +450,7 @@ describe('connect()', function() {
             usergridResponse.ok.should.be.true()
             client.getConnections(UsergridClient.Connections.DIRECTION_OUT, entity1, relationship, function(err, usergridResponse) {
                 usergridResponse.first.metadata.connecting[relationship].should.equal(urljoin(
-                    "/",
+                    "",
                     config.test.collection,
                     entity1.uuid,
                     relationship,
@@ -470,7 +470,7 @@ describe('connect()', function() {
             usergridResponse.ok.should.be.true()
             client.getConnections(UsergridClient.Connections.DIRECTION_OUT, entity1, relationship, function(err, usergridResponse) {
                 usergridResponse.first.metadata.connecting[relationship].should.equal(urljoin(
-                    "/",
+                    "",
                     config.test.collection,
                     entity1.uuid,
                     relationship,
@@ -490,7 +490,7 @@ describe('connect()', function() {
             usergridResponse.ok.should.be.true()
             client.getConnections(UsergridClient.Connections.DIRECTION_OUT, entity1, relationship, function(err, usergridResponse) {
                 usergridResponse.first.metadata.connecting[relationship].should.equal(urljoin(
-                    "/",
+                    "",
                     config.test.collection,
                     entity1.uuid,
                     relationship,
@@ -534,7 +534,7 @@ describe('getConnections()', function() {
 
         entity1.getConnections(client, UsergridClient.Connections.DIRECTION_OUT, relationship, function(err, usergridResponse) {
             usergridResponse.first.metadata.connecting[relationship].should.equal(urljoin(
-                "/",
+                "",
                 config.test.collection,
                 entity1.uuid,
                 relationship,
@@ -554,7 +554,7 @@ describe('getConnections()', function() {
 
         entity2.getConnections(client, UsergridClient.Connections.DIRECTION_IN, relationship, function(err, usergridResponse) {
             usergridResponse.first.metadata.connections[relationship].should.equal(urljoin(
-                "/",
+                "",
                 config.test.collection,
                 entity2.uuid,
                 "connecting",

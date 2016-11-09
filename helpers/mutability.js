@@ -14,8 +14,7 @@ limitations under the License.
 
 'use strict'
 
-var ok = require('objectkit'),
-    _ = require('lodash')
+var _ = require('lodash')
 
 module.exports = {
     setReadOnly: function(obj, key) {
@@ -27,7 +26,7 @@ module.exports = {
             return Object.freeze(obj[key])
         } else if (_.isPlainObject(obj) && key === undefined) {
             return Object.freeze(obj)
-        } else if (ok(obj).has(key)) {
+        } else if (_.has(obj,key)) {
             return Object.defineProperty(obj, key, {
                 writable: false
             })
@@ -45,7 +44,7 @@ module.exports = {
             return _.clone(obj[key])
         } else if (_.isPlainObject(obj) && key === undefined) {
             return _.clone(obj)
-        } else if (ok(obj).has(key)) {
+        } else if (_.has(obj,key)) {
             return Object.defineProperty(obj, key, {
                 writable: true
             })
