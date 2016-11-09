@@ -1,7 +1,6 @@
 'use strict'
 
 var should = require('should'),
-    urljoin = require('url-join'),
     config = require('../../helpers').config,
     UsergridEntity = require('../../lib/entity'),
     UsergridAsset = require('../../lib/asset'),

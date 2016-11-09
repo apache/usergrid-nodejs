@@ -7,7 +7,6 @@
     "lodash": "~4.0",
     "lodash-inflection": "latest",
     "lodash-uuid": "latest",
-    "objectkit": "latest",
     "read-chunk": "^1.0.1",
     "request": "latest",
     "url-join": "latest",

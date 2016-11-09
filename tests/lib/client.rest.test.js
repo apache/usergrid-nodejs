@@ -1,14 +1,11 @@
 'use strict'
 
 var should = require('should'),
-    urljoin = require('url-join'),
     config = require('../../helpers').config,
     chance = new require('chance').Chance(),
     UsergridClient = require('../../lib/client'),
     UsergridEntity = require('../../lib/entity'),
     UsergridQuery = require('../../lib/query'),
-    UsergridAuth = require('../../lib/auth'),
-    UsergridAppAuth = require('../../lib/appAuth'),
     _ = require('lodash')
 
 var _uuid,

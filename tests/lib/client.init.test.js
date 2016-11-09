@@ -4,10 +4,6 @@ var should = require('should'),
     urljoin = require('url-join'),
     config = require('../../helpers').config,
     UsergridClient = require('../../lib/client'),
-    UsergridEntity = require('../../lib/entity'),
-    UsergridQuery = require('../../lib/query'),
-    UsergridAuth = require('../../lib/auth'),
-    UsergridAppAuth = require('../../lib/appAuth'),
     _ = require('lodash')
 
 describe('initialization', function() {

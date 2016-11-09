@@ -313,16 +313,16 @@ Usergrid.authenticateUser({
 })
 ```
 
-### authFallback
+### authMode
 
-Auth-fallback defines what the client should do when a user token is not present. By default, `Usergrid.authFallback` is set to `UsergridAuth.AUTH_FALLBACK_NONE`, whereby when a token is *not* present, an API call will be performed unauthenticated. If instead `Usergrid.authFallback` is set to `UsergridAuth.AUTH_FALLBACK_APP`, the API call will instead be performed using client credentials, _if_ they're available (i.e. `authenticateApp()` was performed at some point). 
+Auth-mode defines what the client should do when a user token is not present. By default, `Usergrid.authMode` is set to `UsergridAuth.AUTH_MODE_NONE`, whereby when a token is *not* present, an API call will be performed unauthenticated. If instead `Usergrid.authMode` is set to `UsergridAuth.AUTH_MODE_APP`, the API call will instead be performed using client credentials, _if_ they're available (i.e. `authenticateApp()` was performed at some point). 
 
 ### usingAuth()
 
 At times it is desireable to have complete, granular control over the authentication context of an API call. To facilitate this, the passthrough function `.usingAuth()` allows you to pre-define the auth context of the next API call.
 
 ```js
-// assume Usergrid.authFallback = UsergridAuth.AUTH_FALLBACK_NONE
+// assume Usergrid.authMode = UsergridAuth.AUTH_MODE_NONE
     
 Usergrid.usingAuth(Usergrid.appAuth).POST('roles/guest/permissions', {
     permission: "get,post,put,delete:/**"

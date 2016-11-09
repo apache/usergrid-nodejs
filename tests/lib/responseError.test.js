@@ -30,7 +30,7 @@ describe('name, description, exception', function() {
 
     it('response.error should be a UsergridResponseError object with name, description, and exception keys', function() {
         _response.ok.should.be.false()
-        _response.error.should.be.an.instanceof(UsergridResponseError).with.keys(['name', 'description', 'exception'])
+        _response.error.should.be.an.instanceof(UsergridResponseError).with.properties(['name', 'description', 'exception'])
     })
 })
 

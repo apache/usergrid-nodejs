@@ -2,12 +2,9 @@
 
 var should = require('should'),
     chance = new require('chance').Chance(),
-    urljoin = require('url-join'),
     util = require('util'),
     config = require('../../helpers').config,
     UsergridClient = require('../../lib/client'),
-    UsergridEntity = require('../../lib/entity'),
-    UsergridQuery = require('../../lib/query'),
     UsergridAuth = require('../../lib/auth'),
     UsergridAppAuth = require('../../lib/appAuth'),
     UsergridUserAuth = require('../../lib/userAuth'),
@@ -18,7 +15,7 @@ var _uuid,
     _slow = 500,
     _timeout = 4000
 
-describe('authFallback', function() {
+describe('authMode', function() {
 
     this.slow(_slow)
     this.timeout(_timeout)
@@ -38,8 +35,8 @@ describe('authFallback', function() {
         })
     })
 
-    it('should fall back to using no authentication when currentUser is not authenticated and authFallback is set to NONE', function(done) {
-        client.authFallback = UsergridAuth.AUTH_FALLBACK_NONE
+    it('should fall back to using no authentication when currentUser is not authenticated and authMode is set to NONE', function(done) {
+        client.authMode = UsergridAuth.AUTH_MODE_NONE
         client.GET('users', function(error, usergridResponse) {
             should(client.currentUser).be.undefined()
             usergridResponse.request.headers.should.not.have.property('authorization')
@@ -49,8 +46,8 @@ describe('authFallback', function() {
         })
     })
 
-    it('should fall back to using the app token when currentUser is not authenticated and authFallback is set to APP', function(done) {
-        client.authFallback = UsergridAuth.AUTH_FALLBACK_APP
+    it('should fall back to using the app token when currentUser is not authenticated and authMode is set to APP', function(done) {
+        client.authMode = UsergridAuth.AUTH_MODE_APP
         client.GET('users', function(error, usergridResponse, user) {
             should(client.currentUser).be.undefined()
             usergridResponse.request.headers.should.have.property('authorization').equal(util.format('Bearer %s', token))
@@ -62,7 +59,7 @@ describe('authFallback', function() {
 
     after(function(done) {
         // re-add sandbox permissions
-        client.authFallback = UsergridAuth.AUTH_FALLBACK_NONE
+        client.authMode = UsergridAuth.AUTH_MODE_NONE
         client.usingAuth(client.appAuth).POST('roles/guest/permissions', {
             permission: "get,post,put,delete:/**"
         }, function(error, usergridResponse) {
@@ -136,10 +133,8 @@ describe('authenticateApp()', function() {
 
     it('should not set client.appAuth when authenticating with a bad clientId and clientSecret in an object', function(done) {
         var failClient = new UsergridClient()
-        failClient.authenticateApp({
-            clientId: 'BADCLIENTID',
-            clientSecret: 'BADCLIENTSECRET'
-        }, function(e, r, token) {
+        failClient.appAuth = undefined
+        failClient.authenticateApp(new UsergridAppAuth('BADCLIENTID', 'BADCLIENTSECRET'), function(e, r, token) {
             e.should.containDeep({
                 name: 'invalid_grant',
                 description: 'invalid username or password'
@@ -152,10 +147,8 @@ describe('authenticateApp()', function() {
 
     it('should not set client.appAuth when authenticating with a bad UsergridAppAuth instance (using an object)', function(done) {
         var failClient = new UsergridClient()
-        failClient.authenticateApp(new UsergridAppAuth({
-            clientId: 'BADCLIENTID',
-            clientSecret: 'BADCLIENTSECRET'
-        }), function(e, r, token) {
+        failClient.appAuth = undefined
+        failClient.authenticateApp(new UsergridAppAuth('BADCLIENTID', 'BADCLIENTSECRET'), function(e, r, token) {
             e.should.containDeep({
                 name: 'invalid_grant',
                 description: 'invalid username or password'
@@ -169,6 +162,7 @@ describe('authenticateApp()', function() {
 
     it('should not set client.appAuth when authenticating with a bad UsergridAppAuth instance (using arguments)', function(done) {
         var failClient = new UsergridClient()
+        failClient.appAuth = undefined
         failClient.authenticateApp(new UsergridAppAuth('BADCLIENTID', 'BADCLIENTSECRET'), function(e, r, token) {
             e.should.containDeep({
                 name: 'invalid_grant',
