@@ -302,7 +302,6 @@ describe('PUT()', function() {
 
         this.slow(_slow)
         this.timeout(_timeout)
-
         client.PUT(config.test.collection, {
             uuid: response.entity.uuid,
             updateByPassingTypeAndBody: true
