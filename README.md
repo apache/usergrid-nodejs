@@ -1,4 +1,4 @@
-[![Codacy Badge](https://api.codacy.com/project/badge/grade/034bc34302b646bf932c7c0307e0e313)](https://www.codacy.com/app/remus/usergrid-nodejs)
+[![Codacy Badge](https://api.codacy.com/project/badge/grade/034bc34302b646bf932c7c0307e0e313)](https://www.codacy.com/app/brandonscript/usergrid-nodejs)
 [![Travis CI Badge](https://travis-ci.org/brandonscript/usergrid-nodejs.svg?branch=master)](https://travis-ci.org/brandonscript/usergrid-nodejs)
 [![npm version](https://badge.fury.io/js/usergrid.svg)](https://badge.fury.io/js/usergrid)
 
@@ -11,16 +11,16 @@ _**Note:** This Node.js SDK 2.0 for Usergrid is **not** backwards compatible wit
 
 ## Current Release
 
-- Pre-release: [Release Candidate 1](https://github.com/r3mus/usergrid-nodejs/releases), available here or on npm
+- Pre-release: [2.0 Release Candidate 2](https://github.com/brandonscript/usergrid-nodejs/releases), available here or on npm
 - Stable: [0.10.11](https://github.com/apache/usergrid/tree/master/sdks/nodejs)
  
 ## 2.X Bugs
 
-Please open an [issue](https://github.com/r3mus/usergrid-nodejs/issues/new)
+Please open an [issue](https://github.com/brandonscript/usergrid-nodejs/issues/new)
 
 ## Known Issues
 
-- Native support for push notifications is slated for RC2. Workaround is to send a regular POST request to `'devices/<device_ID>/notifications'`
+- Native support for push notifications is slated for RC3. Workaround is to send a regular POST request to `'devices/<device_ID>/notifications'`
 - There is no clean way to require submodules (e.g. `UsergridClient` or `UsergridEntity`) modules without referencing the full path to `../lib/<class>`.
 - Any other functionality that is missing or expected, please open an issue.
 
@@ -40,7 +40,7 @@ To install the 2.0 release candidates, install from [npm](https://www.npmjs.com/
 
 If you want access to the latest development build (you will need to run `npm install` to keep it up to date):
 
-    npm install r3mus/usergrid-nodejs
+    npm install brandonscript/usergrid-nodejs
 
 ## Usage
 
