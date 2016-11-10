@@ -21,7 +21,7 @@ var util = require('util'),
     appRoot = path.dirname(require.main.filename)
 
 if (/mocha$/i.test(process.argv[1])) {
-    var target = _(_.last(process.argv)).startsWith('--target=') ? _.last(process.argv).replace(/--target=/, '') : '1.0'
+    var target = (_.last(process.argv)).startsWith('--target=') ? _.last(process.argv).replace(/--target=/, '') : '2.1'
     var config = require('../tests/config.test.json')[target]
     if (config && target) {
         config.target = target

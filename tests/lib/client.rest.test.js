@@ -390,7 +390,7 @@ describe('DELETE()', function() {
     })
 
     it('response.error.name should equal "entity_not_found"', function() {
-        response.error.name.should.equal('entity_not_found')
+        response.error.name.should.equal((config.target === '1.0') ? 'service_resource_not_found' : 'entity_not_found')
     })
 
     it('should support deleting an entity by passing a UsergridEntity object', function(done) {
@@ -407,7 +407,7 @@ describe('DELETE()', function() {
             client.DELETE(usergridResponse.entity, function() {
                 client.GET(config.test.collection, usergridResponse.entity.uuid, function(err, delResponse) {
                     delResponse.ok.should.be.false()
-                    delResponse.error.name.should.equal('entity_not_found')
+                    delResponse.error.name.should.equal((config.target === '1.0') ? 'service_resource_not_found' : 'entity_not_found')
                     done()
                 })
             })

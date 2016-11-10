@@ -276,7 +276,7 @@ entity.remove(function(error, usergridResponse) {
 })
 ```
     
-## Authentication, current user, and auth-fallback
+## Authentication, current user, and authMode
 
 ### appAuth and authenticateApp()
 
@@ -315,7 +315,13 @@ Usergrid.authenticateUser({
 
 ### authMode
 
-Auth-mode defines what the client should do when a user token is not present. By default, `Usergrid.authMode` is set to `UsergridAuth.AUTH_MODE_NONE`, whereby when a token is *not* present, an API call will be performed unauthenticated. If instead `Usergrid.authMode` is set to `UsergridAuth.AUTH_MODE_APP`, the API call will instead be performed using client credentials, _if_ they're available (i.e. `authenticateApp()` was performed at some point). 
+Auth-mode is used to determine what the `UsergridClient` will use for authorization.
+
+By default, `Usergrid.authMode` is set to `UsergridAuth.AUTH_MODE_USER`, whereby if a non-expired `UsergridUserAuth` exists in `UsergridClient.currentUser`, this token is used to authenticate all API calls.
+
+If instead `Usergrid.authMode` is set to `UsergridAuth.AUTH_MODE_NONE`, all API calls will be performed unauthenticated. 
+
+If instead `Usergrid.authMode` is set to `UsergridAuth.AUTH_MODE_APP`, all API calls will be performed using the client credentials token, _if_ they're available (i.e. `authenticateApp()` was performed at some point). 
 
 ### usingAuth()
 

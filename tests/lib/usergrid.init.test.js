@@ -16,7 +16,7 @@ describe('init() / initSharedInstance()', function() {
     })
     
     it(util.format('should be testing against a Usergrid v%s instance', config.target), function(done) {
-        util.format('--target=%s', config.target).should.equal(_.last(process.argv))
+        util.format('%s', config.target).should.equal((_.last(process.argv)).startsWith('--target=') ? _.last(process.argv).replace(/--target=/, '') : '2.1')
         done()
     })
 })
