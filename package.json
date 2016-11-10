@@ -1,5 +1,12 @@
 {
   "author": "Brandon Shelley",
+  "contributors": [{
+    "name": "Brandon Shelley",
+    "email": "brandon@codeblooded.io"
+  }, {
+    "name": "Robert Walsh",
+    "email": "rjwalsh1985@gmail.com"
+  }],
   "dependencies": {
     "async": "latest",
     "file": "latest",
@@ -20,7 +27,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/r3mus/usergrid-nodejs.git"
+    "url": "git://github.com/brandonscript/usergrid-nodejs.git"
   },
   "keywords": [],
   "license": "Apache 2.0",
@@ -31,5 +38,5 @@
     "start": "node usergrid.js",
     "test": "mocha tests"
   },
-  "version": "2.0.0-rc.1"
+  "version": "2.0.0-rc.2"
 }
