@@ -276,7 +276,7 @@ entity.remove(function(error, usergridResponse) {
 })
 ```
     
-## Authentication, current user, and auth-fallback
+## Authentication, current user, and auth-mode
 
 ### appAuth and authenticateApp()
 
