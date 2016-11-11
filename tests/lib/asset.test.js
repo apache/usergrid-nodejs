@@ -5,7 +5,6 @@ var config = require('../../helpers').config,
     UsergridAsset = require('../../lib/asset'),
     UsergridClient = require('../../lib/client'),
     util = require('util'),
-    request = require('request'),
     fs = require('fs')
 
 var _slow = 6000,

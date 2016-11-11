@@ -4,7 +4,6 @@ var should = require('should'),
     urljoin = require('url-join'),
     config = require('../../helpers').config,
     UsergridClient = require('../../lib/client'),
-    UsergridEntity = require('../../lib/entity'),
     UsergridQuery = require('../../lib/query')
 
 var _slow = 500,

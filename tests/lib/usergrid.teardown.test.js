@@ -1,7 +1,6 @@
 'use strict'
 
-var should = require('should'),
-    Usergrid = require('../../usergrid'),
+var Usergrid = require('../../usergrid'),
     UsergridClient = require('../../lib/client')
 
 it('should be destroyed', function(done) {

@@ -18,12 +18,11 @@ describe('authMode', function() {
     this.slow(_slow)
     this.timeout(_timeout)
 
-    var response, token, client = new UsergridClient()
+    var token, client = new UsergridClient()
     before(function(done) {
         // authenticate app and remove sandbox permissions
         client.setAppAuth(config.clientId, config.clientSecret)
         client.authenticateApp(function(e, r, t) {
-            response = r
             token = t
             client.usingAuth(client.appAuth).DELETE('roles/guest/permissions', {
                 permission: "get,post,put,delete:/**"

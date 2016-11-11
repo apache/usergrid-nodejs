@@ -15,7 +15,6 @@ limitations under the License.
 'use strict'
 
 var Usergrid = require('../usergrid'),
-    helpers = require('../helpers'),
     _ = require('lodash')
 
 
