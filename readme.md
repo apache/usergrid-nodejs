@@ -2,7 +2,7 @@
 
 ##Version
 
-Current Version: **0.10.8**
+This is an older version of the SDK. Version: **0.10.8**.  Please see master branch for the most up to date version.
 
 See change log:
 
