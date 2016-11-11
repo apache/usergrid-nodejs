@@ -1,8 +1,6 @@
 var express = require('express'),
     app = express(),
-    Usergrid = require('usergrid'),
-    async = require('async'),
-    chance = require('chance')
+    Usergrid = require('usergrid')
 
 Usergrid.init()
 

@@ -6,8 +6,7 @@ var should = require('should'),
     config = require('../../helpers').config,
     UsergridClient = require('../../lib/client'),
     UsergridUser = require('../../lib/user'),
-    UsergridQuery = require('../../lib/query'),
-    _ = require('lodash')
+    UsergridQuery = require('../../lib/query')
 
 var _slow = 1500,
     _timeout = 4000,
@@ -26,7 +25,7 @@ before(function(done) {
     var query = new UsergridQuery('users').not.eq('username', config.test.username).limit(20)
     // clean up old user entities as the UsergridResponse tests rely on this collection containing less than 10 entities
     client.DELETE(query, function() {
-        _user1.create(client, function(err, usergridResponse, user) {
+        _user1.create(client, function() {
             done()
         })
     })
@@ -83,7 +82,7 @@ describe('create()', function() {
             user.should.have.property('activated').true()
             user.should.not.have.property('password')
                 // cleanup
-            user.remove(client, function(err, response) {
+            user.remove(client, function() {
                 done()
             })
         })
@@ -112,7 +111,7 @@ describe('logout()', function() {
     this.timeout(_timeout)
 
     it(util.format("it should log out '%s' and destroy the saved UsergridUserAuth instance", _username1), function(done) {
-        _user1.logout(client, function(err, response, success) {
+        _user1.logout(client, function(err, response) {
             response.ok.should.be.true()
             response.body.action.should.equal("revoked user token")
             _user1.auth.isValid.should.be.false()
@@ -121,7 +120,7 @@ describe('logout()', function() {
     })
 
     it("it should return an error when attempting to log out a user that does not have a valid token", function(done) {
-        _user1.logout(client, function(err, response, success) {
+        _user1.logout(client, function(err) {
             err.should.containDeep({
                 name: 'no_valid_token'
             })
@@ -133,8 +132,8 @@ describe('logout()', function() {
 describe('logoutAllSessions()', function() {
     it(util.format("it should log out all tokens for the user '%s' destroy the saved UsergridUserAuth instance", _username1), function(done) {
         _user1.password = config.test.password
-        _user1.login(client, function(err, response, token) {
-            _user1.logoutAllSessions(client, function(err, response, success) {
+        _user1.login(client, function() {
+            _user1.logoutAllSessions(client, function(err, response) {
                 response.ok.should.be.true()
                 response.body.action.should.equal("revoked user tokens")
                 _user1.auth.isValid.should.be.false()
@@ -150,7 +149,7 @@ describe('resetPassword()', function() {
     this.timeout(_timeout)
 
     it(util.format("it should reset the password for '%s' by passing parameters", _username1), function(done) {
-        _user1.resetPassword(client, config.test.password, '2cool4u', function(err, response, success) {
+        _user1.resetPassword(client, config.test.password, '2cool4u', function(err, response) {
             response.ok.should.be.true()
             response.body.action.should.equal("set user password")
             done()
@@ -161,7 +160,7 @@ describe('resetPassword()', function() {
         _user1.resetPassword(client, {
             oldPassword: '2cool4u',
             newPassword: config.test.password
-        }, function(err, response, success) {
+        }, function(err, response) {
             response.ok.should.be.true()
             response.body.action.should.equal("set user password")
             done()
@@ -172,10 +171,10 @@ describe('resetPassword()', function() {
         _user1.resetPassword(client, {
             oldPassword: 'BADOLDPASSWORD',
             newPassword: config.test.password
-        }, function(err, response, success) {
+        }, function(err, response) {
             response.ok.should.be.false()
             err.name.should.equal('auth_invalid_username_or_password')
-            _user1.remove(client, function(err, response) {
+            _user1.remove(client, function() {
                 done()
             })
         })

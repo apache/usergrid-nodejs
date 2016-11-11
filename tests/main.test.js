@@ -2,7 +2,6 @@
 
 // module config
 var should = require('should'),
-    validator = require('validator'),
     _ = require('lodash')
 
 _.mixin(require('lodash-uuid'))

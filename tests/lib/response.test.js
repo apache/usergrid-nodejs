@@ -74,7 +74,7 @@ describe('users', function() {
 
     it('response.users should be an array of UsergridUser objects', function(done) {
         client.setAppAuth(config.clientId, config.clientSecret, config.tokenTtl)
-        client.authenticateApp(function(err, response) {
+        client.authenticateApp(function(err) {
             should(err).be.undefined()
             client.GET('users', function(err, usergridResponse) {
                 usergridResponse.ok.should.be.true()

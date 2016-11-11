@@ -1,7 +1,6 @@
 'use strict'
 
-var should = require('should'),
-    config = require('../../helpers').config,
+var config = require('../../helpers').config,
     Usergrid = require('../../usergrid'),
     UsergridClient = require('../../lib/client'),
     util = require('util'),

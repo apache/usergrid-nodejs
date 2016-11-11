@@ -1,10 +1,8 @@
 'use strict'
 
 var should = require('should'),
-    urljoin = require('url-join'),
     config = require('../../helpers').config,
-    UsergridClient = require('../../lib/client'),
-    _ = require('lodash')
+    UsergridClient = require('../../lib/client')
 
 describe('initialization', function() {
     it('should fail to initialize without an orgId and appId', function() {
