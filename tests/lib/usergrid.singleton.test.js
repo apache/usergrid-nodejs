@@ -1,7 +1,6 @@
 'use strict'
 
-var should = require('should'),
-    Usergrid = require('../../usergrid')
+var Usergrid = require('../../usergrid')
 
 it('should be initialized when defined in another module', function(done) {
     Usergrid.should.have.property('isInitialized').which.is.true()

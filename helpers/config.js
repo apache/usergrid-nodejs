@@ -34,7 +34,7 @@ if (/mocha$/i.test(process.argv[1])) {
         file.walkSync(appRoot, function(start, dirs, names) {
             if (_.includes(names, "config.json") || _.includes(names, "usergrid.json")) {
                 var name = _.first(names.filter(function(name) {
-                    return name == "config.json" || name == "usergrid.json"
+                    return name === "config.json" || name === "usergrid.json"
                 }).sort().reverse())
                 var configPath = util.format("%s/%s", start, name)
                 module.exports = require(configPath)

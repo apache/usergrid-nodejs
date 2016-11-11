@@ -8,11 +8,9 @@ var should = require('should'),
     UsergridAuth = require('../../lib/auth'),
     UsergridAppAuth = require('../../lib/appAuth'),
     UsergridUserAuth = require('../../lib/userAuth'),
-    UsergridUser = require('../../lib/user'),
-    _ = require('lodash')
+    UsergridUser = require('../../lib/user')
 
-var _uuid,
-    _slow = 500,
+var _slow = 500,
     _timeout = 4000
 
 describe('authMode', function() {
@@ -62,7 +60,7 @@ describe('authMode', function() {
         client.authMode = UsergridAuth.AUTH_MODE_NONE
         client.usingAuth(client.appAuth).POST('roles/guest/permissions', {
             permission: "get,post,put,delete:/**"
-        }, function(error, usergridResponse) {
+        }, function() {
             done()
         })
     })
@@ -238,7 +236,7 @@ describe('authenticateUser()', function() {
             username: config.test.username,
             password: config.test.password,
             email: email
-        }, false, function(err, r, t) {
+        }, false, function() {
             should(noCurrentUserClient.currentUser).be.undefined()
             done()
         })
@@ -248,9 +246,9 @@ describe('authenticateUser()', function() {
         var newClient = new UsergridClient()
         var ttlInMilliseconds = 500000
         var userAuth = new UsergridUserAuth(config.test.username, config.test.password, ttlInMilliseconds)
-        client.authenticateUser(userAuth, function(err, usergridResponse, token) {
+        newClient.authenticateUser(userAuth, function(err, usergridResponse, token) {
             usergridResponse.ok.should.be.true()
-            client.currentUser.auth.token.should.equal(token)
+            newClient.currentUser.auth.token.should.equal(token)
             usergridResponse.body.expires_in.should.equal(ttlInMilliseconds / 1000)
             done()
         })

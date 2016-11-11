@@ -1,14 +1,12 @@
 'use strict'
 
-var should = require('should'),
-    config = require('../../helpers').config,
+var config = require('../../helpers').config,
     UsergridEntity = require('../../lib/entity'),
     UsergridAsset = require('../../lib/asset'),
     UsergridClient = require('../../lib/client'),
     util = require('util'),
     request = require('request'),
-    fs = require('fs'),
-    _ = require('lodash')
+    fs = require('fs')
 
 var _slow = 6000,
     _timeout = 12000,
@@ -103,7 +101,7 @@ describe('upload via client.PUT to a specific entity', function() {
     it('should upload a binary asset to an existing entity', function(done) {
         var entity = new UsergridEntity({
             type: config.test.collection,
-            name: "AssetTestPUT",
+            name: "AssetTestPUT"
         })
         var asset = new UsergridAsset(filename, file)
         client.PUT(entity, function(err, entityResponse, createdEntity) {

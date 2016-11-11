@@ -5,11 +5,9 @@ var should = require('should'),
     config = require('../../helpers').config,
     UsergridClient = require('../../lib/client'),
     UsergridEntity = require('../../lib/entity'),
-    UsergridQuery = require('../../lib/query'),
-    _ = require('lodash')
+    UsergridQuery = require('../../lib/query')
 
-var _uuid,
-    _slow = 500,
+var _slow = 500,
     _timeout = 4000
 
 describe('connect()', function() {

@@ -8,14 +8,12 @@ var should = require('should'),
     UsergridQuery = require('../../lib/query'),
     UsergridAuth = require('../../lib/auth'),
     UsergridAsset = require('../../lib/asset'),
-    fs = require('fs'),
-    _ = require('lodash')
+    fs = require('fs')
 
 var _slow = 1500,
     _timeout = 4000,
     filename = 'old_man',
     file = __dirname + '/image.jpg',
-    testFile = __dirname + '/image_test.jpg',
     expectedContentLength = 109055,
     assetEntity = new UsergridEntity({
         type: config.test.collection,
@@ -297,7 +295,7 @@ describe('reload()', function() {
             var entity = new UsergridEntity(getResponse.first)
             var modified = entity.modified
             getResponse.first.putProperty('reloadTest', now)
-            client.PUT(getResponse.first, function(err, putResponse) {
+            client.PUT(getResponse.first, function() {
                 entity.reload(client, function() {
                     client.isSharedInstance.should.be.false()
                     entity.reloadTest.should.equal(now)
@@ -351,7 +349,7 @@ describe('remove()', function() {
     })
 })
 
-describe('attachAsset()', function(done) {
+describe('attachAsset()', function() {
 
     var asset = new UsergridAsset(filename, file),
         entity = new UsergridEntity({
@@ -372,7 +370,7 @@ describe('attachAsset()', function(done) {
     })
 })
 
-describe('uploadAsset()', function(done) {
+describe('uploadAsset()', function() {
 
     this.slow(_slow)
     this.timeout(_timeout)
@@ -398,7 +396,7 @@ describe('uploadAsset()', function(done) {
     })
 })
 
-describe('downloadAsset()', function(done) {
+describe('downloadAsset()', function() {
 
     this.slow(_slow)
     this.timeout(_timeout)

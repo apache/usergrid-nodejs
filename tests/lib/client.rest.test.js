@@ -1,7 +1,6 @@
 'use strict'
 
-var should = require('should'),
-    config = require('../../helpers').config,
+var config = require('../../helpers').config,
     chance = new require('chance').Chance(),
     UsergridClient = require('../../lib/client'),
     UsergridEntity = require('../../lib/entity'),
