@@ -25,7 +25,7 @@ describe('init from fs.readFile()', function() {
     })
 
     it('asset.data should be a binary Buffer', function() {
-        asset.data.should.be.a.buffer
+        asset.data.should.be.a.buffer()
     })
 
     it('asset.contentType should be inferred from Buffer', function() {
@@ -53,7 +53,7 @@ describe('init from piped writable stream', function() {
     })
 
     it('asset.data should be a binary Buffer', function() {
-        asset.data.should.be.a.buffer
+        asset.data.should.be.a.buffer()
     })
 
     it('asset.contentType should be inferred from Buffer', function() {
