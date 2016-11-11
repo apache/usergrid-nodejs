@@ -1,0 +1,12 @@
+language: node_js
+node_js:
+- '5.1.0'
+install: 
+- 'npm install'
+- 'npm -g install mocha'
+script: 
+- 'mocha tests --bail --target=2.1'
+notifications:
+  email:
+    on_failure: change
+    on_success: change

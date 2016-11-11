@@ -1,0 +1,28 @@
+{
+    "1.0": {
+        "orgId": "rwalsh",
+        "appId": "nodejs",
+        "baseUrl": "https://api.usergrid.com",
+        "clientId": "YXA68wzo4KbAEea4p6tiytxmag",
+        "clientSecret": "YXA671McJDKY_C3oU1HpdbJBqGMf_Y0",
+        "test": {
+            "collection": "nodejs",
+            "email": "authtest@test.com",
+            "password": "P@ssw0rd",
+            "username": "authtest"
+        }
+    },
+    "2.1": {
+        "appId": "sdksandbox",
+        "baseUrl": "https://api-connectors-prod.apigee.net/appservices",
+        "clientId": "YXA6WMhAuFJTEeWoggrRE9kXrQ",
+        "clientSecret": "YXA6zZbat7PKgOlN73rpByc36LWaUhw",
+        "orgId": "api-connectors",
+        "test": {
+            "collection": "nodejs",
+            "email": "authtest@test.com",
+            "password": "P@ssw0rd",
+            "username": "authtest"
+        }
+    }
+}

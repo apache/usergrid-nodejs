@@ -1,0 +1,8 @@
+{
+    "appId": "sandbox",
+    "orgId": "brandon.apigee",
+    "authMode": "NONE",
+    "baseUrl": "https://api.usergrid.com",
+    "clientId": "YXA6GXSAACS2EeOYd20aP4G6Lw",
+    "clientSecret": "YXA66BeEvgNpJBwc4PAbvZZGTVS_SSw"
+}

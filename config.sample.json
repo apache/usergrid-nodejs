@@ -1,0 +1,8 @@
+{
+    "appId": "yourAppId",
+    "authMode": "NONE",
+    "baseUrl": "https://api.usergrid.com",
+    "clientId": "yourClientId",
+    "clientSecret": "yourClientSecret",
+    "orgId": "yourOrgId"
+}
