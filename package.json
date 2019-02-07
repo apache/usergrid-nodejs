@@ -11,7 +11,7 @@
     "async": "latest",
     "file": "latest",
     "file-type": "^3.4.0",
-    "lodash": "~4.0",
+    "lodash": ">=4.17.11",
     "lodash-inflection": "latest",
     "lodash-uuid": "latest",
     "read-chunk": "^1.0.1",
